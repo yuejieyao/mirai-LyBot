@@ -1,6 +1,6 @@
 # private-mirai-plugins
-
 ![image](https://img.shields.io/badge/python-3.7+-green.svg)
+
 自用的 mirai 插件,在框架上大量参考了 [Graia Project](https://github.com/GraiaProject/Application),由于该项目暂时还为迁移到 2.0+版本的 mirai_http_api 上,所以自己仿着写了一个简版的,还有很多功能没做,代码也比较乱
 
 ## 安装依赖包
