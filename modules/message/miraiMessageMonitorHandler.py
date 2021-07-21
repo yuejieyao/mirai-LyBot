@@ -5,15 +5,12 @@ from modules.message.messageChain import MessageChain
 
 class MiraiMessageMonitor:
     def __init__(self, type: str,  target: int, group: int = None, filter=None, call=None) -> None:
-        """
-        @description : 一次性监听
-        ---------
-        @param : type:message类型(FriendMessage,GroupMessage)
-        @param : group:群号,可以为空
-        @param : target:监听对象QQ
-        @param : filter:消息过滤函数
-        @param : call:监听触发的函数
-        -------
+        """一次性监听,用于等待对方回复的情况,通过传入自定义的filter来判断是否触发传入的call函数
+        type (str): message类型(FriendMessage,GroupMessage)
+        group (int): 群号,可以为空
+        target (int): 监听对象QQ
+        filter (function): 消息过滤函数
+        call: (function) 监听触发的函数
         """
         self.type = type
         self.group = group

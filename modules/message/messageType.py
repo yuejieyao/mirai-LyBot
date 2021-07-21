@@ -133,6 +133,17 @@ class MusicShare(MessageElement):
     type: str = 'MusicShare'
 
     def __init__(self, kind: str, title: str, summary: str, jumpUrl: str, pictureUrl: str, musicUrl: str, brief: str) -> None:
+        """ 音乐卡片分享
+        Param:
+            kind (str):只能是NeteaseCloudMusic等几个,具体参考mirai文档
+            title (str): 标题
+            summary (str): 简介
+            jumpUrl (str): 跳转地址
+            pictureUrl (str): 封面图片地址
+            musicUrl (str): 音乐地址
+            brief (str): 说明
+        """
+
         self.chain = {
             'type': 'MusicShare',
             'kind': kind,

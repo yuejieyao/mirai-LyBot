@@ -14,7 +14,7 @@ class MiraiMessageHandler:
         """根据websocket传来的mirai message触发各种事件"""
 
         if 'type' not in obj:
-            # 未知
+            # 未知消息
             return False
 
         if obj['type'] == 'GroupMessage':
@@ -34,6 +34,7 @@ class MiraiMessageHandler:
                     msg=msg, group=group, quote=quote)
             return
         if obj['type'] == 'FriendMessage':
+            #私聊
             sender = obj["sender"]["id"]
             if str(sender) in self.banList:
                 # banlist过滤

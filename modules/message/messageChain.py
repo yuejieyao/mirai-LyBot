@@ -1,16 +1,24 @@
 from typing import Any, Dict, List, Type, Union, TypeVar
 from modules.message.messageType import MessageElement, Source, Plain, Image, At, AtAll, App, Xml
-import copy
-
 
 class MessageChain:
     def __init__(self, elements: List[MessageElement] = []) -> None:
         self.elements = elements
 
     def append(self, element: MessageElement) -> None:
+        """添加一个MessageElement元素到末尾
+        Param:
+            element (MessageElement):如Plain,Image等
+        """
+
         self.elements.append(element)
 
     def extend(self, elements: List[MessageElement]) -> None:
+        """添加多个MessageElement元素到末尾
+        Param:
+            elements (List[MessageElement]):多个MessageElement组成的List
+        """
+
         self.elements.extend(elements)
 
     def asDisplay(self) -> str:
@@ -24,6 +32,7 @@ class MessageChain:
         return chains
 
     def getId(self) -> int:
+        """从Mirai得到的MessageChain第一个MessageElement固定是Source,对应了此MessageChain的ID,通过此方法获取ID"""
         if isinstance(self.elements[0], Source):
             return self.elements[0].id
         return 0

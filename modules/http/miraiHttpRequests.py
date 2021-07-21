@@ -41,7 +41,6 @@ class MiraiHttpRequests:
     def login(self):
         self.request = requests.session()
         last_sessionKey = config.getMiraiConf('sessionKey')
-        # print(last_sessionKey)
         if last_sessionKey:
             rs = self.post(
                 'release', {'sessionKey': last_sessionKey, 'qq': self.botQQ})
