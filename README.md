@@ -25,10 +25,16 @@
 | ------ | ------- | ------- |
 
 | Announcement | 公告(群发,并不是群公告) | 无 |
+| ------ | ------- | ------- |
 | ExchangeRate | 汇率转换 | [fixer(可能有墙)](https://fixer.io/) |
+| ------ | ------- | ------- |
 | KeywordDetection | 屏蔽关键词 | [百度ocr文字识别api](https://cloud.baidu.com/product/ocr_general) |
+| ------ | ------- | ------- |
 | Lolicon | 色图插件 | [lolicon](https://api.lolicon.app/#/setu) |
+| ------ | ------- | ------- |
 | MusicShare | 点歌(网易云) | 无 |
+| ------ | ------- | ------- |
 | Translation | 翻译 | [百度翻译开放平台](https://fanyi-api.baidu.com/) |
+| ------ | ------- | ------- |
 | UrlThumb | 快览 | (可能有墙) |
 
