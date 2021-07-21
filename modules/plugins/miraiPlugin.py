@@ -2,6 +2,7 @@ from typing import List
 from modules.message.messageChain import MessageChain
 from threading import Thread
 
+
 class MiraiMessagePluginProcessor:
     group_message_plugins_names = []  # 群消息插件注册名
     group_message_plugins = {}  # 群插件
@@ -10,11 +11,13 @@ class MiraiMessagePluginProcessor:
     friend_message_plugins = {}  # 好友插件
 
     def group_msg_process(self, msg: MessageChain, group: int, quote: int, plugins=()):
-        """
-        @description :循环调用群消息插件
-        ---------
-        @param : msg:群消息,group:群号,quote:引用消息的messageId,plugins:可指定触发某些插件
-        -------
+        """ 循环调用群消息插件
+
+        Param:
+            msg (MessageChain):消息
+            group (int): 群号
+            quote (int): 引用消息的messageId
+            plugins (list[str]): 可选,按插件注册名指定触发某些插件
         """
         if plugins == ():
             plugins = self.group_message_plugins_names
@@ -34,11 +37,9 @@ class MiraiMessagePluginProcessor:
 
     @classmethod
     def mirai_group_message_plugin_register(cls, plugin_name):
-        """
-        @description : 注册为群消息的响应模块
-        ---------
-        @param : cls:类本身,plugin_name:注册模块名
-        -------
+        """ 注册为群消息的响应模块
+        Param:
+            plugin_name (str): 注册模块名
         """
         def wrapper(plugin):
             cls.group_message_plugins.update({plugin_name: plugin})
@@ -47,11 +48,12 @@ class MiraiMessagePluginProcessor:
         return wrapper
 
     def friend_msg_process(self, msg: MessageChain, target: int, quote: int, plugins=()):
-        """
-        @description : 循环调用好友消息插件
-        ---------
-        @param : msg:好友消息,target:好友QQ,quote:引用消息的messageId,plugins:可指定触发某些插件
-        -------
+        """ 循环调用私聊消息插件
+        Param
+            msg (MessageChain): 消息
+            target (int): 私聊对象QQ
+            quote (int): 引用消息的messageId
+            plugins (List[str]): 可选,按插件注册名指定触发某些插件
         """
         if plugins == ():
             plugins = self.friend_message_plugins_name
@@ -62,11 +64,9 @@ class MiraiMessagePluginProcessor:
 
     @classmethod
     def mirai_friend_message_plugin_register(cls, plugin_name):
-        """
-        @description : 注册为好友消息的响应模块
-        ---------
-        @param : cls:类本身,plugin_name:注册模块名
-        -------
+        """  注册为好友消息的响应模块
+        Param
+            plugin_name (str): 注册模块名
         """
         def wrapper(plugin):
             cls.friend_message_plugins.update({plugin_name: plugin})
