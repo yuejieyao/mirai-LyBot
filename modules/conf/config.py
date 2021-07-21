@@ -32,10 +32,36 @@ def setMiraiConf(option: str, value: str):
         conf.write(f)
 
 
-def getBaiduConf(option: str = None):
+def getBaiduOcrConf(option: str = None):
     conf = config()
     conf.read('bot.conf')
     if option:
-        return conf.get(section='baidu', option=option)
+        return conf.get(section='baidu_ocr', option=option)
     else:
-        return conf['baidu']
+        return conf['baidu_ocr']
+
+
+def getBaiduTranConf(option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section='baidu_translate', option=option)
+    else:
+        return conf['baidu_translate']
+
+
+def getFixerConf(option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section='fixer', option=option)
+    else:
+        return conf['fixer']
+
+def getLoliconConf(option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section='lolicon', option=option)
+    else:
+        return conf['lolicon']

@@ -11,12 +11,7 @@ class MiraiMessageHandler:
         self.banList = config.getMiraiConf('banList').split(',')
 
     def onMessage(self, obj):
-        """
-        @description : 根据websocket传来的mirai message触发各种事件
-        ---------
-        @param : obj mirai的各种message
-        -------
-        """
+        """根据websocket传来的mirai message触发各种事件"""
 
         if 'type' not in obj:
             # 未知
@@ -28,6 +23,7 @@ class MiraiMessageHandler:
             if str(sender) in self.banList:
                 # banlist过滤
                 return False
+            print(obj['messageChain'])
             msg = MessageChain.fromJsonList(obj['messageChain'])
             quote = msg.getId()
             group = obj['sender']['group']['id']

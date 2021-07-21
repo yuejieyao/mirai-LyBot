@@ -1,5 +1,6 @@
-from typing import Any, Dict, List
-from modules.message.messageType import MessageElement, Source, Plain, Image, At, AtAll
+from typing import Any, Dict, List, Type, Union, TypeVar
+from modules.message.messageType import MessageElement, Source, Plain, Image, At, AtAll, App, Xml
+import copy
 
 
 class MessageChain:
@@ -28,32 +29,26 @@ class MessageChain:
         return 0
 
     def get(self, element_type: MessageElement) -> List[MessageElement]:
-        """
-        @description : 获取消息中对应类型的元素
-        ---------
-        @param : element_type 对应的消息类型,如Plain,Image
-        -------
-        @Returns : 对应类型的元素列表
-        -------
+        """获取消息中对应类型的元素
+        Param:
+            element_type (MessageElement): 对应的消息类型,如Plain,Image
+        Returns:
+            List[MessageElement]: 对应类型的元素列表
         """
 
         return [i for i in self.elements if type(i) is element_type]
 
+    def has(self, element_type: MessageElement) -> bool:
+        return element_type in [type(i) for i in self.elements]
+
     @staticmethod
     def fromJsonList(obj_list: List) -> 'MessageChain':
-        """
-        @description  : 根据消息的json数据生成MessageChain,主要用于websocket的on_message事件
-        ---------
-        @param  : obj_list  mirai的message是一串消息链,包含多种类型
-        -------
-        @Returns  :一个MessageChain对象,包含了各种类型的消息对象如Plain,Image等
-        -------
-        """
+        """根据消息的json数据生成MessageChain,主要用于websocket的on_message事件"""
 
         list = []
         for obj in obj_list:
             try:
-                if obj['type'] in ['Source', 'Plain', 'Image', 'At', 'AtAll']:
+                if obj['type'] in ['Source', 'Plain', 'Image', 'At', 'AtAll', 'App', 'Xml']:
                     list.append(
                         getattr(eval(obj['type']), 'fromJson')(obj))
                     # 生成对应Type的MessageElement
@@ -62,3 +57,16 @@ class MessageChain:
                 print(obj)
                 continue
         return MessageChain(list)
+
+    def __iter__(self):
+        return iter(self.elements)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.elements[key]
+        elif isinstance(self, slice):
+            return self.__class__(self.elements[key])
+        elif issubclass(key, MessageElement):
+            return self.get(key)
+        else:
+            raise NotImplementedError

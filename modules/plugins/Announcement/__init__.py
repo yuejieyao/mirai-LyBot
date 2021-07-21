@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+'''
+@Description: 通过与bot私聊公告触发,bot监听之后的一次回复作为公告内容,发送到bot所在的群
+@Date     :2021/06/11 14:32:43
+@Author      :yuejieyao
+@version      :1.0
+'''
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain
@@ -5,7 +13,6 @@ from modules.http.miraiMemberRequest import MiraiMemberRequests
 from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitor, MiraiMessageMonitorHandler
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MsgReq
 import time
-import re
 
 
 @MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('announcement')
@@ -21,6 +28,9 @@ class Announcement:
             return True
 
         def callback(_msg: MessageChain, _target: int):
+            if _msg.asDisplay() in ('取消', '算了', 'cancel'):
+                return
+
             msg = MessageChain([Plain(text="接收到公告内容,即将开始发送公告")])
             msgReq.sendFriendMessage(msg=msg, target=_target)
             time.sleep(1)

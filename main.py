@@ -8,11 +8,12 @@ def start():
     try:
         conn = MiraiHttpRequests()
         conn.login()
-
+    except Exception as e:
+        print(e)
+        start()
+    else:
         websocket_client = MiraiWebSocketClient(conn.sessionKey)
         websocket_client.open()
-    except:
-        start()
 
 
 if __name__ == '__main__':

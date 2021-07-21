@@ -31,8 +31,8 @@ class KeywordDetection:
                         [Plain('检测到关键词[%s],但我没有权限撤回你,算你牛逼' % taboo)])
                     msgReq.sendGroupMessage(msg=msg, target=group, quote=quote)
                 else:
-                    msg = MessageChain([Plain('检测到关键词[%s]' % taboo)])
-                    msgReq.sendGroupMessage(msg=msg, target=group, quote=quote)
+                    msg = MessageChain([Plain('检测到关键词[%s],自动撤回' % taboo)])
+                    msgReq.sendGroupMessage(msg=msg, target=group)
                 break
             # 检测图片中包含关键词
             images = chains.get(Image)
@@ -53,8 +53,8 @@ class KeywordDetection:
                                     msg=msg, target=group, quote=quote)
                             else:
                                 msg = MessageChain(
-                                    [Plain('检测到关键词[%s]' % taboo)])
+                                    [Plain('检测到关键词[%s],自动撤回' % taboo)])
                                 msgReq.sendGroupMessage(
-                                    msg=msg, target=group, quote=quote)
+                                    msg=msg, target=group)
                             break
                     time.sleep(0.5)

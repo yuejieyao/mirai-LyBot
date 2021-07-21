@@ -1,19 +1,30 @@
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from modules.message.messageChain import MessageChain
+from modules.conf import config
 
 
 class MiraiMessageRequest:
     def __init__(self) -> None:
         self.httpRequest = MiraiHttpRequests()
 
-    def sendGroupMessage(self, msg: MessageChain, target: int, quote: int = None):
+    def sendAdminMessage(self, msg: MessageChain):
+        """发送消息到管理员,管理员配置为conf文件中的adminQQ,可以用逗号分割多个管理员
+        
+        Param:
+            msg (MessageChain): 消息链
         """
-        @description : 发送群消息
-        ---------
-        @param : msg:消息,target:目标群号,quote:引用消息ID
-        -------
-        """
+        adminIds = config.getMiraiConf('adminQQ').split(',')
+        for adminId in adminIds:
+            self.sendFriendMessage(msg=msg, target=adminId)
 
+    def sendGroupMessage(self, msg: MessageChain, target: int, quote: int = None):
+        """发送群消息
+
+        Param:
+            msg (MessageChain): 消息链
+            target (int): 目标群号
+            quote (int): 引用消息ID,可选,默认为None
+        """
         data = {"sessionKey": self.httpRequest.sessionKey,
                 "messageChain": msg.asJson(), "target": target}
         if quote:
@@ -24,13 +35,13 @@ class MiraiMessageRequest:
             print(response)
 
     def sendFriendMessage(self, msg: MessageChain, target: int, quote: int = None):
-        """
-        @description : 发送好友消息
-        ---------
-        @param : msg:消息,target:目标好友QQ,quote:引用消息ID
-        -------
-        """
+        """发送好友消息 
 
+        Param:
+            msg (MessageChain): 消息链
+            target (int): 目标好友QQ号
+            quote (int): 引用消息ID,可选,默认为None
+        """
         data = {"sessionKey": self.httpRequest.sessionKey,
                 "messageChain": msg.asJson(), "target": target}
         if quote:
@@ -41,11 +52,10 @@ class MiraiMessageRequest:
             print(response)
 
     def recall(self, target: int):
-        """
-        @description : 撤回群员消息
-        ---------
-        @param : 目标消息id
-        -------
+        """撤回消息
+
+        Param:
+            target (int): 目标消息id
         """
 
         data = {"sessionKey": self.httpRequest.sessionKey, "target": target}

@@ -44,13 +44,13 @@ class MiraiMessageMonitorHandler:
         self.monitors.remove(monitor)
 
     def process(self, type: str, msg: MessageChain, target: int, group: int = None) -> bool:
-        """
-        @description : 遍历当前的监听列表,满足目标条件时调用监听的filter,满足后调用回调函数,后删除该监听
-        ---------
-        @param : type:message类型(FriendMessage,GroupMessage),target:监听目标QQ,msg:消息
-        -------
-        @Returns : bool值,如有监听成功执行则返回true,若遍历结束没有符合条件的监听则返回false
-        -------
+        """遍历当前的监听列表,满足目标条件时调用监听的filter,满足后调用回调函数,后删除该监听
+        Param:
+            type (str): message类型(FriendMessage,GroupMessage)
+            target (int): 监听目标的QQ号
+            msg (MessageChain): 消息链
+        Returns:
+            bool: 如有监听成功执行则返回true,若遍历结束没有符合条件的监听则返回false
         """
 
         for monitor in self.monitors:

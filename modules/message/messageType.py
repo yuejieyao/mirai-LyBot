@@ -1,4 +1,4 @@
-from modules.resource.imageManager import ImageType, ImageManager
+from modules.resource.imageManager import ImageManager
 
 
 class MessageElement:
@@ -89,15 +89,34 @@ class Plain(MessageElement):
 class Image(MessageElement):
     type: str = 'Image'
 
-    def __init__(self, file_path: str, image_id: str, image_url: str, image_type: ImageType) -> None:
-        if all([file_path, image_id == None]):
+    def __init__(self, image_type: str, file_path: str = None, image_id: str = None, image_url: str = None) -> None:
+        """生成图片消息
+        Param:
+            image_type (str): friend,group或temp
+            file_path (str): 可选,若是本地上传图片则需要此参数
+            image_id (str): 可选,若已有image_id则直接生成图片消息
+            image_url (str): 可选,若从网络图片生成消息则需要此参数
+        Returns:
+            Image: 图片消息
+        """
+
+        if file_path != None and image_id == None:
+            # 本地图片上传
             imageManager = ImageManager()
             image_id = imageManager.upload_img(
                 file_path=file_path, image_type=image_type)
-            self.chain = {'type': 'Image', 'imageId': self.image_id}
-        elif all([image_id, image_url]):
+            self.chain = {'type': 'Image', 'imageId': image_id}
+        elif image_id == None and image_url != None:
+            # 网络图片下载后上传
+            imageManager = ImageManager()
+            image_id = imageManager.upload_img_from_url(
+                image_url, image_type=image_type)
+            self.chain = {'type': 'Image', 'imageId': image_id}
+        elif image_id != None and image_url != None:
+            # 已上传的图片
             self.chain = {'type': 'Image',
                           'imageId': image_id, 'url': image_url}
+        self.image_id = image_id
 
     def asDisplay(self) -> str:
         return '[图片]'
@@ -113,11 +132,58 @@ class Image(MessageElement):
 class MusicShare(MessageElement):
     type: str = 'MusicShare'
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, kind: str, title: str, summary: str, jumpUrl: str, pictureUrl: str, musicUrl: str, brief: str) -> None:
+        self.chain = {
+            'type': 'MusicShare',
+            'kind': kind,
+            'title': title,
+            'summary': summary,
+            'jumpUrl': jumpUrl,
+            'pictureUrl': pictureUrl,
+            'musicUrl': musicUrl,
+            'brief': brief
+        }
 
     def asDisplay() -> str:
         pass
 
     def asSerializationString() -> str:
         pass
+
+
+class App(MessageElement):
+    type: str = 'App'
+    content: str
+
+    def __init__(self, content: str) -> None:
+        self.chain = {'type': 'App', content: str}
+        self.content = content
+
+    def asDisplay(self) -> str:
+        return "[APP消息]"
+
+    def asSerializationString(self) -> str:
+        return "[mirai:App]"
+
+    @staticmethod
+    def fromJson(obj) -> 'App':
+        return App(context=obj['content'])
+
+
+class Xml(MessageElement):
+    type: str = 'Xml'
+    xml: str
+
+    def __init__(self, xml: str) -> None:
+        self.chain = {'type': 'Xml', 'xml': xml}
+        self.xml = xml
+
+    def asDisplay(self) -> str:
+        return "[Xml消息]"
+
+    def asSerializationString(self) -> str:
+        return "[mirai:Xml]"
+
+    @staticmethod
+    def fromJson(obj) -> 'Xml':
+        return Xml(xml=obj['xml'])
