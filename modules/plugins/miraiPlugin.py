@@ -1,4 +1,3 @@
-from typing import List
 from modules.message.messageChain import MessageChain
 from threading import Thread
 
@@ -25,15 +24,6 @@ class MiraiMessagePluginProcessor:
             for plugin_name in plugins:
                 Thread(
                     self.group_message_plugins[plugin_name]().process(msg, group, quote)).start()
-
-        # if plugins == ():
-        #     for plugin_name in self.group_message_plugins_names:
-        #         self.group_message_plugins[plugin_name]().process(
-        #             msg, group, quote)
-        # else:
-        #     for plugin_name in plugins:
-        #         self.group_message_plugins[plugin_name]().process(
-        #             msg, group, quote)
 
     @classmethod
     def mirai_group_message_plugin_register(cls, plugin_name):

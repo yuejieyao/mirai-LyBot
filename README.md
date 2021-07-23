@@ -1,7 +1,8 @@
 # private-mirai-plugins
+
 ![image](https://img.shields.io/badge/python-3.7+-green.svg)
 
-自用的 mirai 插件,在框架上大量参考了 [Graia Project](https://github.com/GraiaProject/Application),由于graia暂时还未迁移到 2.0+版本的 mirai_http_api 上,所以自己仿着写了一个简版的,还有很多功能没做,代码也比较乱
+自用的 mirai 插件,在框架上大量参考了 [Graia Project](https://github.com/GraiaProject/Application),由于 graia 暂时还未迁移到 2.0+版本的 mirai_http_api 上,所以自己仿着写了一个简版的,还有很多功能没做,代码也比较乱
 
 ## 安装依赖包
 
@@ -25,8 +26,9 @@
 | ---------- | :-----------: | :-----------: |
 | Announcement | 公告(群发,并不是群公告) | 无 |
 | ExchangeRate | 汇率转换 | [fixer(可能有墙)](https://fixer.io/) |
-| KeywordDetection | 屏蔽关键词 | [百度 ocr 文字识别 api](https://cloud.baidu.com/product/ocr_general) |
-| Lolicon | 色图插件 | [lolicon](https://api.lolicon.app/#/setu) |
+| KeywordDetection | 屏蔽关键词(含图片) | [百度 ocr 文字识别](https://cloud.baidu.com/product/ocr_general) |
+| Lolicon | 色图插件(不含18X) | [lolicon](https://api.lolicon.app/#/setu) |
 | MusicShare | 点歌(网易云) | 无 |
 | Translation | 翻译 | [百度翻译开放平台](https://fanyi-api.baidu.com/) |
 | UrlThumb | 快览 | (可能有墙) |
+| Weather | 天气查询 | [和风天气](https://www.qweather.com/) |

@@ -130,4 +130,3 @@ dmypy.json
 test.py
 modules/plugins/UrlThumb/icon_cache/*
 modules/resource/temp/*
-bot.conf

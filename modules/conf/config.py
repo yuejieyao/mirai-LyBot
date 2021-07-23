@@ -58,6 +58,7 @@ def getFixerConf(option: str = None):
     else:
         return conf['fixer']
 
+
 def getLoliconConf(option: str = None):
     conf = config()
     conf.read('bot.conf')
@@ -65,3 +66,12 @@ def getLoliconConf(option: str = None):
         return conf.get(section='lolicon', option=option)
     else:
         return conf['lolicon']
+
+
+def getQWeatherConf(option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section='qweather', option=option)
+    else:
+        return conf['qweather']
