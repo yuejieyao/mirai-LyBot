@@ -20,6 +20,7 @@
 
 功能插件位于`/modules/plugins`,不需要可以直接删对应的插件
 要使用的话需要在 config.conf 中配置对应的 api 信息
+
 定时任务插件位于`/modules/schedule`,不需要可以直接删对应的插件
 
 当前完成的功能
