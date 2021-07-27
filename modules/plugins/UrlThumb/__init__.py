@@ -28,6 +28,10 @@ class UrlThumb:
             json_msg = json.loads(chains.get(App)[0].content)
             try:
                 desc = json_msg['desc']
+                if desc == '新闻':
+                    url = json_msg['meta']['news']['jumpUrl']
+                    MsgReq().sendGroupMessage(msg=outline(url), target=group)
+                    return
             except KeyError:
                 pass
             else:
@@ -106,4 +110,5 @@ def get(url, headers=None) -> requests.Response:
     if response.status_code == 200:
         return response
     else:
+        print(response)
         raise

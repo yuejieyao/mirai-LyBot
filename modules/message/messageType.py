@@ -178,7 +178,7 @@ class App(MessageElement):
 
     @staticmethod
     def fromJson(obj) -> 'App':
-        return App(context=obj['content'])
+        return App(content=obj['content'])
 
 
 class Xml(MessageElement):
