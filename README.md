@@ -18,8 +18,9 @@
 
 ## 说明
 
-所有的功能都作为插件方式存在于`/modules/plugins`,不需要直接删对应的插件即可
+功能插件位于`/modules/plugins`,不需要可以直接删对应的插件
 要使用的话需要在 config.conf 中配置对应的 api 信息
+定时任务插件位于`/modules/schedule`,不需要可以直接删对应的插件
 
 当前完成的功能
 | 插件 | 功能 | 需要 |
@@ -32,3 +33,4 @@
 | Translation | 翻译 | [百度翻译开放平台](https://fanyi-api.baidu.com/) |
 | UrlThumb | 快览 | (可能有墙) |
 | Weather | 天气查询 | [和风天气](https://www.qweather.com/) |
+| Today | 历史上的今天(定时任务) | 无 |
