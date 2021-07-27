@@ -9,7 +9,7 @@ class MiraiMessageRequest:
 
     def sendAdminMessage(self, msg: MessageChain):
         """发送消息到管理员,管理员配置为conf文件中的adminQQ,可以用逗号分割多个管理员
-        
+
         Param:
             msg (MessageChain): 消息链
         """
@@ -62,3 +62,4 @@ class MiraiMessageRequest:
         response = self.httpRequest.post('recall', data=data)
         if response['code'] != 0:
             print('recall failed')
+            print(response)
