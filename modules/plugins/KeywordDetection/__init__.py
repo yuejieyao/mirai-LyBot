@@ -33,7 +33,7 @@ class KeywordDetection:
                 else:
                     msg = MessageChain([Plain('检测到关键词[%s],自动撤回' % taboo)])
                     msgReq.sendGroupMessage(msg=msg, target=group)
-                break
+
             # 检测图片中包含关键词
             images = chains.get(Image)
             if len(images) > 0:

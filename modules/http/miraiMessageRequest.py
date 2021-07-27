@@ -59,6 +59,6 @@ class MiraiMessageRequest:
         """
 
         data = {"sessionKey": self.httpRequest.sessionKey, "target": target}
-        response = self.post('recall', data=data)
+        response = self.httpRequest.post('recall', data=data)
         if response['code'] != 0:
             print('recall failed')

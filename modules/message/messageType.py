@@ -126,7 +126,7 @@ class Image(MessageElement):
 
     @staticmethod
     def fromJson(obj) -> 'Image':
-        return Image(image_id=obj['imageId'], image_url=obj['url'])
+        return Image(image_id=obj['imageId'], image_url=obj['url'], image_type='temp')
 
 
 class MusicShare(MessageElement):
