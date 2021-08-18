@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+'''
+@Description: 获取bot当前IP
+@Date     :2021/08/18 14:38:14
+@Author      :yuejieyao
+@version      :1.0
+'''
 from modules.conf import config
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
