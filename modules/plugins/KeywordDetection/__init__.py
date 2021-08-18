@@ -18,7 +18,7 @@ import re
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('keywordDetection')
 class KeywordDetection:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         taboos = ['微博']
         for taboo in taboos:
             # 检测文本中包含关键词

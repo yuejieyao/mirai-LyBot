@@ -31,10 +31,10 @@ class MiraiMessageHandler:
                     type='GroupMessage', msg=msg, target=sender, group=group):
                 # 如果没有触发一次性监听,则执行插件
                 self.processor.group_msg_process(
-                    msg=msg, group=group, quote=quote)
+                    msg=msg, group=group, target=sender, quote=quote)
             return
         if obj['type'] == 'FriendMessage':
-            #私聊
+            # 私聊
             sender = obj["sender"]["id"]
             if str(sender) in self.banList:
                 # banlist过滤

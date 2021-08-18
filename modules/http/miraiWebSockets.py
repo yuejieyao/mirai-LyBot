@@ -26,7 +26,7 @@ class MiraiWebSocketClient:
         Thread(target=loop).start()
 
     def on_close(ws, close_status_code, close_msg):
-        raise 'websocket closed'
+        raise Exception('websocket closed')
 
     def on_error(ws, error):
         raise error

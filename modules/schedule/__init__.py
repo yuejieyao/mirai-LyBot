@@ -14,8 +14,11 @@ for plugin in os.listdir(__path__[0]):
         """
         if os.path.isdir(os.path.join(__path__[0], plugin)):
             import_module(f'modules.schedule.{plugin}')
+            print(f'添加循环任务成功: modules.schedule.{plugin}')
         else:
             import_module(f"modules.schedule.{plugin.split('.')[0]}")
+            print(f"添加循环任务成功: modules.schedule.{plugin.split('.')[0]}")
+
     except ModuleNotFoundError:
         pass
 

@@ -40,4 +40,4 @@ class Today:
                         Plain(text=f"在{item['year']}年,{item['title']}\n"))
             return msg
         else:
-            raise
+            raise Exception('Today:获取数据失败')

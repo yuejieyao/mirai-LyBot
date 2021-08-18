@@ -5,6 +5,9 @@ import schedule
 class MiraiScheduleProcessor:
     def mirai_schedule_plugins_process(self):
         schedule.run_pending()
+        
+        # 立刻执行一次,并每隔1分钟执行一次,测试用
+        # schedule.run_all(delay_seconds=60)
         time.sleep(1)
 
     @classmethod

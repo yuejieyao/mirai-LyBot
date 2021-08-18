@@ -9,12 +9,13 @@ class MiraiMessagePluginProcessor:
     friend_message_plugins_name = []  # 好友消息插件注册名
     friend_message_plugins = {}  # 好友插件
 
-    def group_msg_process(self, msg: MessageChain, group: int, quote: int, plugins=()):
+    def group_msg_process(self, msg: MessageChain, group: int, target: int, quote: int, plugins=()):
         """ 循环调用群消息插件
 
         Param:
             msg (MessageChain):消息
             group (int): 群号
+            target (int): 发送者qq
             quote (int): 引用消息的messageId
             plugins (list[str]): 可选,按插件注册名指定触发某些插件
         """
@@ -23,7 +24,7 @@ class MiraiMessagePluginProcessor:
 
             for plugin_name in plugins:
                 Thread(
-                    self.group_message_plugins[plugin_name]().process(msg, group, quote)).start()
+                    self.group_message_plugins[plugin_name]().process(msg, group, target, quote)).start()
 
     @classmethod
     def mirai_group_message_plugin_register(cls, plugin_name):

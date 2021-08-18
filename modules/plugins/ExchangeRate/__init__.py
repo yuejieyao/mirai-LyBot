@@ -18,7 +18,7 @@ import requests
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('exchangeRate')
 class ExchangeRate:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int, quote: int):
         if re.match('rate .*', chains.asDisplay()) != None:
             msgs = chains.asDisplay().split(' ')
             msgReq = MiraiMessageRequest()

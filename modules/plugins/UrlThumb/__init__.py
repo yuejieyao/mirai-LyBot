@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 '''
-@Description: 链接地址快览,调用的outline接口(此插件仅面向如win10应用商店版QQ,不会自动生产预览卡片,outline接口需跨海)
+@Description: 链接地址快览,调用的outline接口(此插件仅面向不支持某些卡片预览的QQ(win10应用商店版),outline接口需跨海)
 @Date     :2021/07/19 15:22:04
 @Author      :yuejieyao
 @version      :1.0
@@ -23,7 +23,7 @@ import json
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('urlThumb')
 class UrlThumb:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         if chains.has(App):
             json_msg = json.loads(chains.get(App)[0].content)
             try:
@@ -107,8 +107,5 @@ def outline(url: str) -> MessageChain:
 
 def get(url, headers=None) -> requests.Response:
     response = requests.session().get(url=url, headers=headers)
-    if response.status_code == 200:
-        return response
-    else:
-        print(response)
-        raise
+    response.raise_for_status()
+    return response

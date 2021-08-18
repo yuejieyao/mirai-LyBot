@@ -18,7 +18,7 @@ import requests
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('neMusicShare')
 class NeMusicShare:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         if re.match('点歌 .*', chains.asDisplay()) != None:
             msgReq = MiraiMessageRequest()
             msgs = chains.asDisplay().split(' ')
@@ -73,7 +73,5 @@ def getMusic(keyword: str) -> MessageChain:
 
 def get(url: str) -> requests.Response:
     resp = requests.session().get(url=url)
-    if resp.status_code == 200:
-        return resp
-    else:
-        raise
+    resp.raise_for_status()
+    return resp

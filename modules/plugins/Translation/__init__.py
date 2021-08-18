@@ -17,7 +17,7 @@ import re
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('translation')
 class Translation:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         if re.match('翻译 .*', chains.asDisplay()) != None:
             message_text = chains.asDisplay().strip()
             msgs = message_text.split(' ')

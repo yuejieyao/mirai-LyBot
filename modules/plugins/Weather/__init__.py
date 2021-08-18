@@ -25,7 +25,7 @@ icon_file = os.path.join(os.path.dirname(__file__), 'color-64')
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('weather')
 class Weather:
-    def process(self, chains: MessageChain, group: int, quote: int):
+    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
         if re.match('天气 .*', message_display) == None:
             return
@@ -54,7 +54,7 @@ def getLonlat(location: str) -> str:
         lonlat = location['lon']+','+location['lat']
         return lonlat
     else:
-        raise
+        raise Exception("Weather:获取城市定位数据失败")
 
 
 def getWeather(location: str):
@@ -67,7 +67,7 @@ def getWeather(location: str):
     if result['code'] == '200':
         return result['now']
     else:
-        raise
+        raise Exception("Weather:获取天气数据失败")
 
 
 def weatherMsgCreator(obj, location: str) -> str:
@@ -96,7 +96,7 @@ def weatherMsgCreator(obj, location: str) -> str:
     else:
         x = 25-(len(location)-2)*5
     # 地名太长打印会覆盖后边,懒得改了,一般4个字以内效果还行
-    draw.text((x,y), location, font=font, fill="#000000")
+    draw.text((x, y), location, font=font, fill="#000000")
     iconImage = Img.open(f'{icon_file}/{icon}.png').convert('RGBA')
     image.paste(iconImage, box=(5, 30), mask=iconImage)
     temp_path = os.path.join(os.path.dirname(__file__), 'cache')

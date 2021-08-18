@@ -62,4 +62,4 @@ class MiraiMessageRequest:
         response = self.httpRequest.post('recall', data=data)
         if response['code'] != 0:
             print('recall failed')
-            print(response)
+            raise Exception('recall failed')
