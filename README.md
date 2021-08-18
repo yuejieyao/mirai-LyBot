@@ -26,9 +26,11 @@
 | 插件 | 功能 | 需要 |
 | ---------- | :-----------: | :-----------: |
 | Announcement | 公告(群发,并不是群公告) | 无 |
+| MyIP | 返回bot当前IP | 无 |
 | ExchangeRate | 汇率转换 | [fixer(可能有墙)](https://fixer.io/) |
 | KeywordDetection | 屏蔽关键词(含图片) | [百度 ocr 文字识别](https://cloud.baidu.com/product/ocr_general) |
-| Lolicon | 色图插件(不含18X) | [lolicon](https://api.lolicon.app/#/setu) |
+| Lolicon | 色图插件(不含 18X) | [lolicon](https://api.lolicon.app/#/setu) |
+| Pixiv | 色图插件(不含 18X) | [自行获取 refreshToken](https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362) |
 | MusicShare | 点歌(网易云) | 无 |
 | Translation | 翻译 | [百度翻译开放平台](https://fanyi-api.baidu.com/) |
 | UrlThumb | 快览 | (可能有墙) |

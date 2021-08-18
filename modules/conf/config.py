@@ -75,3 +75,12 @@ def getQWeatherConf(option: str = None):
         return conf.get(section='qweather', option=option)
     else:
         return conf['qweather']
+
+
+def getPixivConf(option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section='pixiv', option=option)
+    else:
+        return conf['pixiv']
