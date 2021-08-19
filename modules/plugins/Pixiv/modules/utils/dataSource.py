@@ -80,7 +80,7 @@ class DataSource(Sqlite):
                                {'date': t.strftime('%y-%m-%d')})[0][0]
         if rs_unsend > 0:
             return True
-        rs_total = self.query("select count(*) from illust where date=:date", {'date': t})[0][0]
+        rs_total = self.query("select count(*) from illust where date=:date", {'date': t.strftime('%y-%m-%d')})[0][0]
         rs = self.pixiv.getRanking(mode='day_male', date=t, offset=rs_total)
         append = []
         for r in rs:
