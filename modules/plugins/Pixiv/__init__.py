@@ -24,7 +24,7 @@ class Pixiv:
         if re.match('图来.*', message_display) != None:
             ds = DataSource(path=self.pixiv_db)
             try:
-                pic = ds.getRandomPic()
+                pic = ds.getRandomPic(group=group)
                 msg = MessageChain([Plain(text="来了来了~\n"),
                                     Plain(text=f"title : {pic['title']}\n"),
                                     Plain(text=f"author : {pic['author']}({pic['user']})\n"),
@@ -34,7 +34,7 @@ class Pixiv:
             except Exception as e:
                 print(e)
             else:
-                ds.setSend(pic['id'])  # 记录已发送
+                ds.setSend(id=pic['id'], group=group)  # 记录已发送
 
         if re.match('关注作者 .*', message_display) != None:
             msgs = message_display.split(' ')

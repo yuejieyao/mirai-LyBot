@@ -15,9 +15,14 @@ class DataSource(Sqlite):
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
 
-    def getRandomPic(self):
-        t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
-        rs = self.query("select id,title,tag,url,user,author from illust where send=0 order by random() limit 1")
+    def getRandomPic(self, group: int):
+        # t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
+        rs = self.query("""
+            select i.id,i.title,i.tag,i.url,i.user,i.author 
+            from illust i 
+            where send=0
+            and not exists(select * from send s where s.pic_id=i.id and s.send_group=?) 
+            order by random() limit 1""", (group,))
         if len(rs) == 0:
             if self.initRankingPic():
                 return self.getRandomPic()
@@ -31,13 +36,13 @@ class DataSource(Sqlite):
         else:
             raise Exception("下载图片失败")
 
-    def isSend(self, id: int) -> bool:
-        if self.query('select send from illust where id=:id', {'id': id})[0][0] == 1:
+    def isSend(self, id: int, group: int) -> bool:
+        if self.query('select count(*) from send where pic_id=:pic_id and send_group=:send_group', {'pic_id': id, 'send_group': group})[0][0] > 0:
             return True
         return False
 
-    def setSend(self, id: int):
-        return self.execute("update illust set send=1 where id=:id", {'id': id})
+    def setSend(self, id: int, group: int):
+        return self.execute("insert into send (pic_id,send_group) values(?,?)", [(id, group)])
 
     def getNewPic(self, user: int):
         illust = self.pixiv.getUserPic(user=user)[0]
@@ -76,23 +81,27 @@ class DataSource(Sqlite):
 
     def initRankingPic(self) -> bool:
         t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
-        rs_unsend = self.query("select count(*) from illust where date=:date and send=0",
-                               {'date': t.strftime('%y-%m-%d')})[0][0]
-        if rs_unsend > 0:
-            return True
+        # rs_unsend = self.query("select count(*) from illust where date=:date and send=0",
+        #                        {'date': t.strftime('%y-%m-%d')})[0][0]
+        # if rs_unsend > 0:
+        #     return True
         rs_total = self.query("select count(*) from illust where date=:date", {'date': t.strftime('%y-%m-%d')})[0][0]
         rs = self.pixiv.getRanking(mode='day_male', date=t, offset=rs_total)
         append = []
         for r in rs:
             if not self.exists('illust', 'id', r[0]):
                 append.append(r)
-        return self.execute(
+        self.execute(
             "insert into illust (id,title,url,tag,user,author,date) values(?,?,?,?,?,?,?)", append)
+        # 屏蔽榜单上的漫画
+        self.execute("update illust set send=1 where title like '%漫画%' or tag like '%漫画%'")
+        return True
 
     def __initSqlite(self):
         rs = self.query(
             "select name from sqlite_master where type='table' order by name")
         if ('illust',) not in rs:
+            # 字段send=0表示可发送,1表示各种原因屏蔽掉不发送
             self.execute("""
                 create table illust
                 (
@@ -104,7 +113,7 @@ class DataSource(Sqlite):
                     user int,
                     author text,
                     date date,
-                    send int DEFAULT 0
+                    send int DEFAULT 0             
                 )
             """)
             print('创建表illust成功')
@@ -119,3 +128,14 @@ class DataSource(Sqlite):
                     )
             """)
             print('创建表follow成功')
+        if ('send',) not in rs:
+            # 发送记录
+            self.execute("""
+                create table send
+                    (
+                        send_id INTEGER PRIMARY KEY,
+                        pic_id int,
+                        send_group int
+                    )
+            """)
+            print('创建表send成功')

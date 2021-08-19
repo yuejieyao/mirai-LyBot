@@ -13,11 +13,14 @@ from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image, At
 from modules.http.miraiMessageRequest import MiraiMessageRequest
 import time
+import shutil
+import os
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(interval=1)
 class Pixiv:
     pixiv_db = 'modules/resource/data/pixiv.db'
+
     def process(self):
         ds = DataSource(path=self.pixiv_db)
         # 获取被关注的作者Ids
@@ -29,34 +32,34 @@ class Pixiv:
                 print(f'schedule: 开始检测Pixiv作者ID:{author_id}的新作品')
                 # 获取最后更新的图,检查是否推送过
                 pic = ds.getNewPic(user=author_id)
-                if ds.isSend(id=pic['id']):
-                    continue
-                else:
-                    followers = ds.getFollowers(user=author_id)
-                    # 需要发送的群
-                    groups = list(set(follower[0] for follower in followers))
-                    for group in groups:
-                        # 该群需要@的人员
-                        qqs = list(set([follower[1] for follower in followers if follower[0] == group]))
-                        msg = MessageChain([])
-                        for qq in qqs:
-                            msg.append(At(target=qq))
-                        msg.extend([Plain(text="新图推送~\n"),
-                                    Plain(text=f"title : {pic['title']}\n"),
-                                    Plain(text=f"author : {pic['author']}({pic['user']})\n"),
-                                    Plain(text=f"tags : {pic['tag']}\n"),
-                                    Image(image_type='group', file_path=pic['path'])])
-                        MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
-                        time.sleep(1)
+                followers = ds.getFollowers(user=author_id)
+                # 需要发送的群
+                groups = list(set(follower[0] for follower in followers))
+                for group in groups:
+                    if ds.isSend(id=pic['id'], group=group):
+                        continue
+                    # 该群需要@的人员
+                    qqs = list(set([follower[1] for follower in followers if follower[0] == group]))
+                    msg = MessageChain([])
+                    for qq in qqs:
+                        msg.append(At(target=qq))
+                    msg.extend([Plain(text="新图推送~\n"),
+                                Plain(text=f"title : {pic['title']}\n"),
+                                Plain(text=f"author : {pic['author']}({pic['user']})\n"),
+                                Plain(text=f"tags : {pic['tag']}\n"),
+                                Image(image_type='group', file_path=pic['path'])])
+                    MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
+                    time.sleep(1)
                     # 推送完成后更改图片已推送
-                    ds.setSend(id=pic['id'])
+                    ds.setSend(id=pic['id'], group=group)
             except Exception as e:
                 print(e)
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(days=1, time="06:30")
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(days=1, time="04:00")
 class PixivDayly:
     pixiv_db = 'modules/resource/data/pixiv.db'
+
     def process(self):
         ds = DataSource(path=self.pixiv_db)
         try:
@@ -67,3 +70,13 @@ class PixivDayly:
         except Exception as e:
             print(e)
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
+
+
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(days=1, time="04:00")
+class PixivCacheDelete:
+    directory = "modules/resource/illusts"
+
+    def process(self):
+        # 删除缓存图片
+        shutil.rmtree(path=self.directory)
+        os.mkdir(path=self.directory)
