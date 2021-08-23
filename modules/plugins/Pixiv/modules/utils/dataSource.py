@@ -18,14 +18,14 @@ class DataSource(Sqlite):
     def getRandomPic(self, group: int):
         # t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
         rs = self.query("""
-            select i.id,i.title,i.tag,i.url,i.user,i.author 
-            from illust i 
+            select i.id,i.title,i.tag,i.url,i.user,i.author
+            from illust i
             where send=0
-            and not exists(select * from send s where s.pic_id=i.id and s.send_group=?) 
+            and not exists(select * from send s where s.pic_id=i.id and s.send_group=?)
             order by random() limit 1""", (group,))
         if len(rs) == 0:
             if self.initRankingPic():
-                return self.getRandomPic()
+                return self.getRandomPic(group=group)
             else:
                 raise Exception('获取图片失败')
 
@@ -86,11 +86,20 @@ class DataSource(Sqlite):
         # if rs_unsend > 0:
         #     return True
         rs_total = self.query("select count(*) from illust where date=:date", {'date': t.strftime('%y-%m-%d')})[0][0]
-        rs = self.pixiv.getRanking(mode='day_male', date=t, offset=rs_total)
+        # 由于日榜会有大量和之前日期重复的图,直接count日期得到的数量是不正确的,这里偷懒直接循环了
         append = []
-        for r in rs:
-            if not self.exists('illust', 'id', r[0]):
-                append.append(r)
+        jump = 10
+        i = 0
+        while len(append) == 0:
+            offset = int(rs_total+(i*jump))
+            if offset >= 500:
+                # 日榜最多500
+                return False
+            rs = self.pixiv.getRanking(mode='day_male', date=t, offset=offset)
+            for r in rs:
+                if not self.exists('illust', 'id', r[0]):
+                    append.append(r)
+            i = i+1
         self.execute(
             "insert into illust (id,title,url,tag,user,author,date) values(?,?,?,?,?,?,?)", append)
         # 屏蔽榜单上的漫画
@@ -113,7 +122,7 @@ class DataSource(Sqlite):
                     user int,
                     author text,
                     date date,
-                    send int DEFAULT 0             
+                    send int DEFAULT 0
                 )
             """)
             print('创建表illust成功')
