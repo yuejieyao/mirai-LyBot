@@ -104,6 +104,7 @@ class DataSource(Sqlite):
             "insert into illust (id,title,url,tag,user,author,date) values(?,?,?,?,?,?,?)", append)
         # 屏蔽榜单上的漫画
         self.execute("update illust set send=1 where title like '%漫画%' or tag like '%漫画%'")
+        self.execute("update illust set send=1 where title like '%4コマ%' or tag like '%4コマ%'")
         return True
 
     def __initSqlite(self):
