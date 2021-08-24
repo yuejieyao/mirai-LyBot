@@ -1,4 +1,4 @@
-from modules.resource.imageManager import ImageManager
+from modules.message.imageManager import ImageManager
 
 
 class MessageElement:

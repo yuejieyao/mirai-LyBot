@@ -1,7 +1,6 @@
 import requests
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from enum import Enum
 import os
 import random
 import json
