@@ -1,6 +1,4 @@
 
-import os
-from sys import path
 from pixivpy3 import *
 from modules.conf import config
 import datetime

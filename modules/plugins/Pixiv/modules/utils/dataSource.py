@@ -105,6 +105,7 @@ class DataSource(Sqlite):
         # 屏蔽榜单上的漫画
         self.execute("update illust set send=1 where title like '%漫画%' or tag like '%漫画%'")
         self.execute("update illust set send=1 where title like '%4コマ%' or tag like '%4コマ%'")
+        self.execute("update illust set send=1 where title like '%まんが%' or tag like '%まんが%'")
         return True
 
     def __initSqlite(self):
@@ -126,7 +127,7 @@ class DataSource(Sqlite):
                     send int DEFAULT 0
                 )
             """)
-            print('创建表illust成功')
+            print('Pixiv插件:创建表illust成功')
         if ('follow',) not in rs:
             self.execute("""
                 create table follow
@@ -137,7 +138,7 @@ class DataSource(Sqlite):
                         follow_qq int
                     )
             """)
-            print('创建表follow成功')
+            print('Pixiv插件:创建表follow成功')
         if ('send',) not in rs:
             # 发送记录
             self.execute("""
@@ -148,4 +149,4 @@ class DataSource(Sqlite):
                         send_group int
                     )
             """)
-            print('创建表send成功')
+            print('Pixiv插件:创建表send成功')

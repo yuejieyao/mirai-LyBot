@@ -6,7 +6,6 @@
 @Author      :yuejieyao
 @version      :1.0
 '''
-from sys import path
 from ..miraiSchedule import MiraiScheduleProcessor
 from modules.plugins.Pixiv.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain
