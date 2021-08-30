@@ -14,6 +14,15 @@ class config(configparser.ConfigParser):
         # return super().optionxform(optionstr)
 
 
+def getConf(section: str, option: str = None):
+    conf = config()
+    conf.read('bot.conf')
+    if option:
+        return conf.get(section=section, option=option)
+    else:
+        return conf[section]
+
+
 def getMiraiConf(option: str = None):
     conf = config()
     conf.read('bot.conf')

@@ -26,7 +26,7 @@
 | 插件 | 功能 | 需要 |
 | ---------- | :-----------: | :-----------: |
 | Announcement | 公告(群发,并不是群公告) | 无 |
-| MyIP | 返回bot当前IP | 无 |
+| MyIP | 返回 bot 当前 IP | 无 |
 | ExchangeRate | 汇率转换 | [fixer(可能有墙)](https://fixer.io/) |
 | KeywordDetection | 屏蔽关键词(含图片) | [百度 ocr 文字识别](https://cloud.baidu.com/product/ocr_general) |
 | Lolicon | 色图插件(不含 18X) | [lolicon](https://api.lolicon.app/#/setu) |
@@ -36,3 +36,4 @@
 | UrlThumb | 快览 | (可能有墙) |
 | Weather | 天气查询 | [和风天气](https://www.qweather.com/) |
 | Today | 历史上的今天(定时任务) | 无 |
+| Rss | 订阅 Rsshub | 自建 rsshub(启用 Access_Token) |
