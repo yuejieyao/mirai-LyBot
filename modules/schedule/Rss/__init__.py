@@ -14,7 +14,6 @@ from modules.message.messageType import Plain, Image
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 
 
-
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_minute_register(interval=10)
 class Rss:
     rss_db = 'modules/resource/data/rss.db'
@@ -28,6 +27,10 @@ class Rss:
                 # 获取rss消息并生成MessageChain
                 rss = ds.getNew(url=url)
                 msg = MessageChain([])
+                # 屏蔽中奖动态
+                if '中奖' in rss['title'] or '中奖' in rss['description']:
+                    continue
+
                 # 防止标题和内容重复
                 if rss['title'] not in rss['description']:
                     msg.append(Plain(text=rss['title']+'\n'))
