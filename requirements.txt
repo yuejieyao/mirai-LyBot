@@ -1,10 +1,11 @@
+playwright==1.14.1
+requests_toolbelt==0.9.1
+numpy==1.19.5
 baidu_aip==2.2.18.0
 PixivPy==3.6.0
 lxml==4.6.3
-numpy==1.19.5
 requests==2.25.1
-requests_toolbelt==0.9.1
-Pillow==8.3.1
+Pillow==8.3.2
 secrets==1.0.2
 schedule==0.6.0
 websocket_client==1.2.1

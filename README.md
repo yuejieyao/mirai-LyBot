@@ -38,3 +38,4 @@
 | Weather | 天气查询 | [和风天气](https://www.qweather.com/) |
 | Today | 历史上的今天(定时任务) | 无 |
 | Rss | 订阅 Rsshub | 自建 rsshub(启用 Access_Token) |
+| XHDict | 查字典 | 安装playwright的chromium |
