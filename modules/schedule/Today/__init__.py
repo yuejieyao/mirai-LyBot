@@ -14,7 +14,7 @@ from modules.http.miraiMemberRequest import MiraiMemberRequests
 import requests
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(1, '06:30')
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(1, '07:30')
 class Today:
     def process(self):
         msgReq = MiraiMessageRequest()
