@@ -1,5 +1,4 @@
 import base64
-from modules.message.messageType import Image
 from playwright.sync_api import sync_playwright
 
 
