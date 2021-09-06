@@ -6,7 +6,9 @@ import datetime
 
 class PixivUtils:
     def __init__(self) -> None:
-        self.app = AppPixivAPI()
+        # self.app = AppPixivAPI()
+        self.app = ByPassSniApi()
+        self.app.require_appapi_hosts(hostname="public-api.secure.pixiv.net")
         self.app.auth(refresh_token=config.getPixivConf(option='refreshToken'))
 
     def getRanking(self, mode: str, date: datetime.date = None, offset=None):
@@ -41,4 +43,5 @@ class PixivUtils:
                 )) for illust in json_result.illusts]
 
     def downImg(self, url: str, path: str, name=None) -> bool:
-        return self.app.download(url=url, path=path, name=name, referer="https://www.pixiv.net/")
+        #  referer="https://www.pixiv.net/"
+        return self.app.download(url=url, path=path, name=name)

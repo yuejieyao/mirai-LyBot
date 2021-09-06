@@ -14,7 +14,7 @@ from modules.http.miraiMessageRequest import MiraiMessageRequest
 import requests
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(1, '07:30')
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(1, '08:30')
 class Newspaper:
     def process(self):
         msgReq = MiraiMessageRequest()
@@ -23,7 +23,8 @@ class Newspaper:
             groups = MiraiMemberRequests().getGroupList()
             for group in groups:
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
-        except:
+        except Exception as e:
+            print(e)
             msg = MessageChain([Plain(text="调用每日60秒早报失败,请检查")])
             msgReq.sendAdminMessage(msg=msg)
 
