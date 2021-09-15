@@ -1,11 +1,12 @@
-playwright==1.14.1
-requests_toolbelt==0.9.1
+requests==2.25.1
 numpy==1.19.5
+pyunit_time==2021.2.2
+requests_toolbelt==0.9.1
+APScheduler==3.6.3
+playwright==1.14.1
 baidu_aip==2.2.18.0
 PixivPy==3.6.0
 lxml==4.6.3
-requests==2.25.1
 Pillow==8.3.2
 secrets==1.0.2
-schedule==0.6.0
 websocket_client==1.2.1

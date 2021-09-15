@@ -40,3 +40,4 @@
 | Rss | 订阅 Rsshub | 自建 rsshub(启用 Access_Token) |
 | XHDict | 查字典 | 安装playwright的chromium |
 | Newspaper | 60s早报(定时任务) | 无 |
+| Remind | 定时提醒 | 无 |
