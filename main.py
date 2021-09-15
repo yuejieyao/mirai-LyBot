@@ -1,7 +1,6 @@
-from modules.plugins.miraiPlugin import MiraiMessagePluginProcessor
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from modules.http.miraiWebSockets import MiraiWebSocketClient
-from modules.message.miraiMessageHandler import MiraiMessageHandler
+from modules.schedule.miraiSchedule import MiraiScheduleProcessor
 
 
 def start():
@@ -14,6 +13,9 @@ def start():
     else:
         websocket_client = MiraiWebSocketClient(conn.sessionKey)
         websocket_client.open()
+
+        miraiSchedule = MiraiScheduleProcessor()
+        miraiSchedule.start()
 
 
 if __name__ == '__main__':

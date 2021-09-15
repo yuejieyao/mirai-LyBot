@@ -55,7 +55,7 @@ class Pixiv:
                 print(e)
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(days=1, time="04:00")
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 1)
 class PixivDayly:
     pixiv_db = 'modules/resource/data/pixiv.db'
 
@@ -71,11 +71,16 @@ class PixivDayly:
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(days=1, time="04:00")
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 1)
 class PixivCacheDelete:
     directory = "modules/resource/illusts"
 
     def process(self):
-        # 删除缓存图片
-        shutil.rmtree(path=self.directory)
-        os.mkdir(path=self.directory)
+        try:
+            # 删除缓存图片
+            shutil.rmtree(path=self.directory)
+            os.mkdir(path=self.directory)
+            MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="Pixiv:删除缓存图片成功")]))
+        except Exception as e:
+            print(e)
+            MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="Pixiv:删除缓存图片失败")]))

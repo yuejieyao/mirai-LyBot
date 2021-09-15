@@ -19,10 +19,7 @@ class MiraiWebSocketClient:
         print('websocket opened')
 
         def loop():
-            from modules.schedule.miraiSchedule import MiraiScheduleProcessor
-            miraiSchedule = MiraiScheduleProcessor()
-            while True:
-                miraiSchedule.mirai_schedule_plugins_process()
+            time.sleep(2)
         Thread(target=loop).start()
 
     def on_close(ws, close_status_code, close_msg):
