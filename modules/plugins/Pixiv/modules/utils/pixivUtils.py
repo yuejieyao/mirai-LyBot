@@ -40,7 +40,7 @@ class PixivUtils:
                 illust.user.id,
                 illust.user.name,
                 illust.create_date[:10],
-                )) for illust in json_result.illusts]
+                )) for illust in json_result.illusts if illust.sanity_level < 6] #打开R-18开关后需要过滤一下
 
     def downImg(self, url: str, path: str, name=None) -> bool:
         #  referer="https://www.pixiv.net/"

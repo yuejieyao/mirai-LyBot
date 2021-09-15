@@ -32,7 +32,7 @@ class RssUtils:
         # 去除description中的html标签
         description = re.sub('<br>', '\n', description)
         description = re.sub('<img.+?>', '', description)
-        description = re.sub('<frame.+?frame>', '', description)
+        description = re.sub('<iframe.+?iframe>', '', description)
 
         guid = item.xpath('guid')[0].text
         link = item.xpath('link')[0].text
