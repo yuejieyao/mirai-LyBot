@@ -24,6 +24,7 @@ class Rss:
         urls = ds.getSubUrls()
         for url in urls:
             try:
+                print(f'Rss:开始检测RssUrl={url}')
                 # 获取rss消息并生成MessageChain
                 rss = ds.getNew(url=url)
                 msg = MessageChain([])
@@ -36,7 +37,8 @@ class Rss:
                     msg.append(Plain(text=rss['title']+'\n'))
                 msg.append(Plain(text=rss['description']+'\n'))
                 for img_url in rss['img'].split(','):
-                    msg.append(Image(image_type='group', image_url=img_url))
+                    if img_url:
+                        msg.append(Image(image_type='group', image_url=img_url))
                 msg.append(Plain(text=rss['link']))
                 # 获取订阅该url的所有群号
                 groups = ds.getFollowers(url=url)
