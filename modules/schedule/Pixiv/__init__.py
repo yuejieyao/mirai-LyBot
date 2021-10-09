@@ -71,7 +71,7 @@ class PixivDayly:
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 1)
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 10)
 class PixivCacheDelete:
     directory = "modules/resource/illusts"
 
