@@ -6,8 +6,10 @@ import traceback
 import signal
 import os
 
-def ctrl_c(signalnum,frame):
-		os._exit(0)
+
+def ctrl_c(signalnum, frame):
+    os._exit(0)
+
 
 def start():
     try:
@@ -23,7 +25,8 @@ def start():
         Log.error(msg=traceback.format_exc())
         start()
 
+
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, ctrl_c) 
+    signal.signal(signal.SIGINT, ctrl_c)
     signal.signal(signal.SIGTERM, ctrl_c)
     start()
