@@ -2,7 +2,7 @@
 
 ![image](https://img.shields.io/badge/python-3.7+-green.svg)
 
-自用的 mirai 插件,在框架上大量参考了 [Graia Project](https://github.com/GraiaProject/Application),由于 graia 暂时还未迁移到 2.0+版本的 mirai_http_api 上,所以自己仿着写了一个简版的,还有很多功能没做,代码也比较乱
+基于 [mirai](https://github.com/mamoe/mirai)和[mirai-api-http](https://github.com/project-mirai/mirai-api-http)
 
 ## 安装依赖包
 
