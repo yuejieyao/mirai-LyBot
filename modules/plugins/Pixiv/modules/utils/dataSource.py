@@ -1,4 +1,5 @@
 from modules.utils.sqlCombiner import Sqlite
+from modules.utils import log as Log
 from .pixivUtils import PixivUtils
 import os
 import datetime
@@ -127,7 +128,7 @@ class DataSource(Sqlite):
                     send int DEFAULT 0
                 )
             """)
-            print('Pixiv插件:创建表illust成功')
+            Log.info(msg="[Plugin][Pixiv] create table illust success")
         if ('follow',) not in rs:
             self.execute("""
                 create table follow
@@ -138,7 +139,7 @@ class DataSource(Sqlite):
                         follow_qq int
                     )
             """)
-            print('Pixiv插件:创建表follow成功')
+            Log.info(msg="[Plugin][Pixiv] create table follow success")
         if ('send',) not in rs:
             # 发送记录
             self.execute("""
@@ -149,4 +150,4 @@ class DataSource(Sqlite):
                         send_group int
                     )
             """)
-            print('Pixiv插件:创建表send成功')
+            Log.info(msg="[Plugin][Pixiv] create table send success")

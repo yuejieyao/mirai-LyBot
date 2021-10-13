@@ -3,6 +3,7 @@ import time
 import json
 import websocket
 from modules.conf import config
+from modules.utils import log as Log
 from modules.message.miraiMessageHandler import MiraiMessageHandler
 from threading import Thread
 
@@ -16,7 +17,7 @@ class MiraiWebSocketClient:
         self.url = f"ws://{config.getMiraiConf('server')}:{config.getMiraiConf('port')}/message?sessionKey={sessionKey}&verifyKey={verifykey}&qq={botQQ}"
 
     def on_open(ws):
-        print('websocket opened')
+        Log.info(msg='websocket open success')
 
         def loop():
             time.sleep(2)
@@ -34,7 +35,7 @@ class MiraiWebSocketClient:
         messageHandler.onMessage(message['data'])
 
     def open(self, on_open=on_open, on_close=on_close, on_error=on_error, on_message=on_message):
-        websocket.enableTrace(True)
+        websocket.enableTrace(False)
         ws = websocket.WebSocketApp(
             self.url, on_open=on_open, on_message=on_message, on_error=on_error, on_close=on_close)
         Thread(target=ws.run_forever).start()

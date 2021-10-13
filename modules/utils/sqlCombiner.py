@@ -38,8 +38,7 @@ class Sqlite:
                 return False
 
         except Exception as e:
-            print(e)
-            return False
+            raise e
 
     def query(self, sql: str, parameters=None) -> list:
         """ 执行sql查询

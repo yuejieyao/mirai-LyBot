@@ -12,6 +12,8 @@ from modules.plugins.Rss.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
+from modules.utils import log as Log
+import traceback
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_minute_register(interval=10)
@@ -24,7 +26,7 @@ class Rss:
         urls = ds.getSubUrls()
         for url in urls:
             try:
-                print(f'Rss:开始检测RssUrl={url}')
+                Log.info(f'[Schedule][RSS] check rss url={url}')
                 # 获取rss消息并生成MessageChain
                 rss = ds.getNew(url=url)
                 msg = MessageChain([])
@@ -48,5 +50,5 @@ class Rss:
                         MMR().sendGroupMessage(msg=msg, target=group)
                         ds.setSend(rss_id=rss['rss_id'], group=group)
 
-            except Exception as e:
-                print(e)
+            except Exception:
+                Log.error(msg=traceback.format_exc())

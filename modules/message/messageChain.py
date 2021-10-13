@@ -1,5 +1,8 @@
 from typing import Any, Dict, List, Type, Union, TypeVar
 from modules.message.messageType import MessageElement, Source, Plain, Image, At, AtAll, App, Xml
+from modules.utils import log as Log
+import traceback
+
 
 class MessageChain:
     def __init__(self, elements: List[MessageElement] = []) -> None:
@@ -21,8 +24,11 @@ class MessageChain:
 
         self.elements.extend(elements)
 
-    def asDisplay(self) -> str:
-        return ''.join(i.asDisplay() for i in self.elements)
+    def asDisplay(self, has_at=True) -> str:
+        if has_at:
+            return ''.join(i.asDisplay() for i in self.elements)
+        else:
+            return ''.join(i.asDisplay() for i in self.elements if not isinstance(i, At))
 
     def asSerializationString(self) -> str:
         return ''.join(i.asSerializationString() for i in self.elements)
@@ -61,9 +67,8 @@ class MessageChain:
                     list.append(
                         getattr(eval(obj['type']), 'fromJson')(obj))
                     # 生成对应Type的MessageElement
-            except:
-                print('unknow message')
-                print(obj)
+            except Exception:
+                Log.error(msg=traceback.format_exc())
                 continue
         return MessageChain(list)
 

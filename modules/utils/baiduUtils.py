@@ -69,7 +69,6 @@ class TranslateUtil(BaiduUtils):
             if 'trans_result' in result:
                 return result['trans_result'][0]['dst']
             elif 'error_code' in result:
-                print(result['error_code'])
                 raise Exception(f"百度翻译接口调用失败,ErrorCode:{result['error_code']}")
             else:
                 raise Exception("百度翻译接口调用失败:未知错误")

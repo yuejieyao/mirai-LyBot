@@ -1,5 +1,6 @@
 from modules.utils.sqlCombiner import Sqlite
 from .rssUtils import RssUtils
+from modules.utils import log as Log
 
 class DataSource(Sqlite):
     def __init__(self, path: str) -> None:
@@ -20,7 +21,6 @@ class DataSource(Sqlite):
                 raise Exception(f'该rss已订阅,请勿重复订阅')
             return self.execute('insert into follow(title,url,follow_group) values(?,?,?)', [(title, url, group)])
         except Exception as e:
-            print(e)
             raise e
 
     def showSub(self, group: int):
@@ -67,7 +67,7 @@ class DataSource(Sqlite):
                     send int DEFAULT 0
                 )
             """)
-            print('Rss插件:创建表rss成功')
+            Log.info('[Plugin][RSS] create table rss success')
         if ('follow',) not in rs:
             self.execute("""
                 create table follow
@@ -78,7 +78,7 @@ class DataSource(Sqlite):
                         follow_group int
                     )
             """)
-            print('Rss插件:创建表follow成功')
+            Log.info('[Plugin][RSS] create table follow success')
         if ('send',) not in rs:
             # 发送记录
             self.execute("""
@@ -89,4 +89,4 @@ class DataSource(Sqlite):
                         send_group int
                     )
             """)
-            print('Rss插件:创建表send成功')
+            Log.info('[Plugin][RSS] create table send success')

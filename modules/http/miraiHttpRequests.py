@@ -1,9 +1,12 @@
 # encoding utf-8
 # name:httpRequest.py
+from modules.conf import config
+from modules.utils import log as Log
 import requests
 import time
 import threading
-from modules.conf import config
+import traceback
+
 mirai_config = config.getMiraiConf()
 
 
@@ -45,10 +48,9 @@ class MiraiHttpRequests:
             rs = self.post(
                 'release', {'sessionKey': last_sessionKey, 'qq': self.botQQ})
             if rs['code'] == 0:
-                print('release success:%s' % last_sessionKey)
+                Log.info(msg=f"release success,sessionKey = {last_sessionKey}")
             else:
-                print('release error')
-                print(rs)
+                Log.error(msg=f"release error: sessionKey = {last_sessionKey}")
         while True:
             try:
                 response = self.post('verify', {'verifyKey': self.verifyKey})
@@ -56,12 +58,12 @@ class MiraiHttpRequests:
                 response = self.post(
                     'bind', {'sessionKey': self.sessionKey, 'qq': self.botQQ})
                 if response['code'] == 0:
-                    print('login success:%s' % self.sessionKey)
+                    Log.info(msg=f'login success,sessionKey = {self.sessionKey}')
                     config.setMiraiConf('sessionKey', self.sessionKey)
                     break
-            except Exception as e:
-                print(e)
-                print('login error -- relogin in 5 seconds')
+            except Exception:
+                Log.error(msg=traceback.format_exc())
+                Log.info(msg='login error ---- retry in 5 seconds')
                 time.sleep(5)
 
     def release(self):
@@ -69,11 +71,9 @@ class MiraiHttpRequests:
             rs = self.post(
                 'release', {'sessionKey': self.sessionKey, 'qq': self.botQQ})
             if rs['code'] == 0:
-                print('release success:%s' % self.sessionKey)
+                Log.info(msg=f"release success,sessionKey = {self.sessionKey}")
                 config.setMiraiConf('sessionKey', '')
             else:
-                print('release error')
-                print(rs)
-        except Exception as e:
-            print('release error')
-            print(e)
+                Log.error(msg=f"release error: sessionKey = {self.sessionKey}")
+        except Exception:
+            Log.error(msg=traceback.format_exc())

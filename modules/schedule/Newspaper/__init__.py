@@ -25,7 +25,6 @@ class Newspaper:
             for group in groups:
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
         except Exception as e:
-            print(e)
             msg = MessageChain([Plain(text="调用每日60秒早报失败,将在5分钟后重新调用")])
             msgReq.sendAdminMessage(msg=msg)
 
@@ -40,5 +39,4 @@ class Newspaper:
             msg = MessageChain([Image(image_type="group", image_url=result['imageUrl'])])
             return msg
         else:
-            print(result)
             raise Exception('Newspaper:获取数据失败')

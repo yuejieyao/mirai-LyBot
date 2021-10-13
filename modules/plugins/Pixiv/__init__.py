@@ -12,6 +12,8 @@ from modules.message.messageType import Image, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
 from .modules.utils.dataSource import DataSource
+from modules.utils import log as Log
+import traceback
 import re
 
 
@@ -31,8 +33,8 @@ class Pixiv:
                                     Plain(text=f"tags : {pic['tag']}\n"),
                                     Image(image_type='group', file_path=pic['path'])])
                 MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
-            except Exception as e:
-                print(e)
+            except Exception:
+                Log.error(msg=traceback.format_exc())
             else:
                 ds.setSend(id=pic['id'], group=group)  # 记录已发送
 
@@ -48,10 +50,10 @@ class Pixiv:
                         else:
                             MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
                                 [Plain(text="关注失败")]), target=group, quote=quote)
-                    except Exception as e:
-                        print(e)
+                    except Exception:
+                        Log.error(msg=traceback.format_exc())
                         MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=e)]), target=group, quote=quote)
+                            msg=MessageChain([Plain(text="关注失败")]), target=group, quote=quote)
 
         if re.match('取消关注 .*', message_display) != None:
             msgs = message_display.split(' ')
@@ -66,6 +68,6 @@ class Pixiv:
                             MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
                                 [Plain(text="取消关注失败")]), target=group, quote=quote)
                     except Exception as e:
-                        print(e)
+                        Log.error(msg=traceback.format_exc())
                         MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=e)]), target=group, quote=quote)
+                            msg=MessageChain([Plain(text="取消关注失败")]), target=group, quote=quote)

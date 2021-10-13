@@ -12,6 +12,7 @@ from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain
 from modules.http.miraiMessageRequest import MiraiMessageRequest
 from modules.conf import config
+from modules.utils import log as Log
 import re
 import requests
 
@@ -27,8 +28,7 @@ class ExchangeRate:
                 from_country = msgs[2]
                 to_country = msgs[3]
                 if from_num > 0:
-                    print(
-                        f'exchange rate: {from_num} {from_country} to {to_country}')
+                    Log.info(msg=f'[Plugin][ExchangeRate] {from_num} {from_country} to {to_country}')
                     msgReq.sendGroupMessage(msg=get_exchange_rate(
                         from_num=from_num, from_country=from_country, to_country=to_country), target=group, quote=quote)
                 else:

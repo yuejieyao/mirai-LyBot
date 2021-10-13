@@ -1,4 +1,5 @@
 from modules.utils.sqlCombiner import Sqlite
+from modules.utils import log as Log
 import datetime
 
 
@@ -31,4 +32,4 @@ class DataSource(Sqlite):
                     sign_text text
                 ) 
             """)
-            print('Sign插件:创建表sign成功')
+            Log.info(msg="[Plugin][Sign] create table sign success")

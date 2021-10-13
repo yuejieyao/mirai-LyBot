@@ -2,6 +2,7 @@ from modules.message.messageChain import MessageChain
 from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitorHandler
 from modules.plugins.miraiPlugin import MiraiMessagePluginProcessor
 from modules.conf import config
+from modules.utils import log as Log
 
 
 class MiraiMessageHandler:
@@ -23,10 +24,11 @@ class MiraiMessageHandler:
             if str(sender) in self.banList:
                 # banlist过滤
                 return False
-            print(obj['messageChain'])
             msg = MessageChain.fromJsonList(obj['messageChain'])
             quote = msg.getId()
             group = obj['sender']['group']['id']
+            # 打印群聊日志
+            Log.info(msg=f"[GroupMessage][(UID){sender} -> (GID){group}] " + msg.asSerializationString())
             if not self.monitors.process(
                     type='GroupMessage', msg=msg, target=sender, group=group):
                 # 如果没有触发一次性监听,则执行插件
@@ -41,6 +43,8 @@ class MiraiMessageHandler:
                 return False
             msg = MessageChain.fromJsonList(obj['messageChain'])
             quote = msg.getId()
+            # 打印私聊日志
+            Log.info(msg=f"[FriendMessage][(UID){sender}] "+msg.asSerializationString())
             if not self.monitors.process(type='FriendMessage', msg=msg, target=sender):
                 self.processor.friend_msg_process(
                     msg=msg, target=sender, quote=quote)

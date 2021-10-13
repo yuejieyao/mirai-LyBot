@@ -70,8 +70,7 @@ class UrlThumb:
                                     if binfo_image_create(video_info=video_info, save_path=save_path):
                                         MsgReq().sendGroupMessage(msg=MessageChain(
                                             [Image(image_type='group', file_path=save_path)]), target=group)
-                                except Exception as e:
-                                    print(e)
+                                except Exception:
                                     MsgReq().sendGroupMessage(msg=MessageChain(
                                         [Plain(text=f"B站视频{video_number}解析失败")]), target=group)
                 else:
@@ -99,7 +98,6 @@ class UrlThumb:
 
                     # icon缓存文件名
                     path = os.path.join(self.temp_path, f"{domain.replace('.','_')}.png")
-                    print('cache:%s' % path)
                     # 如果没有就创建,有就直接调取发送
                     if not os.path.exists(path):
                         try:
@@ -108,7 +106,7 @@ class UrlThumb:
                             image = IMG.open(BytesIO(resp.content))
                             image.save(path)
                         except:
-                            print('cache error:no favicon')
+                            pass
                     if os.path.exists(path):
                         msg.extend([
                             Plain(text='[favicon]\n'),

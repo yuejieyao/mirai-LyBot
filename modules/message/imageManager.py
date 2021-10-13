@@ -1,10 +1,12 @@
 import requests
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+from modules.utils import log as Log
 import os
 import random
 import json
 import time
+import traceback
 
 
 class ImageManager:
@@ -35,7 +37,6 @@ class ImageManager:
             '%s/%s' % (self.httpRequest.host, 'uploadImage'), data=multipart_encoder, headers=headers)
         response.raise_for_status()
         return json.loads(response.text)['imageId']
- 
 
     def upload_img_from_url(self, url: str, image_type: str):
         """根据url地址上传互联网图片获取imageID
@@ -57,9 +58,8 @@ class ImageManager:
                 f.write(img.content)
                 f.flush()
 
-        except Exception as e:
-            print('download image error')
-            print(e)
+        except Exception:
+            Log.error(msg=traceback.format_exc())
             return False
 
         if os.path.exists(img_save_path):
@@ -69,5 +69,5 @@ class ImageManager:
                 os.remove(img_save_path)
             return image_id
         else:
-            print('download image error')
+            Log.error('download image error')
             return False

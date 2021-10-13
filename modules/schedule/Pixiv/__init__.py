@@ -11,9 +11,11 @@ from modules.plugins.Pixiv.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image, At
 from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.utils import log as Log
 import time
 import shutil
 import os
+import traceback
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(interval=1)
@@ -28,7 +30,7 @@ class Pixiv:
             # 避免过快访问P站被ban,每次获取间隔5秒
             time.sleep(5)
             try:
-                print(f'schedule: 开始检测Pixiv作者ID:{author_id}的新作品')
+                Log.info(msg=f'schedule[Pixiv]: check new works by author_id = {author_id}')
                 # 获取最后更新的图,检查是否推送过
                 pic = ds.getNewPic(user=author_id)
                 followers = ds.getFollowers(user=author_id)
@@ -51,8 +53,8 @@ class Pixiv:
                     time.sleep(1)
                     # 推送完成后更改图片已推送
                     ds.setSend(id=pic['id'], group=group)
-            except Exception as e:
-                print(e)
+            except Exception:
+                Log.error(msg=traceback.format_exc())
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 1)
@@ -66,8 +68,8 @@ class PixivDayly:
                 MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据成功")]))
             else:
                 MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
-        except Exception as e:
-            print(e)
+        except Exception:
+            Log.error(msg=traceback.format_exc())
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
 
 
@@ -81,6 +83,6 @@ class PixivCacheDelete:
             shutil.rmtree(path=self.directory)
             os.mkdir(path=self.directory)
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="Pixiv:删除缓存图片成功")]))
-        except Exception as e:
-            print(e)
+        except Exception:
+            Log.error(msg=traceback.format_exc())
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="Pixiv:删除缓存图片失败")]))

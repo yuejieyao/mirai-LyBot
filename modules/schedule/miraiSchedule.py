@@ -12,7 +12,6 @@ class MiraiScheduleProcessor:
 
     def start(self):
         self._sched.start()
-        print('scheduler开始执行')
 
     @classmethod
     def mirai_schedule_plugin_every_minute_register(cls, interval: int = 1):

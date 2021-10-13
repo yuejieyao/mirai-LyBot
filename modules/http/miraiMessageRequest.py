@@ -1,6 +1,7 @@
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from modules.message.messageChain import MessageChain
 from modules.conf import config
+from modules.utils import log as Log
 
 
 class MiraiMessageRequest:
@@ -31,8 +32,8 @@ class MiraiMessageRequest:
             data.update({"quote": quote})
         response = self.httpRequest.post('sendGroupMessage', data=data)
         if response['code'] != 0:
-            print('sendGroupMessage failed:')
-            print(response)
+            raise Exception('send group message failed')
+        Log.info(msg=f"[SendGroupMessage][-> (GID){target}] {msg.asSerializationString()}")
 
     def sendFriendMessage(self, msg: MessageChain, target: int, quote: int = None):
         """发送好友消息 
@@ -48,8 +49,8 @@ class MiraiMessageRequest:
             data.update({"quote": quote})
         response = self.httpRequest.post('sendFriendMessage', data=data)
         if response['code'] != 0:
-            print('sendGroupMessage failed:')
-            print(response)
+            raise Exception('send friend message failed')
+        Log.info(msg=f"[SendFriendMessage][-> (UID){target}] {msg.asSerializationString()}")
 
     def recall(self, target: int):
         """撤回消息
@@ -61,5 +62,5 @@ class MiraiMessageRequest:
         data = {"sessionKey": self.httpRequest.sessionKey, "target": target}
         response = self.httpRequest.post('recall', data=data)
         if response['code'] != 0:
-            print('recall failed')
             raise Exception('recall failed')
+        Log.info(msg=f"[Recall][-> (ID){target}]")
