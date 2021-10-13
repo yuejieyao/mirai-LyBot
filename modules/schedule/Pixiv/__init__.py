@@ -30,7 +30,7 @@ class Pixiv:
             # 避免过快访问P站被ban,每次获取间隔5秒
             time.sleep(5)
             try:
-                Log.info(msg=f'schedule[Pixiv]: check new works by author_id = {author_id}')
+                Log.info(msg=f'[Schedule][Pixiv] check new works by author_id = {author_id}')
                 # 获取最后更新的图,检查是否推送过
                 pic = ds.getNewPic(user=author_id)
                 followers = ds.getFollowers(user=author_id)

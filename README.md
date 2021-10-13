@@ -2,7 +2,7 @@
 
 ![image](https://img.shields.io/badge/python-3.7+-green.svg)
 
-基于 [mirai](https://github.com/mamoe/mirai)和[mirai-api-http](https://github.com/project-mirai/mirai-api-http)
+基于 [mirai](https://github.com/mamoe/mirai) 和 [mirai-api-http](https://github.com/project-mirai/mirai-api-http)
 
 ## 安装依赖包
 
