@@ -18,7 +18,7 @@ def mprint(type: str, msg: str, log: bool):
     print(text)
 
     if log:
-        log(text)
+       mlog(text)
 
 
 def info(msg: str, log: bool = False):
@@ -29,7 +29,7 @@ def error(msg: str, log: bool = True):
     mprint(type='ERROR', msg=msg, log=log)
 
 
-def log(msg: str):
+def mlog(msg: str):
     try:
         with open(file=get_log_path(), encoding='utf-8', mode='a+') as fs:
             fs.write(msg+'\n')

@@ -54,12 +54,9 @@ class Lolicon:
                         return msg
 
                 else:
-                    # print(result)
                     return MessageChain([Plain(text='call lolicon api failed for result code != 0')])
 
             else:
-                # print(response.status_code)
                 return MessageChain([Plain(text='call lolicon api failed for response status code != 200')])
         except Exception as e:
-            print(e)
             return MessageChain([Plain(text='call lolicon api failed')])

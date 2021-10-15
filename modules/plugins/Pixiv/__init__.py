@@ -50,10 +50,10 @@ class Pixiv:
                         else:
                             MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
                                 [Plain(text="关注失败")]), target=group, quote=quote)
-                    except Exception:
+                    except Exception as e:
                         Log.error(msg=traceback.format_exc())
                         MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text="关注失败")]), target=group, quote=quote)
+                            msg=MessageChain([Plain(text=str(e))]), target=group, quote=quote)
 
         if re.match('取消关注 .*', message_display) != None:
             msgs = message_display.split(' ')

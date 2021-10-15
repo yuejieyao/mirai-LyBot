@@ -22,5 +22,4 @@ class MyIP:
                 resp = requests.session().get(url="http://myip.ipip.net/")
                 resp.raise_for_status()
                 result = resp.content.decode('utf-8')
-                print(result)
                 MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text=result)]))

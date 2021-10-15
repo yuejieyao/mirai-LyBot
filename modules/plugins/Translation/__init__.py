@@ -33,7 +33,6 @@ class Translation:
                     to_language = 'jp'
                 # 语种列表详见https://fanyi-api.baidu.com/doc/21
                 keyword = ' '.join(msgs[2:])
-                print('trans:to %s,keyword= %s' % (to_language, keyword))
                 msgReq = MsgReq()
                 try:
                     tranUtil = TranslateUtil()

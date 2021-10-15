@@ -38,6 +38,5 @@ class XHDict:
                 MMR().sendGroupMessage(msg=MessageChain(
                     [Image(image_type='group', file_path=path)]), target=group, quote=quote)
 
-            except Exception as e:
-                print(e)
+            except Exception:
                 MMR().sendGroupMessage(msg=MessageChain([Plain(text="查询字典失败")]), target=group, quote=quote)
