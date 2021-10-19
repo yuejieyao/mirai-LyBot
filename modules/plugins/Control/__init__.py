@@ -64,9 +64,12 @@ class Control:
                 msgs = msg_display.split(' ')
                 # 确认插件存在
                 if ds.existGroupPlugin(register_name=msgs[1]):
-                    ds.closeGroupPlugin(register_name=msgs[1], group=group)
-                    MMR().sendGroupMessage(msg=MessageChain([Plain(text=f'成功关闭插件{msgs[1]}')]), target=group)
-                    Log.info(f'[Control][(Group){group}] close plugin {msgs[1]}')
+                    if msgs[1] != 'Control':
+                        ds.closeGroupPlugin(register_name=msgs[1], group=group)
+                        MMR().sendGroupMessage(msg=MessageChain([Plain(text=f'成功关闭插件{msgs[1]}')]), target=group)
+                        Log.info(f'[Control][(Group){group}] close plugin {msgs[1]}')
+                    else:
+                        MMR().sendGroupMessage(msg=MessageChain([Plain(text='你不能,也不应该关闭Control')]), target=group)
                 else:
                     raise Exception('不存在的插件')
             except Exception as e:
