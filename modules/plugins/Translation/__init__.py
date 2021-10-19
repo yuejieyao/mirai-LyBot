@@ -15,8 +15,13 @@ from modules.utils.baiduUtils import TranslateUtil
 import re
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('translation')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Translation')
 class Translation:
+
+    NAME = "翻译"
+    DESCRIPTION = """发送:翻译 目标语种 翻译内容
+    目标语种为简写,如EN,JP,CN(ZH)等,详见https://fanyi-api.baidu.com/doc/21"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         if re.match('翻译 .*', chains.asDisplay()) != None:
             message_text = chains.asDisplay().strip()

@@ -32,7 +32,7 @@ class MiraiMessageRequest:
             data.update({"quote": quote})
         response = self.httpRequest.post('sendGroupMessage', data=data)
         if response['code'] != 0:
-            raise Exception('send group message failed')
+            raise Exception(f'send group message failed:{str(response)}')
         Log.info(msg=f"[SendGroupMessage][-> (GID){target}] {msg.asSerializationString()}")
 
     def sendFriendMessage(self, msg: MessageChain, target: int, quote: int = None):

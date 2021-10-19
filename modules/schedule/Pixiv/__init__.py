@@ -71,6 +71,8 @@ class PixivDayly:
         except Exception:
             Log.error(msg=traceback.format_exc())
             MiraiMessageRequest().sendAdminMessage(msg=MessageChain([Plain(text="更新日榜单数据失败")]))
+        else:
+            ds.close()
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 10)

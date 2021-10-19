@@ -14,8 +14,12 @@ from modules.http.miraiMessageRequest import MiraiMessageRequest
 import requests
 
 
-@MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('myIP')
+@MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('MyIP')
 class MyIP:
+
+    NAME = "我的IP"
+    DESCRIPTION = "返回服务器当前IP地址"
+
     def process(self, chains: MessageChain, target: int,  quote: int):
         if str(target) == config.getMiraiConf(option='adminQQ'):
             if chains.asDisplay() == "myip":

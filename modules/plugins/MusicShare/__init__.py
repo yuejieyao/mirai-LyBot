@@ -16,8 +16,12 @@ import re
 import requests
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('neMusicShare')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('NeMusicShare')
 class NeMusicShare:
+
+    NAME = "点歌"
+    DESCRIPTION = """发送内容:点歌 歌名"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         if re.match('点歌 .*', chains.asDisplay()) != None:
             msgReq = MiraiMessageRequest()

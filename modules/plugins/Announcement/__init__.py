@@ -15,8 +15,11 @@ from modules.http.miraiMessageRequest import MiraiMessageRequest as MsgReq
 import time
 
 
-@MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('announcement')
+@MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('Announcement')
 class Announcement:
+    NAME = "群发"
+    DESCRIPTION = "发送公告触发"
+
     def process(self, chains: MessageChain, target: int, quote: int):
         if chains.asDisplay() != '公告':
             return

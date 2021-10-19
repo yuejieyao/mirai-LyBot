@@ -23,8 +23,12 @@ font_file = os.path.join(os.path.dirname(
 icon_file = os.path.join(os.path.dirname(__file__), 'color-64')
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('weather')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Weather')
 class Weather:
+
+    NAME = "天气查询"
+    DESCRIPTION = """发送:天气 地名"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
         if re.match('天气 .*', message_display) == None:

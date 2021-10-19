@@ -46,7 +46,7 @@ class ImageManager:
         Returns:
             返回image_id,如果出错则返回false
         """
-        temp_path = os.path.join(os.path.dirname(__file__), 'temp')
+        temp_path = os.path.join('modules/resource', 'temp')
         if not os.path.exists(temp_path):
             os.mkdir(temp_path)
 

@@ -22,8 +22,11 @@ import time
 import json
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('urlThumb')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('UrlThumb')
 class UrlThumb:
+    NAME = "Url快览"
+    DESCRIPTION = """发送内容包含url地址时触发"""
+
     # 缓存目录
     temp_path = os.path.join(os.path.dirname(__file__), 'cache')
 

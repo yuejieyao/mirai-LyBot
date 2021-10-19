@@ -16,8 +16,12 @@ import time
 import re
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('keywordDetection')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('KeywordDetection')
 class KeywordDetection:
+
+    NAME = "关键词屏蔽"
+    DESCRIPTION = """检测聊天文本和聊天图片,如包含关键词则自动撤回"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         taboos = ['微博']
         for taboo in taboos:

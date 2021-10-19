@@ -17,8 +17,12 @@ import os
 import uuid
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('xhdict')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('XHDict')
 class XHDict:
+
+    NAME = "字典查询"
+    DESCRIPTION = """发送:字典 字"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay().lower()
         if re.match('字典 .*', message_display) != None or re.match('dict .*', message_display) != None:

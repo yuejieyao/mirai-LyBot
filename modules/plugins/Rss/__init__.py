@@ -17,6 +17,11 @@ import re
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Rss')
 class Rss:
+    NAME = "RssHub订阅"
+    DESCRIPTION = """仅支持管理员自建Rsshub
+    订阅:订阅rss url地址
+    取消订阅:取消订阅rss"""
+
     rss_db = 'modules/resource/data/rss.db'
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):

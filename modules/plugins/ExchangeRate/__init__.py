@@ -17,8 +17,14 @@ import re
 import requests
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('exchangeRate')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('ExchangeRate')
 class ExchangeRate:
+    NAME = "汇率转换"
+    DESCRIPTION = """发送内容:rate 金额(数值) 从币种(3字母简写) 到币种(3字母简写) 
+    忽略大小写,常用币种如:
+    CNY(人民币),HKD(港元),TWD(台湾币),JPY(日元),USD(美元),EUR(欧元),INR(印度卢比),GBP(英镑)等
+    """
+
     def process(self, chains: MessageChain, group: int, target: int, quote: int):
         if re.match('rate .*', chains.asDisplay()) != None:
             msgs = chains.asDisplay().split(' ')

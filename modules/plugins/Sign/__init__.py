@@ -17,6 +17,9 @@ import numpy as np
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Sign')
 class Sign:
+    NAME = "签到"
+    DESCRIPTION = """签到功能,发送内容包含以下关键词即可触发:签到,早安,早上好,午安,中午好,下午好,晚安,晚上好"""
+
     sign_db = 'modules/resource/data/sign.db'
     sign_keyword = ['签到', '早安', '早上好', '午安', '中午好', '下午好', '晚安', '晚上好']
 

@@ -17,8 +17,13 @@ from datetime import datetime
 import re
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('remind')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Remind')
 class Remind:
+
+    NAME = "提醒"
+    DESCRIPTION = """设置一次性提醒发送:提醒我 时间字符串 提醒内容
+    如:提醒我 下午2点 上班,提醒我 明天早上6点半 上班,提醒我 今晚7点 健身环"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         msg_display = chains.asDisplay()
         if re.match('提醒我 .*', msg_display) == None:

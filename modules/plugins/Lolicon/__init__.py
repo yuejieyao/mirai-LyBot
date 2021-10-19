@@ -16,8 +16,12 @@ import re
 import requests
 
 
-@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('lolicon')
+@MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Lolicon')
 class Lolicon:
+
+    NAME = "色图(Lolicon)"
+    DESCRIPTION = """发送内容:来张色图 关键词(可选)"""
+
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
         if re.match('来张色图.*', message_display) == None and re.match('来点色图.*', message_display) == None:

@@ -42,8 +42,19 @@ class DataSource(Sqlite):
             return True
         return False
 
+    def isBan(self, id: int) -> bool:
+        if self.query('select count(*) from ban where author_id=:author_id', {'author_id': id})[0][0] > 0:
+            return True
+        return False
+
     def setSend(self, id: int, group: int):
         return self.execute("insert into send (pic_id,send_group) values(?,?)", [(id, group)])
+
+    def setBan(self, id: int):
+        return self.execute("insert into ban (author_id) values(?)", [(id,)])
+
+    def cancelBan(self, id: int):
+        return self.execute("delete from ban where author_id=:author_id", {'author_id': id})
 
     def getNewPic(self, user: int):
         illust = self.pixiv.getUserPic(user=user)[0]
@@ -107,6 +118,10 @@ class DataSource(Sqlite):
         self.execute("update illust set send=1 where title like '%漫画%' or tag like '%漫画%'")
         self.execute("update illust set send=1 where title like '%4コマ%' or tag like '%4コマ%'")
         self.execute("update illust set send=1 where title like '%まんが%' or tag like '%まんが%'")
+
+        # 根据banlist屏蔽作者
+        self.execute("update illust set send=1 where send=0 and user in (select author_id from ban)")
+
         return True
 
     def __initSqlite(self):
@@ -151,3 +166,12 @@ class DataSource(Sqlite):
                     )
             """)
             Log.info(msg="[Plugin][Pixiv] create table send success")
+        if ('ban',) not in rs:
+            self.execute("""
+                create table ban
+                (
+                    ban_id INTEGER PRIMARY KEY,
+                    author_id int
+                )
+            """)
+            Log.info(msg="[Plugin][Pixiv] create table ban success")
