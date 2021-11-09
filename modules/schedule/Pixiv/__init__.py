@@ -27,8 +27,8 @@ class Pixiv:
         # 获取被关注的作者Ids
         author_ids = ds.getFollowAuthorIds()
         for author_id in author_ids:
-            # 避免过快访问P站被ban,每次获取间隔5秒
-            time.sleep(5)
+            # 避免过快访问P站被ban,每次获取间隔10秒
+            time.sleep(10)
             try:
                 Log.info(msg=f'[Schedule][Pixiv] check new works by author_id = {author_id}')
                 # 获取最后更新的图,检查是否推送过
@@ -44,7 +44,7 @@ class Pixiv:
                     msg = MessageChain([])
                     for qq in qqs:
                         msg.append(At(target=qq))
-                    msg.extend([Plain(text="新图推送~\n"),
+                    msg.extend([Plain(text=" 新图推送~\n"),
                                 Plain(text=f"title : {pic['title']}\n"),
                                 Plain(text=f"author : {pic['author']}({pic['user']})\n"),
                                 Plain(text=f"tags : {pic['tag']}\n"),

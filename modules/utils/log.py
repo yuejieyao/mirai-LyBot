@@ -1,6 +1,6 @@
 import os
 import time
-LOG_PATH = 'modules/utils/log'
+LOG_PATH = 'modules/resource/log'
 
 
 def get_log_path(self):

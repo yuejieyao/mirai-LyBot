@@ -6,9 +6,9 @@ import datetime
 
 class PixivUtils:
     def __init__(self) -> None:
-        # self.app = AppPixivAPI()
-        self.app = ByPassSniApi()
-        self.app.require_appapi_hosts(hostname="public-api.secure.pixiv.net")
+        self.app = AppPixivAPI()
+        # self.app = ByPassSniApi()
+        # self.app.require_appapi_hosts(hostname="public-api.secure.pixiv.net")
         self.app.auth(refresh_token=config.getPixivConf(option='refreshToken'))
 
     def getRanking(self, mode: str, date: datetime.date = None, offset=None):

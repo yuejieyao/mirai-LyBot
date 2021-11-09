@@ -32,11 +32,11 @@ class Pixiv:
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
         if re.match('图来.*', message_display) != None:
-            ds = DataSource(path=self.pixiv_db)
             try:
+                ds = DataSource(path=self.pixiv_db)
                 pic = ds.getRandomPic(group=group)
                 msg = MessageChain([Plain(text="来了来了~\n"),
-                                    Plain(text=f"title : {pic['title']}\n"),
+                                    Plain(text=f"title : {pic['title']}({pic['id']})\n"),
                                     Plain(text=f"author : {pic['author']}({pic['user']})\n"),
                                     Plain(text=f"tags : {pic['tag']}\n"),
                                     Image(image_type='group', file_path=pic['path'])])
