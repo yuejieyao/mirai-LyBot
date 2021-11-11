@@ -1,4 +1,4 @@
-# private-mirai-plugins
+# mirai-LyBot
 
 ![image](https://img.shields.io/badge/python-3.7+-green.svg)
 
