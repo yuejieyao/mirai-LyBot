@@ -42,3 +42,4 @@
 | XHDict | 查字典 | 安装playwright的chromium |
 | Newspaper | 60s早报(定时任务) | 无 |
 | Remind | 定时提醒 | 无 |
+| Lottery | 彩票 | 无 |

@@ -7,12 +7,15 @@
 @version      :1.0
 '''
 
+from os import path
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.message.messageType import At, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
-from .modules.utils.dataSource import DataSource
+from modules.dataSource.userDataSource import DataSource
+from modules.utils import log as Log
 import numpy as np
+import traceback
 
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Sign')
@@ -20,20 +23,26 @@ class Sign:
     NAME = "签到"
     DESCRIPTION = """签到功能,发送内容包含以下关键词即可触发:签到,早安,早上好,午安,中午好,下午好,晚安,晚上好"""
 
-    sign_db = 'modules/resource/data/sign.db'
+    sign_db = 'modules/resource/data/user.db'
     sign_keyword = ['签到', '早安', '早上好', '午安', '中午好', '下午好', '晚安', '晚上好']
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         msg_display = chains.asDisplay()
         if any(keyword if keyword in msg_display else False for keyword in self.sign_keyword):
-            ds = DataSource(path=self.sign_db)
-            if not ds.isSign(target):
-                sign_text = self.get_draw()
-                msg = MessageChain([At(target=target), Plain(text=" 签到成功,"), Plain(text=sign_text)])
-                MMR().sendGroupMessage(msg=msg, target=group)
-                ds.sign(qq=target, sign_text=sign_text)
-            else:
-                MMR().sendGroupMessage(msg=MessageChain([Plain(text="今天已经签到过了哦")]), target=group)
+            try:
+                ds = DataSource(path=self.sign_db)
+                if not ds.isSign(target):
+                    sign_text = self.get_draw()
+                    ds.add_money(qq=target, money=500)
+                    lottery = ds.buy(qq=target, group=group)
+                    msg = MessageChain([At(target=target), Plain(text=" 签到成功\n"), Plain(
+                        text=f"获取一张彩票: {lottery} ,开奖时间为明日10点\n"), Plain(text=sign_text)])
+                    MMR().sendGroupMessage(msg=msg, target=group)
+                    ds.sign(qq=target, sign_text=sign_text)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="今天已经签到过了哦")]), target=group)
+            except:
+                Log.error(traceback.format_exc())
 
     def get_draw(self):
         element_list = ['大吉', '吉', '中吉', '小吉', '末吉', '凶', '大凶']

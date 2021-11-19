@@ -3,7 +3,7 @@ import time
 LOG_PATH = 'modules/resource/log'
 
 
-def get_log_path(self):
+def get_log_path():
     name = time.strftime('%Y%m%d', time.localtime()) + '.log'
     return os.path.join(LOG_PATH, name)
 
@@ -33,5 +33,5 @@ def mlog(msg: str):
     try:
         with open(file=get_log_path(), encoding='utf-8', mode='a+') as fs:
             fs.write(msg+'\n')
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
