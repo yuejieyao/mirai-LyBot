@@ -39,7 +39,8 @@ class Pixiv:
                             msg.extend([At(target=qq), Plain(text=' 您的彩票如下:\n')])
                             r = ds.get_lottery_yesterday_group_qq(group=group, qq=qq)
                             for i in r:
-                                lvl, lvr = self.checkLettory(first_prize=first_prize, lettory=i[0].split(','))
+                                lvl, lvr = self.checkLettory(first_prize=first_prize,
+                                                             lettory=list(map(i[0].split(','))))
                                 """
                                 奖励规则: 在第7位不等时,前6位中2至6位相等,对应7,6,5,4,3等奖
                                          在第7位相等时,前6位中0至6位相等,对应7,6,5,4,3,2,1等奖
