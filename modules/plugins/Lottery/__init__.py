@@ -65,3 +65,12 @@ class Lottery:
                     MMR().sendGroupMessage(msg=MessageChain([Plain(text="您当前没有正在生效的彩券")]), target=group, quote=quote)
             except:
                 Log.error(msg=traceback.format_exc())
+        elif msg_display == '彩票规则':
+            MMR().sendGroupMessage(msg=MessageChain([Plain(text="彩票由7个数字组成,其中前6位从1-27里随机抽取,最后一位从1-9里抽取\n"),
+                                                     Plain(text="奖励规则:\n"),
+                                                     Plain(text="六等奖:选6+1中2+1或中1+1或中0+1\n"),
+                                                     Plain(text="五等奖:选6+1中4+0或中3+1\n"),
+                                                     Plain(text="四等奖:选6+1中5+0或中4+1\n"),
+                                                     Plain(text="三等奖:选6+1中5+1\n"),
+                                                     Plain(text="二等奖:选6+1中6+0\n"),
+                                                     Plain(text="一等奖:选6+1中6+1")]), target=group)

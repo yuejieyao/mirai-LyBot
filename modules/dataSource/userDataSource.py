@@ -10,16 +10,19 @@ class DataSource(Sqlite):
         self.__initSqlite()
 
     def isSign(self, qq: int):
+        """ 是否签到 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
         if self.query('select count(*) from sign where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0] == 1:
             return True
         return False
 
     def sign(self, qq: int, sign_text: str):
+        """ 签到 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
         return self.execute('insert into sign (user_qq,date,sign_text) values(?,?,?)', [(qq, t, sign_text)])
 
     def isOver(self, qq: int):
+        """ 今日购买彩票是否满3 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
         if self.query('select count(*) from lottery where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0] >= 3:
             return True
@@ -31,12 +34,18 @@ class DataSource(Sqlite):
         return False
 
     def count_lottery_today(self, qq: int):
+        """ 今天购买彩票数量 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
         return self.query('select count(*) from lottery where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0]
 
     def buy(self, qq: int, group: int):
+        """ 买彩票 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
-        content = f"{random.randint(1,16)},{random.randint(1,16)},{random.randint(1,16)},{random.randint(1,16)},{random.randint(1,16)},{random.randint(1,16)},{random.randint(1,8)}"
+        # 前6位从1-27中抽取,不重复,最后1位随机1-9
+        l = range(1, 28)
+        c = random.sample(l, 6)
+        c.append(random.randint(1, 9))
+        content = ','.join(map(str,c))
         self.execute('insert into lottery (user_qq,user_group,content,date) values(?,?,?,?)', [(qq, group, content, t)])
         return content
 
@@ -81,6 +90,7 @@ class DataSource(Sqlite):
     def __initSqlite(self):
         rs = self.query(
             "select name from sqlite_master where type='table' order by name")
+        # 签到表
         if ('sign',) not in rs:
             self.execute("""
                 create table sign
@@ -91,6 +101,7 @@ class DataSource(Sqlite):
                     sign_text text
                 ) 
             """)
+        # 用户表
         if ('user',) not in rs:
             self.execute("""
                 create table user
@@ -100,6 +111,7 @@ class DataSource(Sqlite):
                     money int DEFAULT 0
                 ) 
             """)
+        # 彩票表
         if ('lottery',) not in rs:
             self.execute("""
                 create table lottery

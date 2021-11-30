@@ -25,44 +25,65 @@ class Pixiv:
     def process(self):
         try:
             # 生成今日的开奖号码
-            first_prize = [random.randint(1, 16), random.randint(1, 16), random.randint(1, 16), random.randint(
-                1, 16), random.randint(1, 16), random.randint(1, 16), random.randint(1, 8)]
-            Log.info(msg=f"[Schedule][Lottery]今日大奖: {first_prize}", log=True)
+            l = range(1, 28)
+            c = random.sample(l, 6)
+            first_prize_left = random.sample(l, 6)
+            first_prize_right = random.randint(1, 9)
+
+            Log.info(
+                msg=f"[Schedule][Lottery]今日大奖: {','.join(map(str,first_prize_left))},{first_prize_right}", log=True)
             ds = DataSource(self.user_db)
             groups = ds.get_lottery_yesterday_group()
             if len(groups):
                 for group in groups:
-                    msg = MessageChain([Plain(text=f'今日大奖: {",".join(map(str,first_prize))}\n')])
+                    msg = MessageChain(
+                        [Plain(text=f"今日大奖: {','.join(map(str,first_prize_left))},{first_prize_right}\n")])
                     qqs = ds.get_lottery_yesterday_qq(group=group)
                     if len(qqs):
                         for qq in qqs:
                             msg.extend([At(target=qq), Plain(text=' 您的彩票如下:\n')])
                             r = ds.get_lottery_yesterday_group_qq(group=group, qq=qq)
                             for i in r:
-                                lvl, lvr = self.checkLettory(first_prize=first_prize,
+                                lvl, lvr = self.checkLettory(first_prize_left=first_prize_left, first_prize_right=first_prize_right,
                                                              lettory=list(map(int, i[0].split(','))))
                                 """
-                                奖励规则: 在第7位不等时,前6位中2至6位相等,对应7,6,5,4,3等奖
-                                         在第7位相等时,前6位中0至6位相等,对应7,6,5,4,3,2,1等奖
+                                奖励规则:
+                                        六等奖:选6+1中2+1或中1+1或中0+1
+                                        五等奖:选6+1中4+0或中3+1
+                                        四等奖:选6+1中5+0或中4+1
+                                        三等奖:选6+1中5+1
+                                        二等奖:选6+1中6+0
+                                        一等奖:选6+1中6+1
                                 """
                                 money = 0
                                 if lvr == 0:
-                                    if lvl < 2:
+                                    if lvl < 4:
                                         msg.append(Plain(text=f"{i[0]} 非的一批\n"))
-                                    else:
-                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得{9-lvl}等奖,奖励{500*(lvl-1)}游戏币\n"))
-                                        money = 500*(lvl-1)
-
-                                else:
-                                    if lvl == 6:
-                                        msg.append(Plain(text=f"{i[0]} 您可牛逼大了,头奖!奖励3000000游戏币,您永远都用不完\n"))
-                                        money = 3000000
+                                    elif lvl == 4:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得五等奖,奖励1000游戏币\n"))
+                                        money = 1000
                                     elif lvl == 5:
-                                        msg.append(Plain(text=f"{i[0]} 您可牛逼大了,二等奖!奖励300000游戏币,离头奖只差1位,真的可惜\n"))
-                                        money = 300000
-                                    else:
-                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得{7-lvl}等奖,奖励{500*(lvl+1)}游戏币\n"))
-                                        money = 500*(lvl+1)
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得四等奖,奖励20000游戏币\n"))
+                                        money = 20000
+                                    elif lvl == 6:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得二等奖,奖励300000游戏币\n"))
+                                        money = 3000000
+                                else:
+                                    if lvl < 3:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得六等奖,奖励500游戏币\n"))
+                                        money = 500
+                                    elif lvl == 3:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得五等奖,奖励1000游戏币\n"))
+                                        money = 1000
+                                    elif lvl == 4:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得四等奖,奖励20000游戏币\n"))
+                                        money = 20000
+                                    elif lvl == 5:
+                                        msg.append(Plain(text=f"{i[0]} 恭喜您获得三等奖,奖励30000游戏币\n"))
+                                        money = 30000
+                                    elif lvl == 6:
+                                        msg.append(Plain(text=f"{i[0]} 您可牛逼大了,一等奖!奖励3000000游戏币\n"))
+                                        money = 3000000
                                 if money:
                                     ds.add_money(qq=qq, money=money)
                     MMR().sendGroupMessage(msg=msg, target=group)
@@ -70,11 +91,11 @@ class Pixiv:
         except:
             Log.error(msg=traceback.format_exc())
 
-    def checkLettory(self, first_prize: List, lettory: List) -> int:
+    def checkLettory(self, first_prize_left: List[int], first_prize_right: int, lettory: List) -> int:
         lv_left, lv_right = 0, 0
-        if first_prize[6] == lettory[6]:
+        if lettory[6] == first_prize_right:
             lv_right = 1
         for i in range(6):
-            if first_prize[i] == lettory[i]:
+            if lettory[i] in first_prize_left:
                 lv_left = lv_left+1
         return lv_left, lv_right
