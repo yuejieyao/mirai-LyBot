@@ -1,4 +1,4 @@
-lxml==4.6.3
+lxml==4.6.5
 requests==2.25.1
 APScheduler==3.6.3
 pyunit_time==2021.2.2
