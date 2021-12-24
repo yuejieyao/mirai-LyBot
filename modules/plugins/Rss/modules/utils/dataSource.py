@@ -2,6 +2,7 @@ from modules.utils.sqlCombiner import Sqlite
 from .rssUtils import RssUtils
 from modules.utils import log as Log
 
+
 class DataSource(Sqlite):
     def __init__(self, path: str) -> None:
         super().__init__(path)
@@ -50,9 +51,7 @@ class DataSource(Sqlite):
         return self.execute("insert into send (rss_id,send_group) values(?,?)", [(rss_id, group)])
 
     def __initSqlite(self):
-        rs = self.query(
-            "select name from sqlite_master where type='table' order by name")
-        if ('rss',) not in rs:
+        if not self.exists_table('rss'):
             # 字段send=0表示可发送,1表示各种原因屏蔽掉不发送
             self.execute("""
                 create table rss
@@ -68,7 +67,7 @@ class DataSource(Sqlite):
                 )
             """)
             Log.info('[Plugin][RSS] create table rss success')
-        if ('follow',) not in rs:
+        if not self.exists_table('follow'):
             self.execute("""
                 create table follow
                     (
@@ -79,7 +78,7 @@ class DataSource(Sqlite):
                     )
             """)
             Log.info('[Plugin][RSS] create table follow success')
-        if ('send',) not in rs:
+        if not self.exists_table('send'):
             # 发送记录
             self.execute("""
                 create table send

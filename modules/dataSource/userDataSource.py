@@ -45,7 +45,7 @@ class DataSource(Sqlite):
         l = range(1, 28)
         c = random.sample(l, 6)
         c.append(random.randint(1, 9))
-        content = ','.join(map(str,c))
+        content = ','.join(map(str, c))
         self.execute('insert into lottery (user_qq,user_group,content,date) values(?,?,?,?)', [(qq, group, content, t)])
         return content
 
@@ -88,10 +88,7 @@ class DataSource(Sqlite):
         return [int(i[0]) for i in r]
 
     def __initSqlite(self):
-        rs = self.query(
-            "select name from sqlite_master where type='table' order by name")
-        # 签到表
-        if ('sign',) not in rs:
+        if not self.exists_table('sign'):
             self.execute("""
                 create table sign
                 (
@@ -101,8 +98,9 @@ class DataSource(Sqlite):
                     sign_text text
                 ) 
             """)
+            Log.info(msg="[Mirai][User] create table sign success")
         # 用户表
-        if ('user',) not in rs:
+        if not self.exists_table('user'):
             self.execute("""
                 create table user
                 (
@@ -111,8 +109,9 @@ class DataSource(Sqlite):
                     money int DEFAULT 0
                 ) 
             """)
+            Log.info(msg="[Mirai][User] create table user success")
         # 彩票表
-        if ('lottery',) not in rs:
+        if not self.exists_table('lottery'):
             self.execute("""
                 create table lottery
                 (
@@ -123,3 +122,4 @@ class DataSource(Sqlite):
                     date date
                 ) 
             """)
+            Log.info(msg="[Mirai][User] create table lottery success")

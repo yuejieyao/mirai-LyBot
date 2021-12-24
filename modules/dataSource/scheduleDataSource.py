@@ -25,9 +25,7 @@ class DataSource(Sqlite):
         return self.execute("update remind set send=1 where id=:id", {"id": id})
 
     def __initSqlite(self):
-        rs = self.query(
-            "select name from sqlite_master where type='table' order by name")
-        if ('remind',) not in rs:
+        if not self.exists_table('remind'):
             # 字段send=0表示可发送,1表示各种原因屏蔽掉不发送
             self.execute("""
                 create table remind

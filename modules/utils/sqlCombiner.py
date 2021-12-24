@@ -1,18 +1,34 @@
 import sqlite3
+from collections import namedtuple
 
 
 class Sqlite:
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, mode='list') -> None:
+        """ 初始化sqlite
+        Param:
+            path (str): sqlite文件路径
+            mode (str): 设定结果返回模式,可以为list,dict,nametuple,默认为list
+        """
+
         self.conn = sqlite3.connect(path)
+        if mode == 'dict':
+            self.conn.row_factory = __dict_factory
+        if mode == 'nametuple':
+            self.conn.row_factory = __namedtuple_factory
         self.cur = self.conn.cursor()
 
-    def exists(self, table, column, value) -> bool:
+    def exists(self, table: str, column: str, value) -> bool:
         rs = self.query(
             f"select {column} from  {table} where {column}=:value", {'value': value})
         if len(rs) > 0:
             return True
-        else:
-            return False
+        return False
+
+    def exists_table(self, name: str) -> bool:
+        rs = self.query(f"SELECT * FROM sqlite_master WHERE TYPE='table' AND name=:name", {'name': name})
+        if len(rs) > 0:
+            return True
+        return False
 
     def execute(self, sql: str, parameters=None) -> bool:
         """ 执行增删改
@@ -57,3 +73,18 @@ class Sqlite:
     def close(self):
         self.cur.close()
         self.conn.close()
+
+
+def __dict_factory(cursor, row):
+    """Returns sqlite rows as dict."""
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+
+def __namedtuple_factory(cursor, row):
+    """Returns sqlite rows as named tuples."""
+    fields = [col[0] for col in cursor.description]
+    Row = namedtuple("Row", fields)
+    return Row(*row)

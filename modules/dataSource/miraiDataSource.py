@@ -78,9 +78,7 @@ class MiraiDataSource(Sqlite):
         return str(self.query("select description from plugin where register_name=:register_name", {'register_name': register_name})[0][0])
 
     def __initSqlite(self):
-        rs = self.query(
-            "select name from sqlite_master where type='table' order by name")
-        if ('plugin',) not in rs:
+        if not self.exists_table('plugin'):
             # 字段send=0表示可发送,1表示各种原因屏蔽掉不发送
             self.execute("""
                 create table plugin

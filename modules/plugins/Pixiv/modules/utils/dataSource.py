@@ -125,9 +125,7 @@ class DataSource(Sqlite):
         return True
 
     def __initSqlite(self):
-        rs = self.query(
-            "select name from sqlite_master where type='table' order by name")
-        if ('illust',) not in rs:
+        if not self.exists_table('illust'):
             # 字段send=0表示可发送,1表示各种原因屏蔽掉不发送
             self.execute("""
                 create table illust
@@ -144,7 +142,7 @@ class DataSource(Sqlite):
                 )
             """)
             Log.info(msg="[Plugin][Pixiv] create table illust success")
-        if ('follow',) not in rs:
+        if not self.exists_table('follow'):
             self.execute("""
                 create table follow
                     (
@@ -155,7 +153,7 @@ class DataSource(Sqlite):
                     )
             """)
             Log.info(msg="[Plugin][Pixiv] create table follow success")
-        if ('send',) not in rs:
+        if not self.exists_table('send'):
             # 发送记录
             self.execute("""
                 create table send
@@ -166,7 +164,7 @@ class DataSource(Sqlite):
                     )
             """)
             Log.info(msg="[Plugin][Pixiv] create table send success")
-        if ('ban',) not in rs:
+        if not self.exists_table('ban'):
             self.execute("""
                 create table ban
                 (
