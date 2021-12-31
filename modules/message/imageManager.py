@@ -36,7 +36,13 @@ class ImageManager:
         response = self.httpRequest.request.post(
             '%s/%s' % (self.httpRequest.host, 'uploadImage'), data=multipart_encoder, headers=headers)
         response.raise_for_status()
-        return json.loads(response.text)['imageId']
+        image_json = json.loads(response.text)
+        if 'imageId' in image_json:
+            return image_json['imageId']
+        else:
+            Log.error(msg="[Mirai][Image] upload image failed")
+            Log.error(msg=response.text)
+            return False
 
     def upload_img_from_url(self, url: str, image_type: str):
         """根据url地址上传互联网图片获取imageID
