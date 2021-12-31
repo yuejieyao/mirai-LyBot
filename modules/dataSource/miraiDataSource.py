@@ -17,7 +17,7 @@ class MiraiDataSource(Sqlite):
                                 [(register_name, name, description, plugin_type)])
 
     def removePlugin(self, register_name: str):
-        return self.execute('delete from plugin where register_name=:register_name', {'regisger_name', register_name})
+        return self.execute('delete from plugin where register_name=:register_name', {'register_name': register_name})
 
     def openPlugin(self, register_name: str):
         return self.execute('update plugin set open=1 where register_name=:register_name', {'register_name': register_name})
