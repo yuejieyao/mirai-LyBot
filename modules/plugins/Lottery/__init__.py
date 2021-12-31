@@ -27,29 +27,50 @@ class Lottery:
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         msg_display = chains.asDisplay()
-        if msg_display in ['购买彩票', '买彩票', '获得彩票']:
+
+        msg_split = msg_display.split(' ')
+
+        if msg_split[0] in ['购买彩票', '买彩票', '获得彩票', '买票']:
             try:
                 ds = DataSource(path=self.user_db)
-                if ds.count_lottery_today(qq=target) < 3:
-                    money = ds.get_money(qq=target)
-                    if money >= 500:
-                        if ds.min_money(qq=target, money=500):
-                            content = ds.buy(qq=target, group=group)
-                            MMR().sendGroupMessage(MessageChain(
-                                [Plain(text=f"购买成功\n您的彩券号码为: {content}\n开奖时间为明日10点,尽请期待\n您的游戏币剩余{money-500}")]), target=group, quote=quote)
-                        else:
-                            Log.error(f'[Lottery][{target}(QQ)][{group}(Group)]扣除游戏币失败')
-                            MMR().sendGroupMessage(MessageChain(
-                                [Plain(text="扣除游戏币失败")]), target=group, quote=quote)
-                    else:
-                        MMR().sendGroupMessage(MessageChain(
-                            [Plain(text=f"您的游戏币不够,当前剩余: {money}")]), target=group, quote=quote)
-                else:
+                purchased_count = ds.count_lottery_today(qq=target)
+                has_money = ds.get_money(qq=target)
+                if purchased_count >= 3:
                     MMR().sendGroupMessage(MessageChain([Plain('您已到达购买上限,请明天再买吧')]), target=group, quote=quote)
+                    return
+                if has_money < 500:
+                    MMR().sendGroupMessage(MessageChain([Plain('您已经连一张都买不起了')]), target=group, quote=quote)
+                    return
+                buy_count = 1
+                buy_money = 500
+                msg = MessageChain([Plain('')])
+                if len(msg_split) > 1:
+                    if msg_split[1].isdigit():
+                        buy_count = int(msg_split[1])
+                        buy_money = 500*buy_count
+                        buy_flag = False
+                        # 判断钱是否足够买这么多张,自动减少购买数量
+                        if buy_count*500 > has_money:
+                            buy_count = has_money//500
+                            buy_money = 500*buy_count
+                            buy_flag = True
+                        # 判断购买后是否超出上限,自动减少购买数量
+                        if purchased_count+buy_count > 3:
+                            buy_count = 3-purchased_count
+                            buy_money = 500*buy_count
+                            buy_flag = True
+                        if buy_flag:
+                            msg.append(Plain(f'由于上限或金额问题,您只能买到{buy_count}张哦~\n'))
+                for i in range(buy_count):
+                    content = ds.buy(qq=target, group=group)
+                    msg.append(Plain(f'您购买的号码为: {content}\n'))
+                if ds.min_money(qq=target, money=buy_money):
+                    msg.append(Plain(f'开奖时间为明日10点,您剩余的游戏币为{has_money-buy_money}'))
+                MMR().sendGroupMessage(msg=msg, target=group, quote=quote)
 
             except:
                 Log.error(msg=traceback.format_exc())
-        elif msg_display in ['我的彩票', '看看彩票']:
+        elif msg_display in ['我的彩票', '看看彩票', '我的票', '看票', '看看票']:
             try:
                 ds = DataSource(self.user_db)
                 r = ds.get_lottery_today(qq=target)
