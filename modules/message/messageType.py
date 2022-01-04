@@ -90,7 +90,8 @@ class Image(MessageElement):
     type: str = 'Image'
 
     def __init__(self, image_type: str, file_path: str = None, image_id: str = None, image_url: str = None) -> None:
-        """生成图片消息
+        """ 生成图片消息
+
         Param:
             image_type (str): friend,group或temp
             file_path (str): 可选,若是本地上传图片则需要此参数
@@ -134,6 +135,7 @@ class MusicShare(MessageElement):
 
     def __init__(self, kind: str, title: str, summary: str, jumpUrl: str, pictureUrl: str, musicUrl: str, brief: str) -> None:
         """ 音乐卡片分享
+        
         Param:
             kind (str):只能是NeteaseCloudMusic等几个,具体参考mirai文档
             title (str): 标题

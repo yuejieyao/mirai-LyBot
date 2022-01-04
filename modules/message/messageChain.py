@@ -9,7 +9,8 @@ class MessageChain:
         self.elements = elements
 
     def append(self, element: MessageElement) -> None:
-        """添加一个MessageElement元素到末尾
+        """ 添加一个MessageElement元素到末尾
+
         Param:
             element (MessageElement):如Plain,Image等
         """
@@ -17,7 +18,8 @@ class MessageChain:
         self.elements.append(element)
 
     def extend(self, elements: List[MessageElement]) -> None:
-        """添加多个MessageElement元素到末尾
+        """ 添加多个MessageElement元素到末尾
+
         Param:
             elements (List[MessageElement]):多个MessageElement组成的List
         """
@@ -38,13 +40,14 @@ class MessageChain:
         return chains
 
     def getId(self) -> int:
-        """从Mirai得到的MessageChain第一个MessageElement固定是Source,对应了此MessageChain的ID,通过此方法获取ID"""
+        """ 从Mirai得到的MessageChain第一个MessageElement固定是Source,对应了此MessageChain的ID,通过此方法获取ID """
         if isinstance(self.elements[0], Source):
             return self.elements[0].id
         return 0
 
     def get(self, element_type: MessageElement) -> List[MessageElement]:
         """获取消息中对应类型的元素
+
         Param:
             element_type (MessageElement): 对应的消息类型,如Plain,Image
         Returns:
@@ -58,7 +61,7 @@ class MessageChain:
 
     @staticmethod
     def fromJsonList(obj_list: List) -> 'MessageChain':
-        """根据消息的json数据生成MessageChain,主要用于websocket的on_message事件"""
+        """ 根据消息的json数据生成MessageChain,主要用于websocket的on_message事件 """
 
         list = []
         for obj in obj_list:

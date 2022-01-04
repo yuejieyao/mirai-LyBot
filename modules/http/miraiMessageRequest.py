@@ -9,7 +9,7 @@ class MiraiMessageRequest:
         self.httpRequest = MiraiHttpRequests()
 
     def sendAdminMessage(self, msg: MessageChain):
-        """发送消息到管理员,管理员配置为conf文件中的adminQQ,可以用逗号分割多个管理员
+        """ 发送消息到管理员,管理员配置为conf文件中的adminQQ,可以用逗号分割多个管理员
 
         Param:
             msg (MessageChain): 消息链
@@ -19,7 +19,7 @@ class MiraiMessageRequest:
             self.sendFriendMessage(msg=msg, target=adminId)
 
     def sendGroupMessage(self, msg: MessageChain, target: int, quote: int = None):
-        """发送群消息
+        """ 发送群消息
 
         Param:
             msg (MessageChain): 消息链
@@ -36,7 +36,7 @@ class MiraiMessageRequest:
         Log.info(msg=f"[SendGroupMessage][-> (GID){target}] {msg.asSerializationString()}")
 
     def sendFriendMessage(self, msg: MessageChain, target: int, quote: int = None):
-        """发送好友消息 
+        """ 发送好友消息 
 
         Param:
             msg (MessageChain): 消息链
@@ -53,7 +53,7 @@ class MiraiMessageRequest:
         Log.info(msg=f"[SendFriendMessage][-> (UID){target}] {msg.asSerializationString()}")
 
     def recall(self, target: int):
-        """撤回消息
+        """ 撤回消息
 
         Param:
             target (int): 目标消息id

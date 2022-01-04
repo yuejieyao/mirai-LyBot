@@ -8,7 +8,7 @@ class MiraiMemberRequests:
         self.httpRequest = MiraiHttpRequests()
 
     def getFirendList(self) -> List[FriendInfo]:
-        """获取好友列表"""
+        """ 获取好友列表 """
 
         response = self.httpRequest.get('friendList')
         if response['code'] == 0:
@@ -17,7 +17,7 @@ class MiraiMemberRequests:
             return []
 
     def getGroupList(self) -> List[GroupInfo]:
-        """获取群列表"""
+        """ 获取群列表 """
 
         response = self.httpRequest.get('groupList')
         if response['code'] == 0:

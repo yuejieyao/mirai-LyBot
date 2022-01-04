@@ -5,6 +5,7 @@ from collections import namedtuple
 class Sqlite:
     def __init__(self, path: str, mode='list') -> None:
         """ 初始化sqlite
+
         Param:
             path (str): sqlite文件路径
             mode (str): 设定结果返回模式,可以为list,dict,nametuple,默认为list
@@ -32,6 +33,7 @@ class Sqlite:
 
     def execute(self, sql: str, parameters=None) -> bool:
         """ 执行增删改
+
         Param:
             sql (str): sql语句
             parameters (list/tuple) : 使用参数化sql时需传入此参数
@@ -58,6 +60,7 @@ class Sqlite:
 
     def query(self, sql: str, parameters=None) -> list:
         """ 执行sql查询
+        
         Param:
             sql (str): sql语句
             parameters (tuple) : 使用参数化sql时需传入此参数

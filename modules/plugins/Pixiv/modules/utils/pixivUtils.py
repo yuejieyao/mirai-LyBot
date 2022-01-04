@@ -12,7 +12,7 @@ class PixivUtils:
         self.app.auth(refresh_token=config.getPixivConf(option='refreshToken'))
 
     def getRanking(self, mode: str, date: datetime.date = None, offset=None):
-        """id,title,url,tag,user,author,date"""
+        """ id,title,url,tag,user,author,date """
         json_result = self.app.illust_ranking(mode=mode, date=date, offset=offset)
         return [tuple((
                 illust.id,

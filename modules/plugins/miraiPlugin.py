@@ -39,6 +39,7 @@ class MiraiMessagePluginProcessor:
     @classmethod
     def mirai_group_message_plugin_register(cls, plugin_name):
         """ 注册为群消息的响应模块
+
         Param:
             plugin_name (str): 注册模块名
         """
@@ -50,6 +51,7 @@ class MiraiMessagePluginProcessor:
 
     def friend_msg_process(self, msg: MessageChain, target: int, quote: int, plugins=()):
         """ 循环调用私聊消息插件
+
         Param
             msg (MessageChain): 消息
             target (int): 私聊对象QQ
@@ -66,6 +68,7 @@ class MiraiMessagePluginProcessor:
     @classmethod
     def mirai_friend_message_plugin_register(cls, plugin_name):
         """  注册为好友消息的响应模块
+        
         Param
             plugin_name (str): 注册模块名
         """

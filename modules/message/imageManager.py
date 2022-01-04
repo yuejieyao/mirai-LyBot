@@ -14,7 +14,8 @@ class ImageManager:
         self.httpRequest = MiraiHttpRequests()
 
     def upload_img(self, file_path: str, image_type: str):
-        """上传本地图片获取imageID
+        """ 上传本地图片获取imageID
+
         Param:
             file_path (str): 本地图片路径
             image_type (str): friend,group或temp
@@ -50,7 +51,8 @@ class ImageManager:
             return False
 
     def upload_img_from_url(self, url: str, image_type: str):
-        """根据url地址上传互联网图片获取imageID
+        """ 根据url地址上传互联网图片获取imageID
+        
         Param:
             url (str): 图片的互联网地址
             image_type (str): friend,group或temp
