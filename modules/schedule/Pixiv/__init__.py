@@ -14,6 +14,7 @@ from modules.http.miraiMessageRequest import MiraiMessageRequest
 from modules.utils import log as Log
 import time
 import shutil
+import uuid
 import os
 import traceback
 
@@ -21,9 +22,12 @@ import traceback
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(interval=1)
 class Pixiv:
     pixiv_db = 'modules/resource/data/pixiv.db'
+    directory = "modules/resource/illusts"
 
     def process(self):
         ds = DataSource(path=self.pixiv_db)
+        if not os.path.exists(self.directory):
+            os.makedirs(self.directory)
         # 获取被关注的作者Ids
         author_ids = ds.getFollowAuthorIds()
         for author_id in author_ids:
@@ -36,9 +40,17 @@ class Pixiv:
                 followers = ds.getFollowers(user=author_id)
                 # 需要发送的群
                 groups = list(set(follower[0] for follower in followers))
+                # 下载图片文件名
+                fname = f"{uuid.uuid1()}.png"
+                path = os.path.join(self.directory, fname)
+
                 for group in groups:
                     if ds.isSend(id=pic['id'], group=group):
                         continue
+                    # 在有需要发送的群的前提下,下载图片
+                    if not os.path.exists(path=path):
+                        if ds.pixiv.downImg(url=pic['url'], path=self.directory, name=fname):
+                            Log.info(f"[Plugins][Pixiv] download IMG[{pic['id']}(ID)][{path}(Path)] success")
                     # 该群需要@的人员
                     qqs = list(set([follower[1] for follower in followers if follower[0] == group]))
                     msg = MessageChain([])
@@ -48,7 +60,7 @@ class Pixiv:
                                 Plain(text=f"title : {pic['title']}\n"),
                                 Plain(text=f"author : {pic['author']}({pic['user']})\n"),
                                 Plain(text=f"tags : {pic['tag']}\n"),
-                                Image(image_type='group', file_path=pic['path'])])
+                                Image(image_type='group', file_path=path)])
                     MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
                     time.sleep(1)
                     # 推送完成后更改图片已推送

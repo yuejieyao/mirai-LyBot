@@ -30,27 +30,27 @@ class Rss:
                 Log.info(f'[Schedule][RSS] check rss url={url}')
                 # 获取rss消息并生成MessageChain
                 rsses = ds.getMultNew(url=url)
-                for rss in rsses:
-                    msg = MessageChain([])
-                    # 屏蔽中奖动态
-                    if '中奖' in rss['title'] or '中奖' in rss['description']:
-                        continue
-
-                    # 防止标题和内容重复
-                    if rss['title'] not in rss['description']:
-                        msg.append(Plain(text=rss['title']+'\n'))
-                    msg.append(Plain(text=rss['description']+'\n'))
-                    for img_url in rss['img'].split(','):
-                        if img_url:
-                            img = Image(image_type='group', image_url=img_url)
-                            if img.image_id:
-                                msg.append(img)
-                    msg.append(Plain(text=rss['link']))
-                    # 获取订阅该url的所有群号
+                for rss in rsses:                
                     groups = ds.getFollowers(url=url)
                     for group in groups:
                         # 判断是否发送过
                         if not ds.isSend(rss_id=rss['rss_id'], group=group):
+                            msg = MessageChain([])
+                            # 屏蔽中奖动态
+                            if '中奖' in rss['title'] or '中奖' in rss['description']:
+                                continue
+
+                            # 防止标题和内容重复
+                            if rss['title'] not in rss['description']:
+                                msg.append(Plain(text=rss['title']+'\n'))
+                            msg.append(Plain(text=rss['description']+'\n'))
+                            for img_url in rss['img'].split(','):
+                                if img_url:
+                                    img = Image(image_type='group', image_url=img_url)
+                                    if img.image_id:
+                                        msg.append(img)
+                            msg.append(Plain(text=rss['link']))
+                            # 获取订阅该url的所有群号
                             MMR().sendGroupMessage(msg=msg, target=group)
                             ds.setSend(rss_id=rss['rss_id'], group=group)
                     time.sleep(10)

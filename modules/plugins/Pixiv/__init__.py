@@ -14,6 +14,8 @@ from modules.message.messageChain import MessageChain
 from .modules.utils.dataSource import DataSource
 from modules.utils import log as Log
 import traceback
+import uuid
+import os
 import re
 
 
@@ -28,6 +30,7 @@ class Pixiv:
     """
 
     pixiv_db = 'modules/resource/data/pixiv.db'
+    directory = "modules/resource/illusts"
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
@@ -35,11 +38,19 @@ class Pixiv:
             try:
                 ds = DataSource(path=self.pixiv_db)
                 pic = ds.getRandomPic(group=group)
+
+                fname = f"{uuid.uuid1()}.png"
+                path = os.path.join(self.directory, fname)
+
+                if not os.path.exists(path=path):
+                    if ds.pixiv.downImg(url=pic['url'], path=self.directory, name=fname):
+                        Log.info(f"[Plugins][Pixiv] download IMG[{pic['id']}(ID)][{path}(Path)] success")
+
                 msg = MessageChain([Plain(text="来了来了~\n"),
                                     Plain(text=f"title : {pic['title']}({pic['id']})\n"),
                                     Plain(text=f"author : {pic['author']}({pic['user']})\n"),
                                     Plain(text=f"tags : {pic['tag']}\n"),
-                                    Image(image_type='group', file_path=pic['path'])])
+                                    Image(image_type='group', file_path=path)])
                 MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
             except Exception:
                 Log.error(msg=traceback.format_exc())

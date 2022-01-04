@@ -2,20 +2,19 @@ from configparser import Error
 from modules.utils.sqlCombiner import Sqlite
 from modules.utils import log as Log
 from .pixivUtils import PixivUtils
-import os
 import datetime
-import uuid
+# import uuid
 
 
 class DataSource(Sqlite):
-    directory = "modules/resource/illusts"
+    # directory = "modules/resource/illusts"
 
     def __init__(self, path: str) -> None:
         super().__init__(path)
         self.__initSqlite()
         self.pixiv = PixivUtils()
-        if not os.path.exists(self.directory):
-            os.makedirs(self.directory)
+        # if not os.path.exists(self.directory):
+        #     os.makedirs(self.directory)
 
     def getRandomPic(self, group: int):
         # t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
@@ -32,11 +31,12 @@ class DataSource(Sqlite):
                 raise Exception('获取图片失败')
 
         row = rs[0]
-        fname = f"{uuid.uuid1()}.png"
-        if self.pixiv.downImg(url=row[3], path=self.directory, name=fname):
-            return dict(id=row[0], title=row[1], tag=row[2], url=row[3], user=row[4], author=row[5], path=os.path.join(self.directory, fname))
-        else:
-            raise Exception("下载图片失败")
+        return dict(id=row[0], title=row[1], tag=row[2], url=row[3], user=row[4], author=row[5])
+        # fname = f"{uuid.uuid1()}.png"
+        # if self.pixiv.downImg(url=row[3], path=self.directory, name=fname):
+        #     return dict(id=row[0], title=row[1], tag=row[2], url=row[3], user=row[4], author=row[5], path=os.path.join(self.directory, fname))
+        # else:
+        #     raise Exception("下载图片失败")
 
     def isSend(self, id: int, group: int) -> bool:
         if self.query('select count(*) from send where pic_id=:pic_id and send_group=:send_group', {'pic_id': id, 'send_group': group})[0][0] > 0:
@@ -65,11 +65,13 @@ class DataSource(Sqlite):
         if not self.exists(table='illust', column='id', value=illust[0]):
             self.execute(
                 "insert into illust (id,title,url,tag,user,author,date) values(?,?,?,?,?,?,?)", illust)
-        fname = f"{uuid.uuid1()}.png"
-        if self.pixiv.downImg(url=illust[2], path=self.directory, name=fname):
-            return dict(id=illust[0], title=illust[1], tag=illust[3], url=illust[2], user=illust[4], author=illust[5], path=os.path.join(self.directory, fname))
-        else:
-            raise Exception("下载图片失败")
+        return dict(id=illust[0], title=illust[1], tag=illust[3], url=illust[2], user=illust[4], author=illust[5])
+
+        # fname = f"{uuid.uuid1()}.png"
+        # if self.pixiv.downImg(url=illust[2], path=self.directory, name=fname):
+        #     return dict(id=illust[0], title=illust[1], tag=illust[3], url=illust[2], user=illust[4], author=illust[5], path=os.path.join(self.directory, fname))
+        # else:
+        #     raise Exception("下载图片失败")
 
     def follow(self, user: int, group: int, qq: int):
         if self.pixiv.getUserIsvalid(user=user):
