@@ -42,9 +42,10 @@ class ImageManager:
         response.raise_for_status()
         image_json = json.loads(response.text)
         if 'imageId' in image_json:
+            Log.info(msg=f"[Mirai][Image] upload image success,imageId: {image_json['imageId']}")
             return image_json['imageId']
         else:
-            Log.error(msg=f"[Mirai][Image] upload image failed,filepath: {file_path}")
+            Log.error(msg=f"[Mirai][Image] upload image failed,filePath: {file_path}")
             Log.error(msg=response.text)
             return False
 
@@ -75,7 +76,7 @@ class ImageManager:
         if os.path.exists(img_save_path):
             image_id = self.upload_img(
                 image_type=image_type, file_path=img_save_path)
-     
+
             os.remove(img_save_path)
             return image_id
         else:
