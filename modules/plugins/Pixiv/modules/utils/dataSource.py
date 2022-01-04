@@ -1,3 +1,4 @@
+from configparser import Error
 from modules.utils.sqlCombiner import Sqlite
 from modules.utils import log as Log
 from .pixivUtils import PixivUtils
@@ -57,7 +58,10 @@ class DataSource(Sqlite):
         return self.execute("delete from ban where author_id=:author_id", {'author_id': id})
 
     def getNewPic(self, user: int):
-        illust = self.pixiv.getUserPic(user=user)[0]
+        new_pic = self.pixiv.getUserPic(user=user)
+        if len(new_pic) == 0:
+            raise Exception(f"获取作者图片失败:{user}")
+        illust = new_pic[0]
         if not self.exists(table='illust', column='id', value=illust[0]):
             self.execute(
                 "insert into illust (id,title,url,tag,user,author,date) values(?,?,?,?,?,?,?)", illust)
