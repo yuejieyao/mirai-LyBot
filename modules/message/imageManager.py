@@ -21,6 +21,10 @@ class ImageManager:
         Returns:
             返回image_id,如果出错则返回false
         """
+        # 大于10M的图片就不上传了
+        if os.path.getsize(file_path) > 10*1024*1024:
+            return False
+
         multipart_encoder = MultipartEncoder(
             fields={
                 'sessionKey': self.httpRequest.sessionKey,
@@ -40,7 +44,7 @@ class ImageManager:
         if 'imageId' in image_json:
             return image_json['imageId']
         else:
-            Log.error(msg="[Mirai][Image] upload image failed")
+            Log.error(msg=f"[Mirai][Image] upload image failed,filepath: {file_path}")
             Log.error(msg=response.text)
             return False
 
@@ -71,8 +75,8 @@ class ImageManager:
         if os.path.exists(img_save_path):
             image_id = self.upload_img(
                 image_type=image_type, file_path=img_save_path)
-            if image_id:
-                os.remove(img_save_path)
+     
+            os.remove(img_save_path)
             return image_id
         else:
             Log.error('download image error')
