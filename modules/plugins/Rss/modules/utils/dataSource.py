@@ -15,6 +15,15 @@ class DataSource(Sqlite):
             self.execute("insert into rss(rss_id,title,description,img,link,date) values(?,?,?,?,?,?)", [rss])
         return dict(rss_id=rss[0], title=rss[1], description=rss[2], img=rss[3], link=rss[4])
 
+    def getMultNew(self, url: str):
+        rsses = self.utils.getLatest10Rss(url=url)
+        rdata = []
+        for rss in rsses:
+            rdata.append(dict(rss_id=rss[0], title=rss[1], description=rss[2], img=rss[3], link=rss[4]))
+            if not self.exists(table='rss', column='rss_id', value=rss[0]):
+                self.execute("insert into rss(rss_id,title,description,img,link,date) values(?,?,?,?,?,?)", [rss])
+        return rdata
+
     def sub(self, url: str, group: int):
         try:
             title = self.utils.getChannel(url=url)
