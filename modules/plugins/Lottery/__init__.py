@@ -15,7 +15,7 @@ from modules.message.messageChain import MessageChain
 from modules.dataSource.userDataSource import DataSource
 from modules.utils import log as Log
 from typing import List
-import random
+import re
 import traceback
 
 
@@ -27,10 +27,8 @@ class Lottery:
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         msg_display = chains.asDisplay()
-
-        msg_split = msg_display.split(' ')
-
-        if msg_split[0] in ['购买彩票', '买彩票', '获得彩票', '买票']:
+        p = "(买票|买彩票|购买彩票|获得彩票)\s*\d*"
+        if re.match(p, msg_display):
             try:
                 ds = DataSource(path=self.user_db)
                 purchased_count = ds.count_lottery_today(qq=target)
@@ -44,23 +42,22 @@ class Lottery:
                 buy_count = 1
                 buy_money = 500
                 msg = MessageChain([Plain('')])
-                if len(msg_split) > 1:
-                    if msg_split[1].isdigit():
-                        buy_count = int(msg_split[1])
+                if msg_display[-1].isdigit():
+                    buy_count = int(msg_display[-1])
+                    buy_money = 500*buy_count
+                    buy_flag = False
+                    # 判断钱是否足够买这么多张,自动减少购买数量
+                    if buy_count*500 > has_money:
+                        buy_count = has_money//500
                         buy_money = 500*buy_count
-                        buy_flag = False
-                        # 判断钱是否足够买这么多张,自动减少购买数量
-                        if buy_count*500 > has_money:
-                            buy_count = has_money//500
-                            buy_money = 500*buy_count
-                            buy_flag = True
-                        # 判断购买后是否超出上限,自动减少购买数量
-                        if purchased_count+buy_count > 3:
-                            buy_count = 3-purchased_count
-                            buy_money = 500*buy_count
-                            buy_flag = True
-                        if buy_flag:
-                            msg.append(Plain(f'由于上限或金额问题,您只能买到{buy_count}张哦~\n'))
+                        buy_flag = True
+                    # 判断购买后是否超出上限,自动减少购买数量
+                    if purchased_count+buy_count > 3:
+                        buy_count = 3-purchased_count
+                        buy_money = 500*buy_count
+                        buy_flag = True
+                    if buy_flag:
+                        msg.append(Plain(f'由于上限或金额问题,您只能买到{buy_count}张哦~\n'))
                 for i in range(buy_count):
                     content = ds.buy(qq=target, group=group)
                     msg.append(Plain(f'您购买的号码为: {content}\n'))
