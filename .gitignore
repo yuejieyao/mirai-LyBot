@@ -131,3 +131,4 @@ test.py
 modules/plugins/UrlThumb/icon_cache/*
 modules/resource/temp/*
 modules/plugins/ChatBot/__init__.py
+.vscode/settings.json
