@@ -1,6 +1,28 @@
 from typing import List
 
 
+class BotInfo:
+    nickname: str
+    email: str
+    age: int
+    level: int
+    sign: str
+    sex: str
+
+    def __init__(self, nickname: str, email: str, age: int, level: int, sign: str, sex: str) -> None:
+        self.nickname = nickname
+        self.email = email
+        self.age = age
+        self.level = level
+        self.sign = sign
+        self.sex = sex
+
+    @staticmethod
+    def fromJson(obj) -> 'BotInfo':
+        return BotInfo(nickname=obj['nickname'], email=obj['email'], age=obj['age'], level=obj['level'], sign=obj['sign'], sex=obj['sex'])
+    
+
+
 class GroupInfo:
     id: int
     name: str
