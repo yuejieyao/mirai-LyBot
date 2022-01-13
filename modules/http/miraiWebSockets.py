@@ -14,7 +14,7 @@ messageHandler = MiraiMessageHandler()
 
 class MiraiWebSocketClient:
     def __init__(self, sessionKey: str) -> None:
-        self.url = f"ws://{config.getMiraiConf('server')}:{config.getMiraiConf('port')}/message?sessionKey={sessionKey}&verifyKey={verifykey}&qq={botQQ}"
+        self.url = f"ws://{config.getMiraiConf('server')}:{config.getMiraiConf('port')}/all?sessionKey={sessionKey}&verifyKey={verifykey}&qq={botQQ}"
 
     def on_open(ws):
         Log.info(msg='websocket open success')

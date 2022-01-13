@@ -7,6 +7,7 @@ import traceback
 class MessageChain:
     def __init__(self, elements: List[MessageElement] = []) -> None:
         self.elements = elements
+        self.prev = None
 
     def append(self, element: MessageElement) -> None:
         """ 添加一个MessageElement元素到末尾
@@ -25,6 +26,12 @@ class MessageChain:
         """
 
         self.elements.extend(elements)
+
+    def setPrev(self, prev: 'MessageChain') -> None:
+        self.prev = prev
+
+    def getPrev(self) -> 'MessageChain':
+        return self.prev
 
     def asDisplay(self, has_at=True) -> str:
         if has_at:

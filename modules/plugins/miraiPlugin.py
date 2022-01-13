@@ -1,4 +1,3 @@
-from os import path
 from modules.message.messageChain import MessageChain
 from modules.dataSource.miraiDataSource import MiraiDataSource
 from modules.utils import log as Log
