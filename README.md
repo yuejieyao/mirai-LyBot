@@ -36,9 +36,9 @@
 | Remind | 定时提醒 | `/plugins/Remind`,`/schedule/Remind` | 分设置提醒和轮询任务 |
 | Rss | 订阅Rsshub | `/plugins/Rss`,`/schedule/Rss` | 分订阅和轮询任务,需自建rsshub(启用Access_Token) |
 | Translation | 翻译 | `/plugins/Translation` | [申请百度翻译api](https://fanyi-api.baidu.com/) |
-| UrlThumb | 快览 | `/plugins/Urlthumb` | url地址快览 |
+| UrlThumb | 快览 | `/plugins/Urlthumb` | url地址快览,其中B站视频解析抄自[ABot](https://github.com/djkcyl/ABot-Graia) |
 | Weather | 天气查询 | `/plugins/Weather` | [申请和风天气api](https://www.qweather.com/) |
-| XHDict | 查字典 | `/plugins/XHDict` | 服务器需安装playwright的chromium |
+| XHDict | 查字典 | `/plugins/XHDict` | 服务器需安装playwright的chromium,抄自[ABot](https://github.com/djkcyl/ABot-Graia)  |
 | Newspaper | 60s早报 | `/schedule/Newspaper` | 无 |
 | Today | 历史上的今天 | `/schedule/Today` | 无 |
 | CardChange | 群员昵称改变触发 | `/events/CardChange` | 无 |
