@@ -10,16 +10,20 @@
 from typing import List
 from ..miraiSchedule import MiraiScheduleProcessor
 from modules.dataSource.userDataSource import DataSource
+from modules.dataSource.miraiDataSource import MiraiDataSource as MD
 from modules.message.messageChain import MessageChain
-from modules.message.messageType import Plain, At
+from modules.message.messageType import Plain, At ,Image
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.utils import log as Log
 import traceback
 import random
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(hour=10, minute=0)
-class Pixiv:
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(schedule_name='LotterySchedule', hour=10, minute=0)
+class LotterySchedule:
+    NAME = "彩票开奖服务"
+    DESCRIPTION = "每日上午10点彩票开奖"
+
     user_db = 'modules/resource/data/user.db'
 
     def process(self):
@@ -36,6 +40,8 @@ class Pixiv:
             groups = ds.get_lottery_yesterday_group()
             if len(groups):
                 for group in groups:
+                    if MD().isScheduleClose(register_name='LotterySchedule', group=group):
+                        continue
                     msg = MessageChain(
                         [Plain(text=f"今日大奖: {','.join(map(str,first_prize_left))},{first_prize_right}\n")])
                     qqs = ds.get_lottery_yesterday_qq(group=group)

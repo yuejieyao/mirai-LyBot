@@ -12,13 +12,17 @@ from modules.plugins.Rss.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
+from modules.dataSource.miraiDataSource import MiraiDataSource as MD
 from modules.utils import log as Log
 import traceback
 import time
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_every_minute_register(interval=10)
-class Rss:
+@MiraiScheduleProcessor.mirai_schedule_plugin_every_minute_register(schedule_name='RssSchedule', interval=10)
+class RssSchedule:
+    NAME = "RSS推送服务"
+    DESCRIPTION = "主动推送已订阅的rss更新"
+
     rss_db = 'modules/resource/data/rss.db'
 
     def process(self):
@@ -30,9 +34,11 @@ class Rss:
                 Log.info(f'[Schedule][RSS] check rss url={url}')
                 # 获取rss消息并生成MessageChain
                 rsses = ds.getMultNew(url=url)
-                for rss in rsses:                
+                for rss in rsses:
                     groups = ds.getFollowers(url=url)
                     for group in groups:
+                        if MD().isScheduleClose(register_name='RssSchedule', group=group):
+                            continue
                         # 判断是否发送过
                         if not ds.isSend(rss_id=rss['rss_id'], group=group):
                             msg = MessageChain([])

@@ -11,18 +11,24 @@ from modules.message.messageChain import MessageChain
 from modules.message.messageType import Image, Plain
 from modules.http.miraiMemberRequest import MiraiMemberRequests
 from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.dataSource.miraiDataSource import MiraiDataSource as MD
 from datetime import datetime, timedelta
 import requests
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(8, 30)
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register('Newspaper', 8, 30)
 class Newspaper:
+    NAME = "每日60秒早报"
+    DESCRIPTION = "每日早上8点半触发发送60秒早报"
+
     def process(self):
         msgReq = MiraiMessageRequest()
         try:
             msg = self.getNewsImg()
             groups = MiraiMemberRequests().getGroupList()
             for group in groups:
+                if MD().isScheduleClose(register_name='Newspaper', group=group):
+                    continue
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
         except Exception as e:
             msg = MessageChain([Plain(text="调用每日60秒早报失败,将在5分钟后重新调用")])

@@ -11,6 +11,7 @@ from modules.plugins.Pixiv.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image, At
 from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.dataSource.miraiDataSource import MiraiDataSource as MD
 from modules.utils import log as Log
 import time
 import shutil
@@ -19,8 +20,11 @@ import os
 import traceback
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(interval=1)
-class Pixiv:
+@MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(schedule_name='PixivSchedule', interval=1)
+class PixivSchedule:
+    NAME = "P站关注推送服务"
+    DESCRIPTION = "主动推送已关注作者的新图"
+
     pixiv_db = 'modules/resource/data/pixiv.db'
     directory = "modules/resource/illusts"
 
@@ -45,6 +49,8 @@ class Pixiv:
                 path = os.path.join(self.directory, fname)
 
                 for group in groups:
+                    if MD().isScheduleClose(register_name='PixivSchedule', group=group):
+                        continue
                     if ds.isSend(id=pic['id'], group=group):
                         continue
                     # 在有需要发送的群的前提下,下载图片
@@ -69,8 +75,10 @@ class Pixiv:
                 Log.error(msg=traceback.format_exc())
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 1)
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register('PixivDayly', 4, 1)
 class PixivDayly:
+    NAME = "P站榜单数据更新"
+    DESCRIPTION = "每日4点更新P站榜单数据"
     pixiv_db = 'modules/resource/data/pixiv.db'
 
     def process(self):
@@ -87,8 +95,10 @@ class PixivDayly:
             ds.close()
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(4, 10)
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register('PixivCacheDelete', 4, 10)
 class PixivCacheDelete:
+    NAME = "P站缓存清理"
+    DESCRIPTION = "每日4点清理P站缓存"
     directory = "modules/resource/illusts"
 
     def process(self):

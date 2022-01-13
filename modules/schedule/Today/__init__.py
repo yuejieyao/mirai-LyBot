@@ -11,17 +11,23 @@ from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain
 from modules.http.miraiMessageRequest import MiraiMessageRequest
 from modules.http.miraiMemberRequest import MiraiMemberRequests
+from modules.dataSource.miraiDataSource import MiraiDataSource as MD
 import requests
 
 
-@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(7, 30)
-class Today:
+@MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register('TodayInHistory', 7, 30)
+class TodayInHistory:
+    NAME = "历史上的今天"
+    DESCRIPTION = "每天早上7点半推送历史上的今天"
+
     def process(self):
         msgReq = MiraiMessageRequest()
         try:
             msg = self.getToday()
             groups = MiraiMemberRequests().getGroupList()
             for group in groups:
+                if MD().isScheduleClose(register_name='TodayInHistory', group=group):
+                    continue
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
         except:
             msg = MessageChain([Plain(text="调用历史上的今天失败,请检查")])
