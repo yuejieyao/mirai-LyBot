@@ -1,5 +1,22 @@
 import re
+import uuid
 import string
+from PIL import Image, ImageFont, ImageDraw
+
+
+def text_to_img(str):
+    info_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 26)
+    info_color = "#474747"
+    bg_color = "#F5F5F7"
+    lines = get_cut_str(str, 60)
+    text = '\n'.join(lines)
+    w, h = info_font.getsize_multiline(text)
+    img_new = Image.new("RGB", (w+10, h+10), bg_color)
+    draw = ImageDraw.Draw(img_new)
+    draw.text((5, 5), text, info_color, info_font)
+    path = f"modules/resource/temp/{uuid.uuid1()}.png"
+    img_new.save(path)
+    return path
 
 
 def get_cut_str(str, cut):
