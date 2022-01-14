@@ -26,7 +26,7 @@ class TodayInHistory:
             msg = self.getToday()
             groups = MiraiMemberRequests().getGroupList()
             for group in groups:
-                if MD().isScheduleClose(register_name='TodayInHistory', group=group):
+                if MD().isScheduleClose(register_name='TodayInHistory', group=group.id):
                     continue
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
         except:
