@@ -103,7 +103,7 @@ class MiraiDataSource(Sqlite):
             return self.execute('update schedule set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}并未关闭轮询{register_name}')
-    
+
     def closeGroupSchedule(self, register_name: str, group: int):
         unopen = self.query("select unopen from schedule where register_name=:register_name",
                             {'register_name': register_name})[0][0]
@@ -111,7 +111,7 @@ class MiraiDataSource(Sqlite):
             if unopen == '':
                 unopen = str(group)
             else:
-                unopen = ','.join(str(unopen).split(',').append(str(group)))
+                unopen = ','.join([str(group)]+str(unopen).split(','))
             return self.execute('update schedule set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}已经关闭插件{register_name}')
