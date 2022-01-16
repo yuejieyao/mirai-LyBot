@@ -27,7 +27,7 @@ class Newspaper:
             msg = self.getNewsImg()
             groups = MiraiMemberRequests().getGroupList()
             for group in groups:
-                if MD().isScheduleClose(register_name='Newspaper', group=group):
+                if MD().isScheduleClose(register_name='Newspaper', group=group.id):
                     continue
                 msgReq.sendGroupMessage(msg=msg, target=group.id)
         except Exception as e:
