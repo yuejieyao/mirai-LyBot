@@ -27,6 +27,7 @@
 | Sign | 签到 | `/plugins/Sign` | 抽签并给1张彩票和500游戏币 |
 | Announcement | 群发 | `/plugins/Announcement` | 无 |
 | ExchangeRate | 汇率转换 | `/plugins/ExchangeRate`  | [申请fixer的apiKey](https://fixer.io/) |
+| JDPrice | JD商品价格监控 | `/plugins/JDPrice`,`schedule/JDPrice` | 无 |
 | KeywordDetection | 屏蔽关键词(含图片) | `/plugins/KeywordDetection` | [申请百度ocr的api](https://cloud.baidu.com/product/ocr_general) |
 | Lolicon | 色图插件(不含18X) | `/plugins/Lolicon` | [申请lolicon的apiKey](https://api.lolicon.app/#/setu) |
 | Lottery | 彩票 | `/plugins/Lottery`,`/schedule/Lottery` | 分买票和定时开奖 |
