@@ -46,13 +46,12 @@ class MiraiMessageMonitorHandler:
         """遍历当前的监听列表,满足目标条件时调用监听的filter,满足后调用回调函数,后删除该监听
         
         Param:
-            type (str): message类型(FriendMessage,GroupMessage)
+            type (str): message类型(FriendMessage,GroupMessage,TempMessage)
             target (int): 监听目标的QQ号
             msg (MessageChain): 消息链
         Returns:
             bool: 如有监听成功执行则返回true,若遍历结束没有符合条件的监听则返回false
         """
-
         for monitor in self.monitors:
             if monitor.type == type:
                 if monitor.target == target:

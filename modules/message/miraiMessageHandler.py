@@ -55,6 +55,20 @@ class MiraiMessageHandler:
             if not self.monitors.process(type='FriendMessage', msg=msg, target=sender):
                 self.processor.friend_msg_process(msg=msg, target=sender, quote=quote)
             return
+        if obj['type'] == "TempMessage":
+            # 群临时消息
+            sender = obj["sender"]["id"]
+            if str(sender) in self.banList:
+                # banlist过滤
+                return
+            msg = MessageChain.fromJsonList(obj['messageChain'])
+            quote = msg.getId()
+            group = obj['sender']['group']['id']
+            Log.info(
+                msg=f"[TempMessage][(SourceID){quote}][(UID){sender} -> (GID){group}] " + msg.asSerializationString())
+            if not self.monitors.process(type='TempMessage', msg=msg, group=group, target=sender):
+                self.processor.temp_msg_process(msg=msg, group=group, target=sender, quote=quote)
+            return
 
         if obj['type'] in ['GroupRecallEvent',
                            'MemberJoinEvent',
@@ -63,7 +77,7 @@ class MiraiMessageHandler:
                            'MemberCardChangeEvent',
                            'MemberPermissionChangeEvent',
                            'MemberMuteEvent']:
-    
+
             Log.info(msg=f"[{obj['type']}] Event Occurred")
             self.events.mirai_events_process(obj)
             return

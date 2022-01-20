@@ -1,6 +1,6 @@
 from typing import List
 from modules.http.miraiHttpRequests import MiraiHttpRequests
-from modules.member.memberInfo import FriendInfo, GroupInfo, BotInfo
+from modules.member.memberInfo import FriendInfo, GroupInfo, BotInfo, GroupMemberInfo
 
 
 class MiraiMemberRequests:
@@ -30,10 +30,10 @@ class MiraiMemberRequests:
         else:
             return []
 
-    def getGroupMemberInfo(self, group: int, qq: int) -> FriendInfo:
+    def getGroupMemberInfo(self, group: int, qq: int) -> GroupMemberInfo:
         """获取群成员信息"""
 
         response = self.httpRequest.request.get('%s/%s?sessionKey=%s&target=%s&memberId=%s' %
                                                 (self.httpRequest.host, 'memberProfile', self.httpRequest.sessionKey, group, qq))
         response.raise_for_status()
-        return FriendInfo.fromJson(response.json())
+        return GroupMemberInfo.fromJson(response.json())

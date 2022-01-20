@@ -12,6 +12,9 @@ class MiraiMessagePluginProcessor:
     friend_message_plugins_name = []  # 好友消息插件注册名
     friend_message_plugins = {}  # 好友插件
 
+    temp_message_plugins_name = []  # 群临时消息插件注册名
+    temp_message_plugins = {}  # 群临时消息插件
+
     def __init__(self) -> None:
         self.db = MiraiDataSource()
         self.__initPluginData()
@@ -67,13 +70,43 @@ class MiraiMessagePluginProcessor:
     @classmethod
     def mirai_friend_message_plugin_register(cls, plugin_name):
         """  注册为好友消息的响应模块
-        
+
         Param
             plugin_name (str): 注册模块名
         """
         def wrapper(plugin):
             cls.friend_message_plugins.update({plugin_name: plugin})
             cls.friend_message_plugins_name.append(plugin_name)
+            return plugin
+        return wrapper
+
+    def temp_msg_process(self, msg: MessageChain, group: int, target: int, quote: int, plugins=()):
+        """ 循环调用群临时消息插件
+
+        Param:
+            msg (MessageChain):消息
+            group (int): 群号
+            target (int): 发送者qq
+            quote (int): 引用消息的messageId
+            plugins (list[str]): 可选,按插件注册名指定触发某些插件
+        """
+        if plugins == ():
+            plugins = self.temp_message_plugins_name
+            # plugins = MiraiDataSource().getGroupOpenedPlugins(group=group)
+
+            for plugin_name in plugins:
+                Thread(self.temp_message_plugins[plugin_name]().process(msg, group, target, quote)).start()
+
+    @classmethod
+    def mirai_temp_message_plugin_register(cls, plugin_name):
+        """ 注册为群临时消息的响应模块
+
+        Param:
+            plugin_name (str): 注册模块名
+        """
+        def wrapper(plugin):
+            cls.temp_message_plugins.update({plugin_name: plugin})
+            cls.temp_message_plugins_name.append(plugin_name)
             return plugin
         return wrapper
 
