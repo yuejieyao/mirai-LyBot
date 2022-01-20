@@ -24,6 +24,7 @@
 | 名称 | 功能 | 位置 | 备注 |
 | ---------- | :-----------: | :-----------: | :-----------: |
 | Control | 功能控制器(群内) | `/plugins/Control` | 无 |
+| Genshin | 原神 | `/plugins/Genshin`,`/schedule/Genshin` | 签到,查询信息,私聊bot绑定cookie |
 | Sign | 签到 | `/plugins/Sign` | 抽签并给1张彩票和500游戏币 |
 | Announcement | 群发 | `/plugins/Announcement` | 无 |
 | ExchangeRate | 汇率转换 | `/plugins/ExchangeRate`  | [申请fixer的apiKey](https://fixer.io/) |
