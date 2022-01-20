@@ -6,7 +6,6 @@
 @Author      :yuejieyao
 @version      :1.0
 '''
-from importlib.resources import path
 from ..miraiSchedule import MiraiScheduleProcessor
 from modules.plugins.JDPrice.modules.utils.dataSource import DataSource
 from modules.message.messageChain import MessageChain

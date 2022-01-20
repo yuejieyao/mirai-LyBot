@@ -65,9 +65,12 @@ class PixivSchedule:
                     msg.extend([Plain(text=" 新图推送~\n"),
                                 Plain(text=f"title : {pic['title']}\n"),
                                 Plain(text=f"author : {pic['author']}({pic['user']})\n"),
-                                Plain(text=f"tags : {pic['tag']}\n"),
-                                Image(image_type='group', file_path=path)])
-                    MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
+                                Plain(text=f"tags : {pic['tag']}\n")])
+                    img=Image(image_type='group', file_path=path)
+                    # 图片过大返回false,不推送但也set成已推送
+                    if img.image_id:
+                        msg.append(img)
+                        MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
                     time.sleep(1)
                     # 推送完成后更改图片已推送
                     ds.setSend(id=pic['id'], group=group)
