@@ -122,16 +122,36 @@ class Genshin:
                 self.get_genshin_info(group, target, quote)
             except:
                 Log.error(msg=traceback.format_exc())
-        if msg_display in ['我的深渊', 'my abyss', '深渊信息', 'abyss info']:
+        elif msg_display in ['我的深渊', 'my abyss', '深渊信息', 'abyss info']:
             try:
                 self.get_genshin_abyss(group, target, quote)
             except:
                 Log.error(msg=traceback.format_exc())
-        if msg_display in ['原神体力', 'resin', 'genshin resin', '树脂']:
+        elif msg_display in ['原神体力', 'resin', 'genshin resin', '树脂']:
             try:
                 self.get_genshin_resin(group, target, quote)
             except:
                 Log.error(msg=traceback.format_exc())
+        elif msg_display in ['打开原神体力提醒', '打开体力提醒', '打开原神树脂提醒', '打开树脂提醒', 'open genshin resin remind', 'open resin remind']:
+            try:
+                ds = DataSource(path=self.genshin_db)
+                if ds.isCloseResinRemind(group, target):
+                    if ds.openResinRemind(group, target):
+                        MMR().sendGroupMessage(msg=MessageChain([Plain('打开原神树脂提醒成功')]), target=group, quote=quote)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain('旅行者,您的树脂提醒功能已经打开')]), target=group, quote=quote)
+            except:
+                Log.error(traceback.format_exc())
+        elif msg_display in ['关闭原神体力提醒', '关闭体力提醒', '关闭原神树脂提醒', '关闭树脂提醒', 'close genshin resin remind', 'close resin remind']:
+            try:
+                ds = DataSource(path=self.genshin_db)
+                if not ds.isCloseResinRemind(group, target):
+                    if ds.closeResinRemind(group, target):
+                        MMR().sendGroupMessage(msg=MessageChain([Plain('关闭原神树脂提醒成功')]), target=group, quote=quote)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain('旅行者,您的树脂提醒功能已经关闭')]), target=group, quote=quote)
+            except:
+                Log.error(traceback.format_exc())
 
     def get_genshin_info(self, group: int, target: int, quote: int):
         ds = DataSource(path=self.genshin_db)

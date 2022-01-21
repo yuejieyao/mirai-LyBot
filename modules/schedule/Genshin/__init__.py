@@ -24,7 +24,7 @@ import traceback
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(schedule_name='GenshinSchedule', hour=6, minute=10)
 class GenshinSchedule:
-    NAME = "原神相关功能"
+    NAME = "原神每日签到"
     DESCRIPTION = "每日签到"
 
     genshin_db = 'modules/resource/data/genshin.db'
@@ -75,6 +75,46 @@ class GenshinSchedule:
                         content += "签到失败\n"
                 path = messageUtils.create_sign_pic(award_info=award_info, content=content)
                 MMR().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]), target=group.id)
+
+        except:
+            Log.error(traceback.format_exc())
+
+
+@MiraiScheduleProcessor.mirai_schedule_plugin_every_hour_register(schedule_name='GenshinResinSchedule', interval=2)
+class GenshinResinSchedule:
+    NAME = "原神体力提醒"
+    DESCRIPTION = "2小时检测一次,超过150提醒一次,溢出提醒一次"
+
+    genshin_db = 'modules/resource/data/genshin.db'
+
+    def process(self):
+        try:
+            ds = DataSource(self.genshin_db)
+            memberReq = MiraiMemberRequests()
+            groups = memberReq.getGroupList()
+            for group in groups:
+                binds = ds.getGroupBinds(group=group.id)
+                for bind in binds:
+                    qq = bind[0]
+                    cookie = bind[1]
+                    try:
+                        if not ds.isCloseResinRemind(group.id, qq):
+                            resin = int(GenshinUtils(cookie).getRecordDaily()['current_resin'])
+                            if resin >= 150 and resin < 160:
+                                if not ds.isSend(group.id, qq):
+                                    MMR().sendGroupMessage(msg=MessageChain(
+                                        [At(qq), Plain(f"旅行者,您的当前体力已经{resin}了,快要溢出了哦")]), target=group.id)
+                            elif resin >= 160:
+                                if not ds.isSend(group.id, qq):
+                                    MMR().sendGroupMessage(msg=MessageChain(
+                                        [At(qq), Plain("旅行者,您的当前体力已经溢出啦,赶紧上游戏做两个树脂吧")]), target=group.id)
+                                    ds.setSend(group.id, qq)
+                            else:
+                                ds.setNotSend(group.id, qq)
+
+                    except:
+                        Log.error(traceback.format_exc())
+                        continue
 
         except:
             Log.error(traceback.format_exc())
