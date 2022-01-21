@@ -95,11 +95,15 @@ class GenshinResinSchedule:
             for group in groups:
                 binds = ds.getGroupBinds(group=group.id)
                 for bind in binds:
+                    time.sleep(random.randint(2, 6))
                     qq = bind[0]
                     cookie = bind[1]
+                    if not ds.existsResinRemind(group.id, qq):
+                        ds.addResinRemind(group.id, qq)
                     try:
                         if not ds.isCloseResinRemind(group.id, qq):
                             resin = int(GenshinUtils(cookie).getRecordDaily()['current_resin'])
+                            Log.info(f"[Schedule][Genshin][(Group){group.id}][(Uid){qq}] checking resin = {resin} ")
                             if resin >= 150 and resin < 160:
                                 if not ds.isSend(group.id, qq):
                                     MMR().sendGroupMessage(msg=MessageChain(

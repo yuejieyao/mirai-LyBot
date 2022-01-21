@@ -98,3 +98,4 @@ class DataSource(Sqlite):
                     switch int DEFAULT 1
                 )
             """)
+            Log.info('[Plugin][Genshin] create table resin_remind success')
