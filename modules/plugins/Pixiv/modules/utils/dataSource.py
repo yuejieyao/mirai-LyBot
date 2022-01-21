@@ -97,6 +97,9 @@ class DataSource(Sqlite):
         """list[follow_group,follow_qq]"""
         return self.query("select follow_group,follow_qq from follow where author_id=:author_id", {'author_id': user})
 
+    def removeFollow(self, user: int):
+        return self.execute("delete from follow where author_id=:author_id", {'author_id': user})
+
     def initRankingPic(self) -> bool:
         t = (datetime.datetime.today()-datetime.timedelta(days=3)).date()
         # rs_unsend = self.query("select count(*) from illust where date=:date and send=0",

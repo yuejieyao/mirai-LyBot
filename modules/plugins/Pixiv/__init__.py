@@ -135,3 +135,16 @@ class Pixiv:
                             msg=MessageChain([Plain(text=str(e))]), target=group)
                     else:
                         ds.close()
+        elif re.match('删除关注 .*', message_display) != None:
+            msgs = message_display.split(' ')
+            if len(msgs) == 2:
+                if msgs[1].isdigit():
+                    ds = DataSource(path=self.pixiv_db)
+                    try:
+                        if ds.removeFollow(user=int(msgs[1])):
+                            MiraiMessageRequest().sendGroupMessage(
+                                msg=MessageChain([Plain(text=f"已删除所有作者ID = {msgs[1]}的关注")]), target=group, quote=quote)
+                    except:
+                        Log.error(traceback.format_exc())
+                    else:
+                        ds.close()
