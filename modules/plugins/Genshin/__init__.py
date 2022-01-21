@@ -7,6 +7,8 @@
 @version      :1.0
 '''
 
+from importlib.resources import path
+from operator import index
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.message.messageType import Image, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
@@ -19,6 +21,7 @@ from modules.utils import log as Log, common
 from datetime import datetime, timedelta
 import traceback
 import time
+import re
 
 
 @MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('GenshinCookieBind')
@@ -117,6 +120,7 @@ class Genshin:
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         msg_display = chains.asDisplay()
+        p = "(深渊|abyss|我的深渊|深渊阵容|我的阵容)\s*\d*"
         if msg_display in ['我的原神', 'my genshin', '原神信息', 'genshin info']:
             try:
                 self.get_genshin_info(group, target, quote)
@@ -150,6 +154,12 @@ class Genshin:
                         MMR().sendGroupMessage(msg=MessageChain([Plain('关闭原神树脂提醒成功')]), target=group, quote=quote)
                 else:
                     MMR().sendGroupMessage(msg=MessageChain([Plain('旅行者,您的树脂提醒功能已经关闭')]), target=group, quote=quote)
+            except:
+                Log.error(traceback.format_exc())
+        elif re.match(p, msg_display):
+            try:
+                floor = int(list(filter(None, re.findall("\d*", msg_display)))[0])
+                self.get_genshin_abyss_floor(group, target, quote, floor)
             except:
                 Log.error(traceback.format_exc())
 
@@ -208,22 +218,50 @@ class Genshin:
     def get_genshin_abyss(self, group: int, target: int, quote: int):
         ds = DataSource(path=self.genshin_db)
         cookie = ds.getCookie(group=group, qq=target)
+        mmReq = MMR()
         if cookie:
             utils = GenshinUtils(cookie=cookie)
             role = utils.getRole()
             if role:
                 abyss = utils.getRecordAbyss(role=role)
                 if not abyss:
-                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="获取深渊信息失败")]), target=group, quote=quote)
+                    mmReq.sendGroupMessage(msg=MessageChain([Plain(text="获取深渊信息失败")]), target=group, quote=quote)
                     return
                 if not abyss['floors']:
-                    MMR().sendGroupMessage(msg=MessageChain(
+                    mmReq.sendGroupMessage(msg=MessageChain(
                         [Plain(text="旅行者你可太懒了,本期深渊一层都没打")]), target=group, quote=quote)
                     return
 
+                mmReq.sendGroupMessage(msg=MessageChain([Plain(text="正在出图...请稍后")]), target=group)
                 path = messageUtils.create_abyss_pic(role=role, abyss=abyss)
-                MMR().sendGroupMessage(msg=MessageChain(
+                mmReq.sendGroupMessage(msg=MessageChain(
                     [Image(image_type='group', file_path=path)]), target=group, quote=quote)
 
         else:
-            MMR().sendGroupMessage(msg=MessageChain([Plain(text="您尚未绑定原神帐号")]), target=group, quote=quote)
+            mmReq.sendGroupMessage(msg=MessageChain([Plain(text="您尚未绑定原神帐号")]), target=group, quote=quote)
+
+    def get_genshin_abyss_floor(self, group: int, target: int, quote: int, floor_index: int):
+        ds = DataSource(path=self.genshin_db)
+        cookie = ds.getCookie(group, target)
+        mmReq = MMR()
+        if floor_index not in [9, 10, 11, 12]:
+            mmReq.sendGroupMessage(msg=MessageChain([Plain(text="仅支持查询9-12层的深渊阵容信息")]), target=group)
+        if cookie:
+            utils = GenshinUtils(cookie=cookie)
+            role = utils.getRole()
+            if role:
+                abyss = utils.getRecordAbyss(role=role)
+                if not abyss:
+                    mmReq.sendGroupMessage(msg=MessageChain([Plain(text="获取深渊信息失败")]), target=group, quote=quote)
+                    return
+                if not abyss['floors']:
+                    mmReq.sendGroupMessage(msg=MessageChain(
+                        [Plain(text="旅行者你可太懒了,本期深渊一层都没打")]), target=group, quote=quote)
+                    return
+                mmReq.sendGroupMessage(msg=MessageChain([Plain(text="正在出图...请稍后")]), target=group)
+                path = messageUtils.create_abyss_floor_pic(role=role, abyss=abyss, index=floor_index)
+                mmReq.sendGroupMessage(msg=MessageChain(
+                    [Image(image_type='group', file_path=path)]), target=group, quote=quote)
+
+        else:
+            mmReq.sendGroupMessage(msg=MessageChain([Plain(text="您尚未绑定原神帐号")]), target=group, quote=quote)

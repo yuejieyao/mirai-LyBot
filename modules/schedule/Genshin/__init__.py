@@ -107,11 +107,11 @@ class GenshinResinSchedule:
                             if resin >= 150 and resin < 160:
                                 if not ds.isSend(group.id, qq):
                                     MMR().sendGroupMessage(msg=MessageChain(
-                                        [At(qq), Plain(f"旅行者,您的当前体力已经{resin}了,快要溢出了哦")]), target=group.id)
+                                        [At(qq), Plain(f" 旅行者,您的当前体力已经{resin}了,快要溢出了哦")]), target=group.id)
                             elif resin >= 160:
                                 if not ds.isSend(group.id, qq):
                                     MMR().sendGroupMessage(msg=MessageChain(
-                                        [At(qq), Plain("旅行者,您的当前体力已经溢出啦,赶紧上游戏做两个树脂吧")]), target=group.id)
+                                        [At(qq), Plain(" 旅行者,您的当前体力已经溢出啦,赶紧上游戏做两个树脂吧")]), target=group.id)
                                     ds.setSend(group.id, qq)
                             else:
                                 ds.setNotSend(group.id, qq)

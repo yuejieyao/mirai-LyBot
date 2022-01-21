@@ -148,3 +148,71 @@ def create_abyss_pic(role, abyss):
     path = f'modules/resource/temp/{uuid.uuid1()}.png'
     img.save(path)
     return path
+
+
+def create_abyss_floor_pic(role, abyss, index: int):
+    bnum = {9: '九', 10: '十', 11: '十一', 12: '十二'}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'}
+    info_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 20)
+    cnt_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 16)
+    info_color = "#474747"
+    bg_color = "#F5F5F7"
+    bg_5star = "#8e5c22"
+    bg_4str = "#604879"
+    w_icon_floor, h_icon_floor = 120, 120
+    # 0123对应9 10 11 12 4层
+    floor = abyss['floors'][index-9]
+
+    # 基础信息
+    content1 = f"UID: {role['game_uid']}  昵称: {role['nickname']}  等级: {role['level']}\n"
+    content1 += f"深境螺旋第{bnum[index]}层    ★{floor['star']}/{floor['max_star']}"
+    _, h_content1 = info_font.getsize_multiline(content1)
+
+    w_img, h_img = 25+w_icon_floor*4, 0
+
+    img_battles = []
+    # 每层3间,每间分上半下半,一间一张图
+    for level in floor['levels']:
+        content2 = f"第{level['index']}间    ★{level['star']}/{level['max_star']}"
+        _, h_content2 = info_font.getsize_multiline(content2)
+        # 宽度为4张图宽度+间距,高度为2图高度+标题
+        img_battle = Image.new('RGBA', (w_img, (h_icon_floor+25)*2+h_content2), bg_color)
+        content2_draw = ImageDraw.Draw(img_battle)
+        content2_draw.text((5, 0), content2, info_color, info_font)
+        for r in range(len(level['battles'])):
+            battle = level['battles'][r]
+            time.sleep(1)
+            for i in range(len(battle['avatars'])):
+                avatar = battle['avatars'][i]
+                rarity = int(avatar['rarity'])
+                icon_url = avatar['icon']
+                lv = avatar['level']
+                icon = Image.new('RGBA', (w_icon_floor, h_icon_floor+25), bg_color)
+                content = requests.get(url=icon_url, headers=headers).content
+                icon_bg = Image.new('RGBA', (w_icon_floor, h_icon_floor), bg_5star if rarity == 5 else bg_4str)
+                icon_fg = Image.open(BytesIO(content))
+                icon_fg = icon_fg.convert('RGBA')
+                icon_fg = icon_fg.resize(size=(w_icon_floor, h_icon_floor))
+                icon_bg.paste(icon_fg, (0, 0), icon_fg)
+                icon.paste(icon_bg, (0, 0), icon_bg)
+                icon_draw = ImageDraw.Draw(icon)
+                icon_draw.text((w_icon_floor/2-15, 5+h_icon_floor-5), f"Lv.{lv}", info_color, cnt_font)
+                img_battle.paste(icon, (5+i*(w_icon_floor+5), h_content2+5+r*(h_icon_floor+25)), icon)
+        # 每间的图出完加入列表
+        img_battles.append(img_battle)
+
+    # 循环结束后,计算总高度
+    h_img = h_content1+5+sum([i.height for i in img_battles])+5
+
+    # 绘制img
+    img = Image.new('RGBA', (w_img, h_img), bg_color)
+    draw = ImageDraw.Draw(img)
+    draw.text((5, 5), content1, info_color, info_font)
+    for i in range(len(img_battles)):
+        img_battle = img_battles[i]
+        img.paste(img_battle, (0, 10+h_content1+i*img_battle.height), img_battle)
+    img = img.convert('RGB')
+    path = f'modules/resource/temp/{uuid.uuid1()}.png'
+    img.save(path)
+    return path
