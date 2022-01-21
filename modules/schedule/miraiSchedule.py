@@ -31,7 +31,8 @@ class MiraiScheduleProcessor:
         """
 
         def wapper(plugin):
-            cls._sched.add_job(func=plugin().process, trigger='interval', seconds=60*interval)
+            cls._sched.add_job(func=plugin().process, trigger='interval',
+                               seconds=60*interval, next_run_time=datetime.now())
             cls.schedules.update({schedule_name: plugin})
             cls.schedules_names.append(schedule_name)
             return plugin
@@ -45,7 +46,8 @@ class MiraiScheduleProcessor:
         """
 
         def wapper(plugin):
-            cls._sched.add_job(func=plugin().process, trigger='interval', seconds=60*60*interval)
+            cls._sched.add_job(func=plugin().process, trigger='interval',
+                               seconds=60*60*interval, next_run_time=datetime.now())
             cls.schedules.update({schedule_name: plugin})
             cls.schedules_names.append(schedule_name)
             return plugin
@@ -88,5 +90,5 @@ class MiraiScheduleProcessor:
         Log.info(msg='checking schedules datasource...')
         for register_name in self.schedules_names:
             self.db.addSchedule(register_name=register_name,
-                              name=self.schedules[register_name].NAME, description=self.schedules[register_name].DESCRIPTION)
+                                name=self.schedules[register_name].NAME, description=self.schedules[register_name].DESCRIPTION)
         Log.info(msg='check schedules datasource success')
