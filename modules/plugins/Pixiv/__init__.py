@@ -7,7 +7,7 @@
 @Author      :yuejieyao
 @version      :1.0
 '''
-from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.message.messageType import Image, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
@@ -53,100 +53,68 @@ class Pixiv:
                 img = Image(image_type='group', file_path=path)
                 if img.image_id:
                     msg.append(img)
-                    MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
+                    MMR().sendGroupMessage(msg=msg, target=group)
             except Exception:
                 Log.error(msg=traceback.format_exc())
             else:
                 ds.setSend(id=pic['id'], group=group)  # 记录已发送
                 ds.close()
 
-        elif re.match('关注作者 .*', message_display) != None:
-            msgs = message_display.split(' ')
-            if len(msgs) == 2:
-                if msgs[1].isdigit():
-                    ds = DataSource(path=self.pixiv_db)
-                    try:
-                        if ds.follow(user=int(msgs[1]), group=group, qq=target):
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"{target}关注作者{msgs[1]}成功,当有新作品时将主动推送,如需取消可输入:取消关注 作者ID")]), target=group)
-                        else:
-                            MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
-                                [Plain(text="关注失败")]), target=group, quote=quote)
-                    except Exception as e:
-                        Log.error(msg=traceback.format_exc())
-                        MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=str(e))]), target=group)
-                    else:
-                        ds.close()
+        elif re.match('(关注作者|关注画师|follow author)\s*\d*', message_display) != None:
+            try:
+                author_id = int(list(filter(None, re.findall("\d*", message_display)))[0])
+                ds = DataSource(path=self.pixiv_db)
+                if ds.follow(user=author_id, group=group, qq=target):
+                    MMR().sendGroupMessage(
+                        msg=MessageChain([Plain(text=f"{target}关注作者{author_id}成功,当有新作品时将主动推送,如需取消可输入:取消关注 作者ID")]), target=group)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="关注失败")]), target=group, quote=quote)
+            except:
+                Log.error(msg=traceback.format_exc())
 
-        elif re.match('取消关注 .*', message_display) != None:
-            msgs = message_display.split(' ')
-            if len(msgs) == 2:
-                if msgs[1].isdigit():
-                    ds = DataSource(path=self.pixiv_db)
-                    try:
-                        if ds.unfollow(user=int(msgs[1]), group=group, qq=target):
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"{target}取消关注作者{msgs[1]}成功")]), target=group)
-                        else:
-                            MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
-                                [Plain(text="取消关注失败")]), target=group, quote=quote)
-                    except Exception as e:
-                        Log.error(msg=traceback.format_exc())
-                        MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=str(e))]), target=group)
-                    else:
-                        ds.close()
+        elif re.match('(取消关注|取消关注作者|取消关注画师|unfollow author)\s*\d*', message_display) != None:
+            try:
+                author_id = int(list(filter(None, re.findall("\d*", message_display)))[0])
+                ds = DataSource(path=self.pixiv_db)
 
-        elif re.match('屏蔽作者 .*', message_display) != None:
-            msgs = message_display.split(' ')
-            if len(msgs) == 2:
-                if msgs[1].isdigit():
-                    ds = DataSource(path=self.pixiv_db)
-                    try:
-                        if ds.isBan(id=msgs[1]):
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text="已屏蔽该作者")]), target=group)
-                        else:
-                            ds.setBan(id=msgs[1])
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"屏蔽作者{msgs[1]}成功,图库更新时将不再获取该作者的图片,如需取消可以输入:取消屏蔽 作者ID")]), target=group)
-                    except Exception as e:
-                        Log.error(msg=traceback.format_exc())
-                        MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=str(e))]), target=group)
-                    else:
-                        ds.close()
+                if ds.unfollow(user=author_id, group=group, qq=target):
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text=f"{target}取消关注作者{author_id}成功")]), target=group)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="取消关注失败")]), target=group, quote=quote)
+            except:
+                Log.error(msg=traceback.format_exc())
 
-        elif re.match('取消屏蔽 .*', message_display) != None:
-            msgs = message_display.split(' ')
-            if len(msgs) == 2:
-                if msgs[1].isdigit():
-                    ds = DataSource(path=self.pixiv_db)
-                    try:
-                        if ds.isBan(id=msgs[1]):
-                            ds.cancelBan(id=msgs[1])
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"取消屏蔽作者{msgs[1]}成功")]), target=group)
-                        else:
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"并没有屏蔽作者{msgs[1]}")]), target=group)
-                    except Exception as e:
-                        Log.error(msg=traceback.format_exc())
-                        MiraiMessageRequest().sendGroupMessage(
-                            msg=MessageChain([Plain(text=str(e))]), target=group)
-                    else:
-                        ds.close()
-        elif re.match('删除关注 .*', message_display) != None:
-            msgs = message_display.split(' ')
-            if len(msgs) == 2:
-                if msgs[1].isdigit():
-                    ds = DataSource(path=self.pixiv_db)
-                    try:
-                        if ds.removeFollow(user=int(msgs[1])):
-                            MiraiMessageRequest().sendGroupMessage(
-                                msg=MessageChain([Plain(text=f"已删除所有作者ID = {msgs[1]}的关注")]), target=group, quote=quote)
-                    except:
-                        Log.error(traceback.format_exc())
-                    else:
-                        ds.close()
+        elif re.match('(屏蔽作者|屏蔽画师)\s*\d*', message_display) != None:
+            try:
+                author_id = int(list(filter(None, re.findall("\d*", message_display)))[0])
+                ds = DataSource(path=self.pixiv_db)
+                if ds.isBan(id=author_id):
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="已屏蔽该作者")]), target=group)
+                else:
+                    ds.setBan(id=author_id)
+                    MMR().sendGroupMessage(
+                        msg=MessageChain([Plain(text=f"屏蔽作者{author_id}成功,图库更新时将不再获取该作者的图片,如需取消可以输入:取消屏蔽 作者ID")]), target=group)
+            except:
+                Log.error(msg=traceback.format_exc())
+
+        elif re.match('取消屏蔽\s*\d*', message_display) != None:
+            try:
+                author_id = int(list(filter(None, re.findall("\d*", message_display)))[0])
+                ds = DataSource(path=self.pixiv_db)
+                if ds.isBan(id=author_id):
+                    ds.cancelBan(id=author_id)
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text=f"取消屏蔽作者{author_id}成功")]), target=group)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text=f"并没有屏蔽作者{author_id}")]), target=group)
+            except:
+                Log.error(msg=traceback.format_exc())
+
+        elif re.match('删除关注\s*\d*', message_display) != None:
+            try:
+                author_id = int(list(filter(None, re.findall("\d*", message_display)))[0])
+                ds = DataSource(path=self.pixiv_db)
+                if ds.removeFollow(user=author_id):
+                    MMR().sendGroupMessage(
+                        msg=MessageChain([Plain(text=f"已删除所有作者ID = {author_id}的关注")]), target=group, quote=quote)
+            except:
+                Log.error(traceback.format_exc())
