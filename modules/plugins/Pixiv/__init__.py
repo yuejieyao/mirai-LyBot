@@ -49,9 +49,11 @@ class Pixiv:
                 msg = MessageChain([Plain(text="来了来了~\n"),
                                     Plain(text=f"title : {pic['title']}({pic['id']})\n"),
                                     Plain(text=f"author : {pic['author']}({pic['user']})\n"),
-                                    Plain(text=f"tags : {pic['tag']}\n"),
-                                    Image(image_type='group', file_path=path)])
-                MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
+                                    Plain(text=f"tags : {pic['tag']}\n")])
+                img = Image(image_type='group', file_path=path)
+                if img.image_id:
+                    msg.append(img)
+                    MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
             except Exception:
                 Log.error(msg=traceback.format_exc())
             else:
