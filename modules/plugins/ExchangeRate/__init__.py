@@ -6,6 +6,7 @@
 @Author      :yuejieyao
 @version      :1.0
 '''
+from pydoc import resolve
 import traceback
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
@@ -67,7 +68,9 @@ class ExchangeRate:
                     from_country = self.getCurrency(find_currencys[0])
                     to_country = self.getCurrency(find_currencys[1])
                     Log.info(msg=f'[Plugin][ExchangeRate] {amount} {from_country} to {to_country}')
-                    MMR().sendGroupMessage(msg=self.get_exchange_rate(amount, from_country, to_country), target=group, quote=quote)
+                    msg = self.get_exchange_rate(amount, from_country, to_country)
+                    if msg:
+                        MMR().sendGroupMessage(msg=msg, target=group, quote=quote)
                 elif len(find_currencys) == 1:
                     from_country = self.getCurrency(find_currencys[0])
                     # 1000日元值多少,1000日元
@@ -95,29 +98,20 @@ class ExchangeRate:
         conf = config.getFixerConf()
         token = conf['token']
         rate_url = f'http://data.fixer.io/api/latest?access_key={token}&format=1'
-        try:
-            msg = None
-            resp = requests.session().get(url=rate_url)
-            if resp.status_code == 200:
-                result = resp.json()
-                if 'success' in result:
-                    from_country = from_country.upper()
-                    to_country = to_country.upper()
-                    rates = result['rates']
-                    if from_country in rates and to_country in rates:
-                        to_num = from_num/rates[from_country]*rates[to_country]
-                        msg = MessageChain([
-                            Plain(text='%.4f %s价值%.4f %s' % (from_num, from_country, to_num, to_country))
-                        ])
-                    else:
-                        msg = MessageChain([
-                            Plain(
-                                text='仅支持3位简写,忽略大小写,常用(CNY,JPY,USD,TWD,EUR,INR,GBP等)')
-                        ])
+        resp = requests.session().get(url=rate_url)
+        if resp.status_code == 200:
+            result = resp.json()
+            if 'success' in result:
+                from_country = from_country.upper()
+                to_country = to_country.upper()
+                rates = result['rates']
+                if from_country in rates and to_country in rates:
+                    to_num = from_num/rates[from_country]*rates[to_country]
+                    return MessageChain([
+                        Plain(text='%.4f %s价值%.4f %s' % (from_num, from_country, to_num, to_country))
+                    ])
                 else:
-                    msg = MessageChain([Plain(text='fixer调用失败')])
-                return msg
-
-        except:
-            msg = MessageChain([Plain(text='fixer调用失败')])
-            return msg
+                    Log.error("[Plugins][ExchangeRate]"+resp.text)
+            else:
+                Log.error("[Plugins][ExchangeRate]"+resp.text)
+        return None
