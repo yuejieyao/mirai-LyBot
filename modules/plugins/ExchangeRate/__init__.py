@@ -9,10 +9,10 @@
 import traceback
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
-from modules.message.messageType import Plain
+from modules.message.messageType import Image, Plain
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.conf import config
-from modules.utils import log as Log
+from modules.utils import log as Log, common
 import jieba
 import re
 import requests
@@ -75,6 +75,13 @@ class ExchangeRate:
                         to_country = 'CNY'
                         Log.info(msg=f'[Plugin][ExchangeRate] {amount} {from_country} to {to_country}')
                         MMR().sendGroupMessage(msg=self.get_exchange_rate(amount, from_country, to_country), target=group, quote=quote)
+            except:
+                Log.error(traceback.format_exc())
+        elif msg_display == "常用货币":
+            try:
+                strs = '\n'.join([f"\"{key}\": {','.join(self.currency[key])}" for key in self.currency])
+                path = common.text_to_img(strs)
+                MMR().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]), target=group)
             except:
                 Log.error(traceback.format_exc())
 
