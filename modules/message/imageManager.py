@@ -2,6 +2,7 @@ import requests
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from modules.utils import log as Log
+from modules.conf import config
 import os
 import random
 import json
@@ -12,6 +13,7 @@ import traceback
 class ImageManager:
     def __init__(self) -> None:
         self.httpRequest = MiraiHttpRequests()
+        self.maxImgSize = int(config.getConf(section='mirai', option='maxImgSize'))
 
     def upload_img(self, file_path: str, image_type: str):
         """ 上传本地图片获取imageID
@@ -22,8 +24,8 @@ class ImageManager:
         Returns:
             返回image_id,如果出错则返回false
         """
-        # 大于10M的图片就不上传了
-        if os.path.getsize(file_path) > 10*1024*1024:
+        # 过滤大于config中设定的图片最大size
+        if os.path.getsize(file_path) > self.maxImgSize*1024*1024:
             return False
 
         multipart_encoder = MultipartEncoder(
@@ -52,7 +54,7 @@ class ImageManager:
 
     def upload_img_from_url(self, url: str, image_type: str):
         """ 根据url地址上传互联网图片获取imageID
-        
+
         Param:
             url (str): 图片的互联网地址
             image_type (str): friend,group或temp
