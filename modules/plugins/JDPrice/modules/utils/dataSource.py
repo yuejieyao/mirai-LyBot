@@ -55,6 +55,16 @@ class DataSource(Sqlite):
         else:
             return False
 
+    def getLastPrice(self, goods_id: int):
+        """ return (price,price_plus,discont,coupon) """
+        res = self.query(
+            "select price,price_plus,discont,coupon from price where jd_goods_id=:goods_id order by date desc limit 1", {'goods_id': goods_id})
+        if len(res) >= 1:
+            last = res[0]
+            return last[0], last[1], last[2], last[3]
+        else:
+            return None, None, None, None
+
     def getFollowedGoods(self):
         rs = self.query("select jd_goods_id from follow group by jd_goods_id")
         return [i[0] for i in rs]
@@ -66,6 +76,7 @@ class DataSource(Sqlite):
     def create_current_img(self, goods_id: int):
         """return (goods_url,img_path)"""
         _, title, url_goods, thumb_url = self.utils.getGoodsInfo(goods_id)
+        price_last, price_plus_last, discont_last, coupon_last = self.getLastPrice(goods_id)
         price, price_plus, discont, coupon = self.getPrice(goods_id)
 
         info_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 26)
@@ -76,6 +87,21 @@ class DataSource(Sqlite):
         title = '\n'.join(get_cut_str(title, 55))
         w_title, h_title = info_font.getsize_multiline(title)
 
+        # 历史信息
+        width_last, height_last = 0, 0
+        if price_last:
+            s_price_last = f"历史价格: {price_last}"
+            if price_plus_last:
+                s_price_last = s_price_last+"\n"+f"Plus会员价格: {price_plus_last}"
+            w_price_last, h_price_last = info_font.getsize_multiline(s_price_last)
+            discont_last = '\n'.join(["历史优惠:"]+get_cut_str(discont_last, 30))
+            w_discont_last, h_discont_last = info_font.getsize_multiline(discont_last)
+            coupon_last = ("历史券:\n"+coupon_last) if coupon_last else "无优惠券"
+            w_coupon_last, h_coupon_last = info_font.getsize_multiline(coupon_last)
+            width_last = max(w_price_last, w_discont_last, w_coupon_last)
+            height_last = h_title+15+(350 if sum([h_price_last+h_discont_last+h_coupon_last]) <
+                                      350 else sum([h_price_last+h_discont_last+h_coupon_last]))
+
         s_price = f"当前价格: {price}"
         if price_plus:
             s_price = s_price+"\n"+f"Plus会员价格: {price_plus}"
@@ -84,17 +110,23 @@ class DataSource(Sqlite):
         w_discont, h_discont = info_font.getsize_multiline(discont)
         coupon = ("可领券:\n"+coupon) if coupon else "当前没有可领取的优惠券"
         w_coupon, h_coupon = info_font.getsize_multiline(coupon)
-        width = max(w_price, w_discont, w_coupon)+350+10
+        width = width_last+max(w_price, w_discont, w_coupon)+350+15
         if width < w_title:
             width = w_title
         height = h_title+15+(350 if sum([h_price+h_discont+h_coupon]) < 350 else sum([h_price+h_discont+h_coupon]))
+        height = max(height, height_last)
 
         img_new = Image.new("RGB", (width, height), bg_color)
         draw = ImageDraw.Draw(img_new)
         draw.text((5, 5), title, info_color, info_font)
-        draw.text((5+h_thumb, 10+h_title), s_price, info_color, info_font)
-        draw.text((5+h_thumb, 10+h_title+h_price), discont, info_color, info_font)
-        draw.text((5+h_thumb, 10+h_title+h_price+h_discont), coupon, info_color, info_font)
+        if price_last:
+            draw.text((5+h_thumb, 10+h_title), s_price_last, info_color, info_font)
+            draw.text((5+h_thumb, 10+h_title+h_price_last), discont_last, info_color, info_font)
+            draw.text((5+h_thumb, 10+h_title+h_price_last+h_discont_last), coupon_last, info_color, info_font)
+
+        draw.text((10+h_thumb+width_last, 10+h_title), s_price, info_color, info_font)
+        draw.text((10+h_thumb+width_last, 10+h_title+h_price), discont, info_color, info_font)
+        draw.text((10+h_thumb+width_last, 10+h_title+h_price+h_discont), coupon, info_color, info_font)
 
         thumb = Image.open(BytesIO(requests.get(url=thumb_url, headers=self.utils.headers).content))
         thumb.convert('RGB')
