@@ -42,7 +42,6 @@
 | Weather | 天气查询 | `/plugins/Weather` | [申请和风天气api](https://www.qweather.com/) |
 | XHDict | 查字典 | `/plugins/XHDict` | 服务器需安装playwright的chromium,抄自[ABot](https://github.com/djkcyl/ABot-Graia)  |
 | Newspaper | 60s早报 | `/schedule/Newspaper` | 无 |
-| Today | 历史上的今天 | `/schedule/Today` | 无 |
 | CardChange | 群员昵称改变触发 | `/events/CardChange` | 无 |
 | MemberMute | 群员被禁言触发 | `/events/MemberMute` | 无 |
 | Welcome | 新人入群触发 | `/events/Welcome` | 无 |

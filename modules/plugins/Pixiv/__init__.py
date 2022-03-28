@@ -7,16 +7,17 @@
 @Author      :yuejieyao
 @version      :1.0
 '''
+import traceback
+import uuid
+import os
+import re
+import random
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.message.messageType import Image, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
 from .modules.utils.dataSource import DataSource
 from modules.utils import log as Log
-import traceback
-import uuid
-import os
-import re
 
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('Pixiv')
@@ -35,6 +36,11 @@ class Pixiv:
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay()
         if re.match('图来.*', message_display) != None:
+            if random.random() <= 0.1:
+                # 1成概率傲娇
+                MMR().sendGroupMessage(msg=MessageChain(
+                    [Plain(text=str(random.choice(['不要!', '不给!', '不许涩涩!', '就不!'])))]), target=group)
+                return
             try:
                 ds = DataSource(path=self.pixiv_db)
                 pic = ds.getRandomPic(group=group)
