@@ -10,6 +10,6 @@ baidu_aip==2.2.18.0
 APScheduler==3.6.3
 pyunit_time==2021.2.2
 prettytable==2.2.1
-Pillow==9.0.0
+Pillow==9.0.1
 secrets==1.0.2
 websocket_client==1.2.3
