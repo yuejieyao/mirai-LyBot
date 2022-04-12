@@ -130,6 +130,8 @@ class DataSource(Sqlite):
 
         thumb = Image.open(BytesIO(requests.get(url=thumb_url, headers=self.utils.headers).content))
         thumb.convert('RGB')
+        if thumb.width > 350:
+            thumb = thumb.resize((350, 350))
         img_new.paste(thumb, (5, 10+h_title))
 
         path = f'modules/resource/temp/{uuid.uuid1()}.png'
