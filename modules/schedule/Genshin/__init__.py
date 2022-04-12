@@ -67,7 +67,7 @@ class GenshinSchedule:
                         content += "旅行者,你已经签到过了 \n"
                         continue
                     if sign_info['first_bind']:
-                        content += "需在米游社手动签到一次\n"
+                        content += "旅行者,你需要在米游社手动签到一次\n"
                         continue
                     if utils.sign(role=role):
                         content += "签到成功\n"

@@ -7,8 +7,11 @@
 @version      :1.0
 '''
 
-from importlib.resources import path
-from operator import index
+import traceback
+import time
+import re
+from datetime import datetime, timedelta
+from modules.http.miraiMemberRequest import MiraiMemberRequests
 from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
 from modules.message.messageType import Image, Plain
 from ..miraiPlugin import MiraiMessagePluginProcessor
@@ -18,10 +21,7 @@ from .modules.utils.dataSource import DataSource
 from .modules.utils import messageUtils
 from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitor, MiraiMessageMonitorHandler
 from modules.utils import log as Log, common
-from datetime import datetime, timedelta
-import traceback
-import time
-import re
+
 
 
 @MiraiMessagePluginProcessor.mirai_friend_message_plugin_register('GenshinCookieBind')
@@ -160,6 +160,43 @@ class Genshin:
             try:
                 floor = int(list(filter(None, re.findall("\d*", msg_display)))[0])
                 self.get_genshin_abyss_floor(group, target, quote, floor)
+            except:
+                Log.error(traceback.format_exc())
+        elif msg_display == "原神签到":
+            try:
+                ds = DataSource(path=self.genshin_db)
+                cookie = ds.getCookie(group=group, qq=target)
+                if cookie is None:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="您尚未绑定cookie")]), target=group, quote=quote)
+                    return
+                utils = GenshinUtils(cookie=cookie)
+                awards = utils.getAwardInfo()
+                if not awards:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="获取奖励信息失败")]), target=group)
+                    return
+                award_info = awards[datetime.now().day-1]
+                role = utils.getRole()
+                if not role:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="获取角色失败,请重新绑定")]), target=group)
+                    return
+                sign_info = utils.getSignInfo(role=role)
+                if not sign_info:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="获取签到信息失败,请重新绑定")]), target=group)
+                    return
+                if sign_info['is_sign']:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="旅行者,你已经签到过了")]), target=group, quote=quote)
+                    return
+                if sign_info['first_bind']:
+                    MMR().sendGroupMessage(msg=MessageChain(
+                        [Plain(text="旅行者,你需要在米游社手动签到一次")]), target=group, quote=quote)
+                    return
+                if utils.sign(role=role):
+                    content = f"{MiraiMemberRequests().getGroupMemberInfo(group=group,qq=target).nickname}({target}):  "
+                    MMR().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=messageUtils.create_sign_pic(
+                        award_info=award_info, content=content+"签到成功"))]), target=group, quote=quote)
+                else:
+                    MMR().sendGroupMessage(msg=MessageChain([Plain(text="签到失败")]), target=group, quote=quote)
+
             except:
                 Log.error(traceback.format_exc())
 
