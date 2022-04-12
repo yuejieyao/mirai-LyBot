@@ -34,8 +34,13 @@ class RssSchedule:
                 Log.info(f'[Schedule][RSS] check rss url={url}')
                 # 获取rss消息并生成MessageChain
                 rsses = ds.getMultNew(url=url)
-                for rss in rsses:
-                    groups = ds.getFollowers(url=url)
+                # 如果一下获取到很多(10条),就当成是首次订阅的情况,只发一条
+                groups = ds.getFollowers(url=url)
+                if len(rsses) > 9:
+                    for rss in rsses[1:10]:
+                        for group in groups:
+                            ds.setSend(rss_id=rss['rss_id'], group=group)
+                for rss in rsses: 
                     for group in groups:
                         if MD().isScheduleClose(register_name='RssSchedule', group=group):
                             continue
