@@ -41,7 +41,7 @@
 | UrlThumb | 快览 | `/plugins/Urlthumb` | url地址快览,其中B站视频解析抄自[ABot](https://github.com/djkcyl/ABot-Graia) |
 | Weather | 天气查询 | `/plugins/Weather` | [申请和风天气api](https://www.qweather.com/) |
 | XHDict | 查字典 | `/plugins/XHDict` | 服务器需安装playwright的chromium,抄自[ABot](https://github.com/djkcyl/ABot-Graia)  |
-| NCOV | 疫情查询 | `/plugins/NCov` | 无 |
+| NCOV | 疫情查询 | `/plugins/NCov` | API引用[DXY-COVID-19-Crawler](https://github.com/BlankerL/DXY-COVID-19-Crawler) |
 | Newspaper | 60s早报 | `/schedule/Newspaper` | 无 |
 | Calendar | 摸鱼人日历 | `/schedule/Calendar` | 无 |
 | CardChange | 群员昵称改变触发 | `/events/CardChange` | 无 |
