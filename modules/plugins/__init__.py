@@ -1,8 +1,8 @@
 import os
 import traceback
 from importlib import import_module
-from modules.utils import log as Log
 
+from modules.utils import log
 
 ignore = ["__init__.py", "__pycache__"]
 for plugin in os.listdir(__path__[0]):
@@ -16,12 +16,12 @@ for plugin in os.listdir(__path__[0]):
         """
         if os.path.isdir(os.path.join(__path__[0], plugin)):
             import_module(f'modules.plugins.{plugin}')
-            Log.info(msg=f'plugin register success : {plugin}')
+            log.info(msg=f'plugin register success : {plugin}')
         else:
             name = plugin.split('.')[0]
             import_module(f"modules.plugins.{name}")
             if name != 'miraiPlugin':
-                Log.info(msg=f"plugin register success : {name}")
-    except Exception:
-        Log.info(msg=f'plugin register failed : {plugin}')
-        Log.error(msg=traceback.format_exc())
+                log.info(msg=f"plugin register success : {name}")
+    except:
+        log.info(msg=f'plugin register failed : {plugin}')
+        log.error(msg=traceback.format_exc())

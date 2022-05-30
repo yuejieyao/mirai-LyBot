@@ -1,13 +1,15 @@
-import requests
-from modules.http.miraiHttpRequests import MiraiHttpRequests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
-from modules.utils import log as Log
-from modules.conf import config
+import json
 import os
 import random
-import json
 import time
 import traceback
+
+import requests
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+
+from modules.conf import config
+from modules.http.miraiHttpRequests import MiraiHttpRequests
+from modules.utils import log
 
 
 class ImageManager:
@@ -45,11 +47,11 @@ class ImageManager:
         response.raise_for_status()
         image_json = json.loads(response.text)
         if 'imageId' in image_json:
-            Log.info(msg=f"[Mirai][Image] upload image success,imageId: {image_json['imageId']}")
+            log.info(msg=f"[Mirai][Image] upload image success,imageId: {image_json['imageId']}")
             return image_json['imageId']
         else:
-            Log.error(msg=f"[Mirai][Image] upload image failed,filePath: {file_path}")
-            Log.error(msg=response.text)
+            log.error(msg=f"[Mirai][Image] upload image failed,filePath: {file_path}")
+            log.error(msg=response.text)
             return False
 
     def upload_img_from_url(self, url: str, image_type: str):
@@ -73,8 +75,8 @@ class ImageManager:
                 f.write(img.content)
                 f.flush()
 
-        except Exception:
-            Log.error(msg=traceback.format_exc())
+        except:
+            log.error(msg=traceback.format_exc())
             return False
 
         if os.path.exists(img_save_path):
@@ -84,5 +86,5 @@ class ImageManager:
             os.remove(img_save_path)
             return image_id
         else:
-            Log.error('download image error')
+            log.error('download image error')
             return False

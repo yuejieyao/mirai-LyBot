@@ -1,9 +1,8 @@
-from modules.utils.sqlCombiner import Sqlite
-from modules.utils import log as Log
 import datetime
 import uuid
-import pickle
-import traceback
+
+from modules.utils import log
+from modules.utils.sqlCombiner import Sqlite
 
 
 class DataSource(Sqlite):
@@ -13,13 +12,14 @@ class DataSource(Sqlite):
         self.__initSqlite()
 
     def add_timing_remind(self, date, content: str, target: int, group: int):
-        id = str(uuid.uuid1())
+        _id = str(uuid.uuid1())
         self.execute("insert into remind (id,date,content,target,send_group) values(?,?,?,?,?)",
-                     [(id, date, content, target, group)])
-        return id
+                     [(_id, date, content, target, group)])
+        return _id
 
     def get_remind_less_than_now(self):
-        return self.query("select id,date,content,target,send_group from remind where date>:date and send=0", {"date": datetime.datetime.now()})
+        return self.query("select id,date,content,target,send_group from remind where date>:date and send=0",
+                          {"date": datetime.datetime.now()})
 
     def set_send(self, id: str):
         return self.execute("update remind set send=1 where id=:id", {"id": id})
@@ -39,4 +39,4 @@ class DataSource(Sqlite):
                     send int DEFAULT 0
                 )
             """)
-            Log.info(msg="[Plugin][Remind] create table remind success")
+            log.info(msg="[Plugin][Remind] create table remind success")

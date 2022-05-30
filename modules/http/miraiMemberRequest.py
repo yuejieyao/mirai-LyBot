@@ -11,7 +11,6 @@ class MiraiMemberRequests:
         response = self.httpRequest.get('botProfile')
         return BotInfo.fromJson(response)
 
-
     def getFirendList(self) -> List[FriendInfo]:
         """ 获取好友列表 """
 
@@ -34,6 +33,10 @@ class MiraiMemberRequests:
         """获取群成员信息"""
 
         response = self.httpRequest.request.get('%s/%s?sessionKey=%s&target=%s&memberId=%s' %
-                                                (self.httpRequest.host, 'memberProfile', self.httpRequest.sessionKey, group, qq))
+                                                (self.httpRequest.host,
+                                                 'memberProfile',
+                                                 self.httpRequest.sessionKey,
+                                                 group,
+                                                 qq))
         response.raise_for_status()
         return GroupMemberInfo.fromJson(response.json())

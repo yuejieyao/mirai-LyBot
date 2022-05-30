@@ -1,7 +1,8 @@
-from modules.message.messageChain import MessageChain
-from modules.dataSource.miraiDataSource import MiraiDataSource
-from modules.utils import log as Log
 from threading import Thread
+
+from modules.dataSource.miraiDataSource import MiraiDataSource
+from modules.message.messageChain import MessageChain
+from modules.utils import log
 
 
 class MiraiMessagePluginProcessor:
@@ -118,10 +119,10 @@ class MiraiMessagePluginProcessor:
         for row in plugin_register_names:
             if row[0] not in self.group_message_plugins_names+self.friend_message_plugins_name:
                 self.db.removePlugin(register_name=row[0])
-                Log.info(msg=f'remove plugin success : register_name = {row[0]}')
+                log.info(msg=f'remove plugin success : register_name = {row[0]}')
 
         # 增加或更新插件
-        Log.info(msg='checking plugins datasource...')
+        log.info(msg='checking plugins datasource...')
         for register_name in self.group_message_plugins_names:
             self.db.addPlugin(register_name=register_name,
                               name=self.group_message_plugins[register_name].NAME, description=self.group_message_plugins[register_name].DESCRIPTION)
@@ -130,4 +131,4 @@ class MiraiMessagePluginProcessor:
             self.db.addPlugin(register_name=register_name, name=self.friend_message_plugins[register_name].NAME,
                               description=self.friend_message_plugins[register_name].DESCRIPTION, plugin_type='friend')
 
-        Log.info(msg='check plugins datasource success')
+        log.info(msg='check plugins datasource success')

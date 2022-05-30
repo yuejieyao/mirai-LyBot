@@ -1,7 +1,8 @@
-from modules.utils.sqlCombiner import Sqlite
-from modules.utils import log as Log
 import datetime
 import random
+
+from modules.utils import log
+from modules.utils.sqlCombiner import Sqlite
 
 
 class DataSource(Sqlite):
@@ -12,7 +13,8 @@ class DataSource(Sqlite):
     def isSign(self, qq: int):
         """ 是否签到 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
-        if self.query('select count(*) from sign where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0] == 1:
+        if self.query('select count(*) from sign where user_qq=:user_qq and date=:date',
+                      {'user_qq': qq, 'date': t})[0][0] == 1:
             return True
         return False
 
@@ -24,7 +26,9 @@ class DataSource(Sqlite):
     def isOver(self, qq: int):
         """ 今日购买彩票是否满3 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
-        if self.query('select count(*) from lottery where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0] >= 3:
+        if \
+                self.query('select count(*) from lottery where user_qq=:user_qq and date=:date',
+                           {'user_qq': qq, 'date': t})[0][0] >= 3:
             return True
         return False
 
@@ -36,14 +40,16 @@ class DataSource(Sqlite):
     def count_lottery_today(self, qq: int):
         """ 今天购买彩票数量 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
-        return self.query('select count(*) from lottery where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})[0][0]
+        return \
+            self.query('select count(*) from lottery where user_qq=:user_qq and date=:date',
+                       {'user_qq': qq, 'date': t})[0][0]
 
     def buy(self, qq: int, group: int):
         """ 买彩票 """
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
         # 前6位从1-27中抽取,不重复,最后1位随机1-9
-        l = range(1, 28)
-        c = random.sample(l, 6)
+        range_l = range(1, 28)
+        c = random.sample(range_l, 6)
         c.append(random.randint(1, 9))
         content = ','.join(map(str, c))
         self.execute('insert into lottery (user_qq,user_group,content,date) values(?,?,?,?)', [(qq, group, content, t)])
@@ -58,33 +64,38 @@ class DataSource(Sqlite):
 
     def add_money(self, qq: int, money: int):
         if self.query('select count(*) from user where user_qq=:user_qq', {'user_qq': qq})[0][0] == 1:
-            return self.execute('update user set money=money+:money where user_qq=:user_qq', {'money': money, 'user_qq': qq})
+            return self.execute('update user set money=money+:money where user_qq=:user_qq',
+                                {'money': money, 'user_qq': qq})
         else:
             return self.execute('insert into user (user_qq,money) values(?,?)', [(qq, money)])
 
     def min_money(self, qq: int, money: int):
         if self.has_user(qq=qq):
             if self.get_money(qq=qq) >= money:
-                return self.execute('update user set money=money-:money where user_qq=:user_qq', {'money': money, 'user_qq': qq})
+                return self.execute('update user set money=money-:money where user_qq=:user_qq',
+                                    {'money': money, 'user_qq': qq})
         return False
 
     def get_lottery_today(self, qq: int):
         t = datetime.datetime.today().date().strftime('%y-%m-%d')
-        return self.query('select content from lottery where user_qq=:user_qq and date=:date', {'user_qq': qq, 'date': t})
+        return self.query('select content from lottery where user_qq=:user_qq and date=:date',
+                          {'user_qq': qq, 'date': t})
 
     def get_lottery_yesterday_group_qq(self, group: int, qq: int):
-        t = (datetime.datetime.today()-datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
-        return self.query('select content from lottery where date=:date and user_group=:user_group and user_qq=:user_qq', {'date': t, 'user_group': group, 'user_qq': qq})
+        t = (datetime.datetime.today() - datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
+        return self.query(
+            'select content from lottery where date=:date and user_group=:user_group and user_qq=:user_qq',
+            {'date': t, 'user_group': group, 'user_qq': qq})
 
     def get_lottery_yesterday_group(self):
-        t = (datetime.datetime.today()-datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
+        t = (datetime.datetime.today() - datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
         r = self.query('select user_group from lottery where date=:date group by user_group', {'date': t})
         return [int(i[0]) for i in r]
 
     def get_lottery_yesterday_qq(self, group: int):
-        t = (datetime.datetime.today()-datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
+        t = (datetime.datetime.today() - datetime.timedelta(days=1)).date().strftime('%y-%m-%d')
         r = self.query('select user_qq from lottery where date=:date and user_group=:user_group group by user_qq', {
-                       'date': t, 'user_group': group})
+            'date': t, 'user_group': group})
         return [int(i[0]) for i in r]
 
     def __initSqlite(self):
@@ -98,7 +109,7 @@ class DataSource(Sqlite):
                     sign_text text
                 ) 
             """)
-            Log.info(msg="[Mirai][User] create table sign success")
+            log.info(msg="[Mirai][User] create table sign success")
         # 用户表
         if not self.exists_table('user'):
             self.execute("""
@@ -109,7 +120,7 @@ class DataSource(Sqlite):
                     money int DEFAULT 0
                 ) 
             """)
-            Log.info(msg="[Mirai][User] create table user success")
+            log.info(msg="[Mirai][User] create table user success")
         # 彩票表
         if not self.exists_table('lottery'):
             self.execute("""
@@ -122,4 +133,4 @@ class DataSource(Sqlite):
                     date date
                 ) 
             """)
-            Log.info(msg="[Mirai][User] create table lottery success")
+            log.info(msg="[Mirai][User] create table lottery success")

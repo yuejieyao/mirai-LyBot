@@ -1,10 +1,11 @@
-from re import template
-from modules.conf import config
-from typing import List
-from aip import AipOcr
-import random
 import hashlib
+import random
+from typing import List
+
 import requests
+from aip import AipOcr
+
+from modules.conf import config
 
 
 class BaiduUtils:
@@ -17,16 +18,14 @@ class OcrUtil(BaiduUtils):
 
     def __init__(self) -> None:
         super().__init__()
-        conf = config.getBaiduOcrConf()
-        self.appId = conf['appId']
-        self.apiKey = conf['apiKey']
-        self.secretKkey = conf['secretKey']
+        self.appId = config.getConf('baidu_ocr', 'appId')
+        self.apiKey = config.getConf('baidu_ocr', 'apiKey')
+        self.secretKkey = config.getConf('baidu_ocr', 'secretKey')
         self.client = AipOcr(
             appId=self.appId, apiKey=self.apiKey, secretKey=self.secretKkey)
 
     def basicGeneralUrl(self, url: str) -> List[str]:
-        options = {}
-        options["detect_direction"] = "true"
+        options = {"detect_direction": "true"}
         result = self.client.basicGeneralUrl(url, options=options)
         if 'words_result' in result:
             return [i['words'] for i in result['words_result']]
@@ -38,9 +37,8 @@ class TranslateUtil(BaiduUtils):
 
     def __init__(self) -> None:
         super().__init__()
-        conf = config.getBaiduTranConf()
-        self.appId = conf['appId']
-        self.secretKkey = conf['secretKey']
+        self.appId = config.getConf('baidu_translate', 'appId')
+        self.secretKkey = config.getConf('baidu_translate', 'secretKey')
 
     def translate(self, keyword: str, to: str) -> str:
 
@@ -50,7 +48,7 @@ class TranslateUtil(BaiduUtils):
         }
         slat = random.randint(0, 100)
         m = hashlib.md5()
-        temp = self.appId+keyword+str(slat)+self.secretKkey
+        temp = self.appId + keyword + str(slat) + self.secretKkey
         if isinstance(temp, str):
             temp = temp.encode('utf8')
         m.update(temp)

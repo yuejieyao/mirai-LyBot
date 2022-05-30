@@ -1,7 +1,7 @@
+from modules.conf import config
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from modules.message.messageChain import MessageChain
-from modules.conf import config
-from modules.utils import log as Log
+from modules.utils import log
 
 
 class MiraiMessageRequest:
@@ -14,8 +14,8 @@ class MiraiMessageRequest:
         Param:
             msg (MessageChain): 消息链
         """
-        adminIds = config.getMiraiConf('adminQQ').split(',')
-        for adminId in adminIds:
+        admin_ids = config.getConf('mirai', 'adminQQ').split(',')
+        for adminId in admin_ids:
             self.sendFriendMessage(msg=msg, target=adminId)
 
     def sendGroupMessage(self, msg: MessageChain, target: int, quote: int = None):
@@ -31,7 +31,7 @@ class MiraiMessageRequest:
         if quote:
             data.update({"quote": quote})
         response = self.httpRequest.post('sendGroupMessage', data=data)
-        Log.info(msg=f"[SendGroupMessage][-> (GID){target}] {msg.asSerializationString()}")
+        log.info(msg=f"[SendGroupMessage][-> (GID){target}] {msg.asSerializationString()}")
         if response['code'] != 0:
             raise Exception(f'send group message failed:{str(response)}')
 
@@ -49,7 +49,7 @@ class MiraiMessageRequest:
         if quote:
             data.update({"quote": quote})
         response = self.httpRequest.post('sendTempMessage', data=data)
-        Log.info(msg=f"[SendTempMessage][-> (GID){target_group}][-> (UID){target_qq}] {msg.asSerializationString()}")
+        log.info(msg=f"[SendTempMessage][-> (GID){target_group}][-> (UID){target_qq}] {msg.asSerializationString()}")
         if response['code'] != 0:
             raise Exception(f'send group message failed:{str(response)}')
 
@@ -68,7 +68,7 @@ class MiraiMessageRequest:
         response = self.httpRequest.post('sendFriendMessage', data=data)
         if response['code'] != 0:
             raise Exception('send friend message failed')
-        Log.info(msg=f"[SendFriendMessage][-> (UID){target}] {msg.asSerializationString()}")
+        log.info(msg=f"[SendFriendMessage][-> (UID){target}] {msg.asSerializationString()}")
 
     def recall(self, target: int):
         """ 撤回消息
@@ -81,4 +81,4 @@ class MiraiMessageRequest:
         response = self.httpRequest.post('recall', data=data)
         if response['code'] != 0:
             raise Exception('recall failed')
-        Log.info(msg=f"[Recall][-> (ID){target}]")
+        log.info(msg=f"[Recall][-> (ID){target}]")

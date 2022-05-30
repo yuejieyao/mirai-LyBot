@@ -7,15 +7,17 @@
 @version      :1.0
 """
 
-import requests
 from urllib import parse
-from modules.http.miraiMessageRequest import MiraiMessageRequest
-from modules.message.messageType import Plain, Image
-from ..miraiPlugin import MiraiMessagePluginProcessor
-from modules.message.messageChain import MessageChain
-from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitor, MiraiMessageMonitorHandler
+
+import requests
+
 from modules.conf import config
+from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.message.messageChain import MessageChain
+from modules.message.messageType import Plain, Image
+from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitor, MiraiMessageMonitorHandler
 from modules.utils import log
+from ..miraiPlugin import MiraiMessagePluginProcessor
 
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('SearchImg')
@@ -60,7 +62,7 @@ class SearchImg:
             MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Plain(text="来图,我看看")]), target=group,
                                                    quote=quote)
             MiraiMessageMonitorHandler().add(
-                MiraiMessageMonitor(type='GroupMessage', target=target, filter=_filter, call=_callback))  # 添加一次性监听
+                MiraiMessageMonitor(monitor_type='GroupMessage', target=target, call_filter=_filter, call_func=_callback))  # 添加一次性监听
 
 
 def search_by_image_url(url: str):

@@ -1,14 +1,16 @@
+import signal
+import sys
+import traceback
+
 from modules.http.miraiHttpRequests import MiraiHttpRequests
 from modules.http.miraiWebSockets import MiraiWebSocketClient
 from modules.schedule.miraiSchedule import MiraiScheduleProcessor
-from modules.utils import log as Log
-import traceback
-import signal
-import os
+from modules.utils import log
 
 
 def ctrl_c(signalnum, frame):
-    os._exit(0)
+    log.info(f"Received {signalnum} {frame}")
+    sys.exit(0)
 
 
 def start():
@@ -19,10 +21,10 @@ def start():
         websocket_client = MiraiWebSocketClient(conn.sessionKey)
         websocket_client.open()
 
-        miraiSchedule = MiraiScheduleProcessor()
-        miraiSchedule.start()
-    except Exception:
-        Log.error(msg=traceback.format_exc())
+        mirai_schedule = MiraiScheduleProcessor()
+        mirai_schedule.start()
+    except:
+        log.error(msg=traceback.format_exc())
         start()
 
 

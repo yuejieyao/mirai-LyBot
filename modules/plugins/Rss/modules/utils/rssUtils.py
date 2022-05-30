@@ -1,9 +1,11 @@
 
-from modules.conf import config
-from lxml import etree
-from datetime import datetime
-import requests
 import re
+from datetime import datetime
+
+import requests
+from lxml import etree
+
+from modules.conf import config
 
 
 class RssUtils:

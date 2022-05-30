@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @Description: RSS订阅轮训任务
 @Date     :2021/08/27 10:53:54
 @Author      :yuejieyao
 @version      :1.0
-'''
+"""
 
-from ..miraiSchedule import MiraiScheduleProcessor
-from modules.plugins.Rss.modules.utils.dataSource import DataSource
+import time
+import traceback
+
+from modules.dataSource.miraiDataSource import MiraiDataSource
+from modules.http.miraiMessageRequest import MiraiMessageRequest
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image
-from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
-from modules.dataSource.miraiDataSource import MiraiDataSource as MD
-from modules.utils import log as Log
-import traceback
-import time
+from modules.plugins.Rss.modules.utils.dataSource import DataSource
+from modules.utils import log
+from ..miraiSchedule import MiraiScheduleProcessor
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_every_minute_register(schedule_name='RssSchedule', interval=10)
@@ -31,7 +32,7 @@ class RssSchedule:
         urls = ds.getSubUrls()
         for url in urls:
             try:
-                Log.info(f'[Schedule][RSS] check rss url={url}')
+                log.info(f'[Schedule][RSS] check rss url={url}')
                 # 获取rss消息并生成MessageChain
                 rsses = ds.getMultNew(url=url)
                 # 如果一下获取到很多(10条),就当成是首次订阅的情况,只发一条
@@ -40,9 +41,9 @@ class RssSchedule:
                     for rss in rsses[1:10]:
                         for group in groups:
                             ds.setSend(rss_id=rss['rss_id'], group=group)
-                for rss in rsses: 
+                for rss in rsses:
                     for group in groups:
-                        if MD().isScheduleClose(register_name='RssSchedule', group=group):
+                        if MiraiDataSource().isScheduleClose(register_name='RssSchedule', group=group):
                             continue
                         # 判断是否发送过
                         if not ds.isSend(rss_id=rss['rss_id'], group=group):
@@ -53,8 +54,8 @@ class RssSchedule:
 
                             # 防止标题和内容重复
                             if rss['title'] not in rss['description']:
-                                msg.append(Plain(text=rss['title']+'\n'))
-                            msg.append(Plain(text=rss['description']+'\n'))
+                                msg.append(Plain(text=rss['title'] + '\n'))
+                            msg.append(Plain(text=rss['description'] + '\n'))
                             for img_url in rss['img'].split(','):
                                 if img_url:
                                     img = Image(image_type='group', image_url=img_url)
@@ -62,8 +63,8 @@ class RssSchedule:
                                         msg.append(img)
                             msg.append(Plain(text=rss['link']))
                             # 获取订阅该url的所有群号
-                            MMR().sendGroupMessage(msg=msg, target=group)
+                            MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
                             ds.setSend(rss_id=rss['rss_id'], group=group)
                     time.sleep(10)
-            except Exception:
-                Log.error(msg=traceback.format_exc())
+            except:
+                log.error(msg=traceback.format_exc())

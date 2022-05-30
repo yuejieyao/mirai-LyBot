@@ -1,5 +1,3 @@
-from modules.message.messageChain import MessageChain
-from modules.utils import log as Log
 from threading import Thread
 
 
@@ -61,44 +59,54 @@ class MiraiEventProcessor:
     @classmethod
     def mirai_join_event_register(cls, event_name):
         """新进群员事件注册"""
+
         def wrapper(event):
             cls.mirai_join_events.update({event_name: event})
             cls.mirai_join_events_names.append(event_name)
             return event
+
         return wrapper
 
     @classmethod
     def mirai_group_recall_register(cls, event_name):
         """群消息撤回事件注册"""
+
         def wrapper(event):
             cls.mirai_group_recalls.update({event_name: event})
             cls.mirai_group_recalls_names.append(event_name)
             return event
+
         return wrapper
 
     @classmethod
     def mirai_member_card_change_event_register(cls, event_name):
         """群名片改动事件注册"""
+
         def wrapper(event):
             cls.mirai_member_card_change_events.update({event_name: event})
             cls.mirai_member_card_change_events_names.append(event_name)
             return event
+
         return wrapper
 
     @classmethod
     def mirai_member_permission_change_event_register(cls, event_name):
         """群员权限改动事件注册"""
+
         def wrapper(event):
             cls.mirai_member_permission_change_events.update({event_name: event})
             cls.mirai_member_permission_change_events_names.append(event_name)
             return event
+
         return wrapper
 
     @classmethod
     def mirai_member_mute_event_register(cls, event_name):
         """群成员被禁言事件注册"""
+
         def wrapper(event):
             cls.mirai_member_mute_events.update({event_name: event})
             cls.mirai_member_mute_events_names.append(event_name)
             return event
+
         return wrapper

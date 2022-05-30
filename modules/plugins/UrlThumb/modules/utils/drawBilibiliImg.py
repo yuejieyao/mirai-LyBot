@@ -1,8 +1,10 @@
+from io import BytesIO
+
 import qrcode
 import requests
-from io import BytesIO
-from qrcode.image.pil import PilImage
 from PIL import Image, ImageFont, ImageDraw
+from qrcode.image.pil import PilImage
+
 from modules.utils.common import get_cut_str
 
 
@@ -16,7 +18,7 @@ def numf(num: int):
     return view
 
 
-def binfo_image_create(video_info: str, save_path: str):
+def binfo_image_create(video_info, save_path: str):
     bg_y = 0
     # 封面
     pic_url = video_info["data"]["pic"]
@@ -69,11 +71,11 @@ def binfo_image_create(video_info: str, save_path: str):
     icon_color = (247, 145, 185)
     info_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 26)
 
-    view = numf(video_info['data']['stat']['view'])             # 播放 \uE6E6
-    danmaku = numf(video_info['data']['stat']['danmaku'])       # 弹幕 \uE6E7
-    favorite = numf(video_info['data']['stat']['favorite'])     # 收藏 \uE6E1
-    coin = numf(video_info['data']['stat']['coin'])             # 投币 \uE6E4
-    like = numf(video_info['data']['stat']['like'])             # 点赞 \uE6E0
+    view = numf(video_info['data']['stat']['view'])  # 播放 \uE6E6
+    danmaku = numf(video_info['data']['stat']['danmaku'])  # 弹幕 \uE6E7
+    favorite = numf(video_info['data']['stat']['favorite'])  # 收藏 \uE6E1
+    coin = numf(video_info['data']['stat']['coin'])  # 投币 \uE6E4
+    like = numf(video_info['data']['stat']['like'])  # 点赞 \uE6E0
 
     info_bg = Image.new("RGB", (560, 170), "#F5F5F7")
     draw = ImageDraw.Draw(info_bg)
@@ -103,7 +105,8 @@ def binfo_image_create(video_info: str, save_path: str):
                 "name": up['name'],
                 "up_title": up['title'],
                 "face": up['face'],
-                "color": up_data['data']['vip']['nickname_color'] if up_data['data']['vip']['nickname_color'] != "" else "black",
+                "color": up_data['data']['vip']['nickname_color'] if up_data['data']['vip'][
+                                                                         'nickname_color'] != "" else "black",
                 "follower": up['follower'],
                 "level": up_data['data']['level']
             })
@@ -115,7 +118,8 @@ def binfo_image_create(video_info: str, save_path: str):
             "name": up_data['data']['name'],
             "up_title": "UP主",
             "face": up_data['data']['face'],
-            "color": up_data['data']['vip']['nickname_color'] if up_data['data']['vip']['nickname_color'] != "" else "black",
+            "color": up_data['data']['vip']['nickname_color'] if up_data['data']['vip'][
+                                                                     'nickname_color'] != "" else "black",
             "follower": up_stat['data']['follower'],
             "level": up_data['data']['level']
         }]

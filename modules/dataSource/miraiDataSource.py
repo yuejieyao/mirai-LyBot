@@ -1,5 +1,5 @@
+from modules.utils import log
 from modules.utils.sqlCombiner import Sqlite
-from modules.utils import log as Log
 
 mirai_db = 'modules/resource/data/mirai.db'
 
@@ -11,7 +11,9 @@ class MiraiDataSource(Sqlite):
 
     def addPlugin(self, register_name: str, name: str, description: str, plugin_type: str = 'group'):
         if self.exists(table='plugin', column='register_name', value=register_name):
-            return self.execute('update plugin set name=:name,description=:description where register_name=:register_name', {'name': name, 'description': description, 'register_name': register_name})
+            return self.execute(
+                'update plugin set name=:name,description=:description where register_name=:register_name',
+                {'name': name, 'description': description, 'register_name': register_name})
         else:
             return self.execute('insert into plugin (register_name,name,description,plugin_type) values(?,?,?,?)',
                                 [(register_name, name, description, plugin_type)])
@@ -20,10 +22,12 @@ class MiraiDataSource(Sqlite):
         return self.execute('delete from plugin where register_name=:register_name', {'register_name': register_name})
 
     def openPlugin(self, register_name: str):
-        return self.execute('update plugin set open=1 where register_name=:register_name', {'register_name': register_name})
+        return self.execute('update plugin set open=1 where register_name=:register_name',
+                            {'register_name': register_name})
 
     def closePlugin(self, register_name: str):
-        return self.execute('update plugin set open=0 where register_name=:register_name', {'register_name': register_name})
+        return self.execute('update plugin set open=0 where register_name=:register_name',
+                            {'register_name': register_name})
 
     def openGroupPlugin(self, register_name: str, group: int):
         unopen = self.query("select unopen from plugin where register_name=:register_name",
@@ -32,7 +36,8 @@ class MiraiDataSource(Sqlite):
             __unopen = str(unopen).split(',')
             __unopen.remove(str(group))
             unopen = ','.join(__unopen)
-            return self.execute('update plugin set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
+            return self.execute('update plugin set unopen=:unopen where register_name=:register_name',
+                                {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}并未关闭插件{register_name}')
 
@@ -44,12 +49,14 @@ class MiraiDataSource(Sqlite):
                 unopen = str(group)
             else:
                 unopen = ','.join(str(unopen).split(',').append(str(group)))
-            return self.execute('update plugin set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
+            return self.execute('update plugin set unopen=:unopen where register_name=:register_name',
+                                {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}已经关闭插件{register_name}')
 
     def existGroupPlugin(self, register_name: str):
-        if self.query("select count(*) from plugin where register_name=:register_name and plugin_type='group'", {'register_name': register_name})[0][0] > 0:
+        if self.query("select count(*) from plugin where register_name=:register_name and plugin_type='group'",
+                      {'register_name': register_name})[0][0] > 0:
             return True
         else:
             return False
@@ -71,15 +78,18 @@ class MiraiDataSource(Sqlite):
     def getGroupOpenedPlugins(self, group: int):
         """ register_name """
         result = self.query("select register_name from plugin where plugin_type='group' and unopen not like :like", {
-                            'like': f'%{str(group)}%'})
+            'like': f'%{str(group)}%'})
         return [r[0] for r in result]
 
     def getPluginDescription(self, register_name: str) -> str:
-        return str(self.query("select description from plugin where register_name=:register_name", {'register_name': register_name})[0][0])
+        return str(self.query("select description from plugin where register_name=:register_name",
+                              {'register_name': register_name})[0][0])
 
     def addSchedule(self, register_name: str, name: str, description: str):
         if self.exists(table='schedule', column='register_name', value=register_name):
-            return self.execute('update schedule set name=:name,description=:description where register_name=:register_name', {'name': name, 'description': description, 'register_name': register_name})
+            return self.execute(
+                'update schedule set name=:name,description=:description where register_name=:register_name',
+                {'name': name, 'description': description, 'register_name': register_name})
         else:
             return self.execute('insert into schedule (register_name,name,description) values(?,?,?)',
                                 [(register_name, name, description)])
@@ -88,10 +98,12 @@ class MiraiDataSource(Sqlite):
         return self.execute('delete from schedule where register_name=:register_name', {'register_name': register_name})
 
     def openSchedule(self, register_name: str):
-        return self.execute('update schedule set open=1 where register_name=:register_name', {'register_name': register_name})
+        return self.execute('update schedule set open=1 where register_name=:register_name',
+                            {'register_name': register_name})
 
     def closeSchedule(self, register_name: str):
-        return self.execute('update schedule set open=0 where register_name=:register_name', {'register_name': register_name})
+        return self.execute('update schedule set open=0 where register_name=:register_name',
+                            {'register_name': register_name})
 
     def openGroupSchedule(self, register_name: str, group: int):
         unopen = self.query("select unopen from schedule where register_name=:register_name",
@@ -100,7 +112,8 @@ class MiraiDataSource(Sqlite):
             __unopen = str(unopen).split(',')
             __unopen.remove(str(group))
             unopen = ','.join(__unopen)
-            return self.execute('update schedule set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
+            return self.execute('update schedule set unopen=:unopen where register_name=:register_name',
+                                {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}并未关闭轮询{register_name}')
 
@@ -111,13 +124,15 @@ class MiraiDataSource(Sqlite):
             if unopen == '':
                 unopen = str(group)
             else:
-                unopen = ','.join([str(group)]+str(unopen).split(','))
-            return self.execute('update schedule set unopen=:unopen where register_name=:register_name', {'unopen': unopen, 'register_name': register_name})
+                unopen = ','.join([str(group)] + str(unopen).split(','))
+            return self.execute('update schedule set unopen=:unopen where register_name=:register_name',
+                                {'unopen': unopen, 'register_name': register_name})
         else:
             raise Exception(f'群{group}已经关闭插件{register_name}')
 
     def existSchedule(self, register_name: str):
-        if self.query("select count(*) from schedule where register_name=:register_name", {'register_name': register_name})[0][0] > 0:
+        if self.query("select count(*) from schedule where register_name=:register_name",
+                      {'register_name': register_name})[0][0] > 0:
             return True
         else:
             return False
@@ -143,7 +158,8 @@ class MiraiDataSource(Sqlite):
         return [r[0] for r in result]
 
     def getScheduleDescription(self, register_name: str) -> str:
-        return str(self.query("select description from schedule where register_name=:register_name", {'register_name': register_name})[0][0])
+        return str(self.query("select description from schedule where register_name=:register_name",
+                              {'register_name': register_name})[0][0])
 
     def __initSqlite(self):
         if not self.exists_table('plugin'):
@@ -160,7 +176,7 @@ class MiraiDataSource(Sqlite):
                     plugin_type text 
                 )
             """)
-            Log.info(msg="[Mirai][DataSource] create table plugin success")
+            log.info(msg="[Mirai][DataSource] create table plugin success")
         if not self.exists_table('schedule'):
             self.execute("""
                 create table schedule
@@ -173,4 +189,4 @@ class MiraiDataSource(Sqlite):
                     open int DEFAULT 1
                 )
             """)
-            Log.info(msg="[Mirai][DataSource] create table schedule success")
+            log.info(msg="[Mirai][DataSource] create table schedule success")

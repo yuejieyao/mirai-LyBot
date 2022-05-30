@@ -1,9 +1,9 @@
+from modules.conf import config
+from modules.events.miraiEvent import MiraiEventProcessor
 from modules.message.messageChain import MessageChain
 from modules.message.miraiMessageMonitorHandler import MiraiMessageMonitorHandler
 from modules.plugins.miraiPlugin import MiraiMessagePluginProcessor
-from modules.events.miraiEvent import MiraiEventProcessor
-from modules.conf import config
-from modules.utils import log as Log
+from modules.utils import log
 
 
 class MiraiMessageHandler:
@@ -11,7 +11,7 @@ class MiraiMessageHandler:
         self.processor = MiraiMessagePluginProcessor()
         self.monitors = MiraiMessageMonitorHandler()
         self.events = MiraiEventProcessor()
-        self.banList = config.getMiraiConf('banList').split(',')
+        self.banList = config.getConf('mirai', 'banList').split(',')
         self.prev = {}
 
     def onMessage(self, obj):
@@ -36,9 +36,9 @@ class MiraiMessageHandler:
             self.prev[group] = msg
 
             # 打印群聊日志
-            Log.info(
+            log.info(
                 msg=f"[GroupMessage][(SourceID){quote}][(UID){sender} -> (GID){group}] " + msg.asSerializationString())
-            if not self.monitors.process(type='GroupMessage', msg=msg, target=sender, group=group):
+            if not self.monitors.process(monitor_type='GroupMessage', msg=msg, target=sender, group=group):
                 # 如果没有触发一次性监听,则执行插件
                 self.processor.group_msg_process(msg=msg, group=group, target=sender, quote=quote)
             return
@@ -51,8 +51,8 @@ class MiraiMessageHandler:
             msg = MessageChain.fromJsonList(obj['messageChain'])
             quote = msg.getId()
             # 打印私聊日志
-            Log.info(msg=f"[FriendMessage][(SourceID){quote}][(UID){sender}] "+msg.asSerializationString())
-            if not self.monitors.process(type='FriendMessage', msg=msg, target=sender):
+            log.info(msg=f"[FriendMessage][(SourceID){quote}][(UID){sender}] " + msg.asSerializationString())
+            if not self.monitors.process(monitor_type='FriendMessage', msg=msg, target=sender):
                 self.processor.friend_msg_process(msg=msg, target=sender, quote=quote)
             return
         if obj['type'] == "TempMessage":
@@ -64,9 +64,9 @@ class MiraiMessageHandler:
             msg = MessageChain.fromJsonList(obj['messageChain'])
             quote = msg.getId()
             group = obj['sender']['group']['id']
-            Log.info(
+            log.info(
                 msg=f"[TempMessage][(SourceID){quote}][(UID){sender} -> (GID){group}] " + msg.asSerializationString())
-            if not self.monitors.process(type='TempMessage', msg=msg, group=group, target=sender):
+            if not self.monitors.process(monitor_type='TempMessage', msg=msg, group=group, target=sender):
                 self.processor.temp_msg_process(msg=msg, group=group, target=sender, quote=quote)
             return
 
@@ -77,7 +77,6 @@ class MiraiMessageHandler:
                            'MemberCardChangeEvent',
                            'MemberPermissionChangeEvent',
                            'MemberMuteEvent']:
-
-            Log.info(msg=f"[{obj['type']}] Event Occurred")
+            log.info(msg=f"[{obj['type']}] Event Occurred")
             self.events.mirai_events_process(obj)
             return

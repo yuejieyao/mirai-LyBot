@@ -19,7 +19,8 @@ class BotInfo:
 
     @staticmethod
     def fromJson(obj) -> 'BotInfo':
-        return BotInfo(nickname=obj['nickname'], email=obj['email'], age=obj['age'], level=obj['level'], sign=obj['sign'], sex=obj['sex'])
+        return BotInfo(nickname=obj['nickname'], email=obj['email'], age=obj['age'], level=obj['level'],
+                       sign=obj['sign'], sex=obj['sex'])
 
 
 class GroupInfo:
@@ -27,14 +28,14 @@ class GroupInfo:
     name: str
     permission: str
 
-    def __init__(self, id: int, name: str, permission: str) -> None:
-        self.id = id
+    def __init__(self, _id: int, name: str, permission: str) -> None:
+        self.id = _id
         self.name = name
         self.permission = permission
 
     @staticmethod
     def fromJson(obj) -> 'GroupInfo':
-        return GroupInfo(id=int(obj['id']), name=obj['name'], permission=obj['permission'])
+        return GroupInfo(_id=int(obj['id']), name=obj['name'], permission=obj['permission'])
 
     @staticmethod
     def fromJsonList(obj_list) -> List['GroupInfo']:
@@ -78,4 +79,5 @@ class GroupMemberInfo:
 
     @staticmethod
     def fromJson(obj) -> 'GroupMemberInfo':
-        return GroupMemberInfo(nickname=obj['nickname'], email=obj['email'], age=obj['age'], level=obj['level'], sign=obj['sign'], sex=obj['sex'])
+        return GroupMemberInfo(nickname=obj['nickname'], email=obj['email'], age=obj['age'], level=obj['level'],
+                               sign=obj['sign'], sex=obj['sex'])

@@ -1,20 +1,20 @@
 # encoding utf-8
 # name:httpRequest.py
-from modules.conf import config
-from modules.utils import log as Log
-import requests
-import time
 import threading
+import time
 import traceback
 
-mirai_config = config.getMiraiConf()
+import requests
+
+from modules.conf import config
+from modules.utils import log
 
 
 class MiraiHttpRequests:
     sessionKey: str
-    host = 'http://%s:%s' % (mirai_config['server'], mirai_config['port'])
-    verifyKey = mirai_config['verifyKey']
-    botQQ = mirai_config['botQQ']
+    host = 'http://%s:%s' % (config.getConf('mirai', 'server'), config.getConf('mirai', 'port'))
+    verifyKey = config.getConf('mirai', 'verifyKey')
+    botQQ = config.getConf('mirai', 'botQQ')
 
     _instance_lock = threading.Lock()
 
@@ -25,8 +25,8 @@ class MiraiHttpRequests:
                     MiraiHttpRequests._instance = object.__new__(cls)
         return MiraiHttpRequests._instance
 
-    def __init__(self) -> None:
-        pass
+    # def __init__(self) -> None:
+    #     self.request = None
 
     def get(self, func):
         response = self.request.get(
@@ -43,14 +43,14 @@ class MiraiHttpRequests:
 
     def login(self):
         self.request = requests.session()
-        last_sessionKey = config.getMiraiConf('sessionKey')
-        if last_sessionKey:
+        last_session_key = config.getConf('mirai', 'sessionKey')
+        if last_session_key:
             rs = self.post(
-                'release', {'sessionKey': last_sessionKey, 'qq': self.botQQ})
+                'release', {'sessionKey': last_session_key, 'qq': self.botQQ})
             if rs['code'] == 0:
-                Log.info(msg=f"release success,sessionKey = {last_sessionKey}")
+                log.info(msg=f"release success,sessionKey = {last_session_key}")
             else:
-                Log.error(msg=f"release error: sessionKey = {last_sessionKey}")
+                log.error(msg=f"release error: sessionKey = {last_session_key}")
         while True:
             try:
                 response = self.post('verify', {'verifyKey': self.verifyKey})
@@ -58,12 +58,12 @@ class MiraiHttpRequests:
                 response = self.post(
                     'bind', {'sessionKey': self.sessionKey, 'qq': self.botQQ})
                 if response['code'] == 0:
-                    Log.info(msg=f'login success,sessionKey = {self.sessionKey}')
-                    config.setMiraiConf('sessionKey', self.sessionKey)
+                    log.info(msg=f'login success,sessionKey = {self.sessionKey}')
+                    config.setConf('mirai', 'sessionKey', self.sessionKey)
                     break
-            except Exception:
-                Log.error(msg=traceback.format_exc())
-                Log.info(msg='login error ---- retry in 5 seconds')
+            except:
+                log.error(msg=traceback.format_exc())
+                log.info(msg='login error ---- retry in 5 seconds')
                 time.sleep(5)
 
     def release(self):
@@ -71,9 +71,9 @@ class MiraiHttpRequests:
             rs = self.post(
                 'release', {'sessionKey': self.sessionKey, 'qq': self.botQQ})
             if rs['code'] == 0:
-                Log.info(msg=f"release success,sessionKey = {self.sessionKey}")
-                config.setMiraiConf('sessionKey', '')
+                log.info(msg=f"release success,sessionKey = {self.sessionKey}")
+                config.setConf('mirai', 'sessionKey', '')
             else:
-                Log.error(msg=f"release error: sessionKey = {self.sessionKey}")
-        except Exception:
-            Log.error(msg=traceback.format_exc())
+                log.error(msg=f"release error: sessionKey = {self.sessionKey}")
+        except:
+            log.error(msg=traceback.format_exc())

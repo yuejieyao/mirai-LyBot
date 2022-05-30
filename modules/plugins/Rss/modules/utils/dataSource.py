@@ -1,6 +1,6 @@
+from modules.utils import log
 from modules.utils.sqlCombiner import Sqlite
 from .rssUtils import RssUtils
-from modules.utils import log as Log
 
 
 class DataSource(Sqlite):
@@ -27,7 +27,8 @@ class DataSource(Sqlite):
     def sub(self, url: str, group: int):
         try:
             title = self.utils.getChannel(url=url)
-            if self.query('select count(*) from follow where url=:url and follow_group=:follow_group', {'url': url, 'follow_group': group})[0][0] > 0:
+            if self.query('select count(*) from follow where url=:url and follow_group=:follow_group',
+                          {'url': url, 'follow_group': group})[0][0] > 0:
                 raise Exception(f'该rss已订阅,请勿重复订阅')
             return self.execute('insert into follow(title,url,follow_group) values(?,?,?)', [(title, url, group)])
         except Exception as e:
@@ -46,13 +47,14 @@ class DataSource(Sqlite):
         rs = self.query("select follow_group from follow where url=:url", {"url": url})
         return [i[0] for i in rs]
 
-    def unSub(self, id):
-        if self.exists(table='follow', column='id', value=id):
-            return self.execute('delete from follow where id=:id', {'id': id})
+    def unSub(self, _id):
+        if self.exists(table='follow', column='id', value=_id):
+            return self.execute('delete from follow where id=:id', {'id': _id})
         return False
 
     def isSend(self, rss_id: int, group: int) -> bool:
-        if self.query('select count(*) from send where rss_id=:rss_id and send_group=:send_group', {'rss_id': rss_id, 'send_group': group})[0][0] > 0:
+        if self.query('select count(*) from send where rss_id=:rss_id and send_group=:send_group',
+                      {'rss_id': rss_id, 'send_group': group})[0][0] > 0:
             return True
         return False
 
@@ -75,7 +77,7 @@ class DataSource(Sqlite):
                     send int DEFAULT 0
                 )
             """)
-            Log.info('[Plugin][RSS] create table rss success')
+            log.info('[Plugin][RSS] create table rss success')
         if not self.exists_table('follow'):
             self.execute("""
                 create table follow
@@ -86,7 +88,7 @@ class DataSource(Sqlite):
                         follow_group int
                     )
             """)
-            Log.info('[Plugin][RSS] create table follow success')
+            log.info('[Plugin][RSS] create table follow success')
         if not self.exists_table('send'):
             # 发送记录
             self.execute("""
@@ -97,4 +99,4 @@ class DataSource(Sqlite):
                         send_group int
                     )
             """)
-            Log.info('[Plugin][RSS] create table send success')
+            log.info('[Plugin][RSS] create table send success')

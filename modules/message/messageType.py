@@ -2,8 +2,10 @@ from modules.message.imageManager import ImageManager
 
 
 class MessageElement:
+    chain = None
+
     def __init__(self) -> None:
-        self.chain = {}
+        pass
 
     def asDisplay(self) -> str:
         pass
@@ -11,16 +13,18 @@ class MessageElement:
     def asSerializationString(self) -> str:
         pass
 
-    def fromJson():
+    @staticmethod
+    def fromJson(obj):
         pass
 
 
 class Source(MessageElement):
     type: str = 'Source'
 
-    def __init__(self, id: int, time: int) -> None:
-        self.chain = {'type': 'Source', 'id': id, 'time': time}
-        self.id = id
+    def __init__(self, _id: int, time: int) -> None:
+        super().__init__()
+        self.chain = {'type': 'Source', 'id': _id, 'time': time}
+        self.id = _id
 
     def asDisplay(self) -> str:
         return ''
@@ -37,6 +41,7 @@ class At(MessageElement):
     type: str = 'At'
 
     def __init__(self, target: int) -> None:
+        super().__init__()
         self.chain = {'type': 'At', 'target': target}
         self.target = target
 
@@ -55,6 +60,7 @@ class AtAll(MessageElement):
     type: str = 'AtAll'
 
     def __init__(self) -> None:
+        super().__init__()
         self.chain = {'type': 'AtAll'}
 
     def asDisplay(self) -> str:
@@ -72,6 +78,7 @@ class Plain(MessageElement):
     type: str = 'Text'
 
     def __init__(self, text: str) -> None:
+        super().__init__()
         self.chain = {'type': 'Plain', 'text': text}
         self.text = text
 
@@ -101,19 +108,20 @@ class Image(MessageElement):
             Image: 图片消息
         """
 
-        if file_path != None and image_id == None:
+        super().__init__()
+        if file_path is not None and image_id is None:
             # 本地图片上传
-            imageManager = ImageManager()
-            image_id = imageManager.upload_img(
+            image_manager = ImageManager()
+            image_id = image_manager.upload_img(
                 file_path=file_path, image_type=image_type)
             self.chain = {'type': 'Image', 'imageId': image_id}
-        elif image_id == None and image_url != None:
+        elif image_id is None and image_url is not None:
             # 网络图片下载后上传
-            imageManager = ImageManager()
-            image_id = imageManager.upload_img_from_url(
+            image_manager = ImageManager()
+            image_id = image_manager.upload_img_from_url(
                 image_url, image_type=image_type)
             self.chain = {'type': 'Image', 'imageId': image_id}
-        elif image_id != None and image_url != None:
+        elif image_id is not None and image_url is not None:
             # 已上传的图片
             self.chain = {'type': 'Image',
                           'imageId': image_id, 'url': image_url}
@@ -133,7 +141,8 @@ class Image(MessageElement):
 class MusicShare(MessageElement):
     type: str = 'MusicShare'
 
-    def __init__(self, kind: str, title: str, summary: str, jumpUrl: str, pictureUrl: str, musicUrl: str, brief: str) -> None:
+    def __init__(self, kind: str, title: str, summary: str, jump_url: str, picture_url: str, music_url: str,
+                 brief: str) -> None:
         """ 音乐卡片分享
         
         Param:
@@ -146,21 +155,22 @@ class MusicShare(MessageElement):
             brief (str): 说明
         """
 
+        super().__init__()
         self.chain = {
             'type': 'MusicShare',
             'kind': kind,
             'title': title,
             'summary': summary,
-            'jumpUrl': jumpUrl,
-            'pictureUrl': pictureUrl,
-            'musicUrl': musicUrl,
+            'jumpUrl': jump_url,
+            'pictureUrl': picture_url,
+            'musicUrl': music_url,
             'brief': brief
         }
 
-    def asDisplay() -> str:
+    def asDisplay(self) -> str:
         pass
 
-    def asSerializationString() -> str:
+    def asSerializationString(self) -> str:
         pass
 
 
@@ -169,6 +179,7 @@ class App(MessageElement):
     content: str
 
     def __init__(self, content: str) -> None:
+        super().__init__()
         self.chain = {'type': 'App', content: str}
         self.content = content
 
@@ -188,6 +199,7 @@ class Xml(MessageElement):
     xml: str
 
     def __init__(self, xml: str) -> None:
+        super().__init__()
         self.chain = {'type': 'Xml', 'xml': xml}
         self.xml = xml
 

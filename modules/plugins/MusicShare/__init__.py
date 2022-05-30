@@ -1,37 +1,37 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @Description:点歌(网易云音乐),调用格式:点歌 歌名
 @Date     :2021/07/20 13:14:19
 @Author      :yuejieyao
 @version      :1.0
-'''
+"""
 
-from ..miraiPlugin import MiraiMessagePluginProcessor
+import re
+
+import requests
+
+from modules.http.miraiMessageRequest import MiraiMessageRequest
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, MusicShare
-from modules.http.miraiMessageRequest import MiraiMessageRequest
-from modules.conf import config
-import re
-import requests
+from ..miraiPlugin import MiraiMessagePluginProcessor
 
 
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('NeMusicShare')
 class NeMusicShare:
-
     NAME = "点歌"
     DESCRIPTION = """发送内容:点歌 歌名"""
 
-    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
-        if re.match('点歌 .*', chains.asDisplay()) != None:
-            msgReq = MiraiMessageRequest()
+    def process(self, chains: MessageChain, group: int, target: int, quote: int):
+        if re.match('点歌 .*', chains.asDisplay()) is not None:
+            msg_req = MiraiMessageRequest()
             msgs = chains.asDisplay().split(' ')
             if len(msgs) == 2:
                 keyword = msgs[1]
-                msgReq.sendGroupMessage(msg=getMusic(
+                msg_req.sendGroupMessage(msg=getMusic(
                     keyword=keyword), target=group)
             else:
-                msgReq.sendGroupMessage(msg=MessageChain(Plain(text="不支持的格式\n示例:点歌 宁夏")))
+                msg_req.sendGroupMessage(msg=MessageChain(Plain(text="不支持的格式\n示例:点歌 宁夏")), target=group)
 
 
 def getMusic(keyword: str) -> MessageChain:
@@ -52,12 +52,13 @@ def getMusic(keyword: str) -> MessageChain:
                 title = music['name']
                 summary = ','.join([x['name']
                                     for x in result['album']['artists']])
-                jumpUrl = 'https://y.music.163.com/m/song/%s' % music['id']
-                pictureUrl = result['album']['picUrl']
-                musicUrl = 'https://music.163.com/song/media/outer/url?id=%s.mp3' % music['id']
+                jump_url = 'https://y.music.163.com/m/song/%s' % music['id']
+                picture_url = result['album']['picUrl']
+                music_url = 'https://music.163.com/song/media/outer/url?id=%s.mp3' % music['id']
                 brief = '[分享]%s' % title
                 msg = MessageChain([MusicShare(kind='NeteaseCloudMusic', title=title, summary=summary,
-                                               jumpUrl=jumpUrl, pictureUrl=pictureUrl, musicUrl=musicUrl, brief=brief)])
+                                               jump_url=jump_url, picture_url=picture_url, music_url=music_url,
+                                               brief=brief)])
                 return msg
             else:
                 msg = MessageChain(

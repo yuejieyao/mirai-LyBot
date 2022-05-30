@@ -1,7 +1,9 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from modules.dataSource.miraiDataSource import MiraiDataSource
-from modules.utils import log as Log
 from datetime import datetime
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
+from modules.dataSource.miraiDataSource import MiraiDataSource
+from modules.utils import log
 
 
 class MiraiScheduleProcessor:
@@ -32,10 +34,13 @@ class MiraiScheduleProcessor:
 
         def wapper(plugin):
             cls._sched.add_job(func=plugin().process, trigger='interval',
-                               seconds=60*interval, next_run_time=datetime.now())
+                               seconds=60 * interval)
+            # cls._sched.add_job(func=plugin().process, trigger='interval',
+            #                    seconds=60 * interval, next_run_time=datetime.now())
             cls.schedules.update({schedule_name: plugin})
             cls.schedules_names.append(schedule_name)
             return plugin
+
         return wapper
 
     @classmethod
@@ -47,10 +52,11 @@ class MiraiScheduleProcessor:
 
         def wapper(plugin):
             cls._sched.add_job(func=plugin().process, trigger='interval',
-                               seconds=60*60*interval, next_run_time=datetime.now())
+                               seconds=60 * 60 * interval)
             cls.schedules.update({schedule_name: plugin})
             cls.schedules_names.append(schedule_name)
             return plugin
+
         return wapper
 
     @classmethod
@@ -66,6 +72,7 @@ class MiraiScheduleProcessor:
             cls.schedules.update({schedule_name: plugin})
             cls.schedules_names.append(schedule_name)
             return plugin
+
         return wapper
 
     def mirai_schedule_plugin_timing_register(self, run_date: datetime, func):
@@ -84,11 +91,12 @@ class MiraiScheduleProcessor:
         for row in schedule_register_names:
             if row[0] not in self.schedules_names:
                 self.db.removeSchedule(register_name=row[0])
-                Log.info(msg=f'remove schedule success : register_name = {row[0]}')
+                log.info(msg=f'remove schedule success : register_name = {row[0]}')
 
         # 增加或更新插件
-        Log.info(msg='checking schedules datasource...')
+        log.info(msg='checking schedules datasource...')
         for register_name in self.schedules_names:
             self.db.addSchedule(register_name=register_name,
-                                name=self.schedules[register_name].NAME, description=self.schedules[register_name].DESCRIPTION)
-        Log.info(msg='check schedules datasource success')
+                                name=self.schedules[register_name].NAME,
+                                description=self.schedules[register_name].DESCRIPTION)
+        log.info(msg='check schedules datasource success')

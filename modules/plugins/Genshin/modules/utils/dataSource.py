@@ -1,5 +1,5 @@
+from modules.utils import log
 from modules.utils.sqlCombiner import Sqlite
-from modules.utils import log as Log
 
 
 class DataSource(Sqlite):
@@ -35,7 +35,8 @@ class DataSource(Sqlite):
         return self.execute("insert into resin_remind(group_id,qq_id) values(?,?)", [(group, qq)])
 
     def getResinRemind(self, group: int, qq: int):
-        return self.query("select send,switch from resin_remind where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
+        return self.query("select send,switch from resin_remind where group_id=:group and qq_id=:qq",
+                          {'group': group, 'qq': qq})
 
     def existsResinRemind(self, group: int, qq: int):
         res = self.query("select * from resin_remind where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
@@ -69,10 +70,12 @@ class DataSource(Sqlite):
             return False
 
     def setSend(self, group: int, qq: int):
-        return self.execute("update resin_remind set send=1 where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
+        return self.execute("update resin_remind set send=1 where group_id=:group and qq_id=:qq",
+                            {'group': group, 'qq': qq})
 
     def setNotSend(self, group: int, qq: int):
-        return self.execute("update resin_remind set send=0 where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
+        return self.execute("update resin_remind set send=0 where group_id=:group and qq_id=:qq",
+                            {'group': group, 'qq': qq})
 
     def __initSqlite(self):
         if not self.exists_table('bind'):
@@ -86,7 +89,7 @@ class DataSource(Sqlite):
                     cookie text
                 )
             """)
-            Log.info('[Plugin][Genshin] create table bind success')
+            log.info('[Plugin][Genshin] create table bind success')
         if not self.exists_table('resin_remind'):
             self.execute("""
                 create table resin_remind
@@ -98,4 +101,4 @@ class DataSource(Sqlite):
                     switch int DEFAULT 1
                 )
             """)
-            Log.info('[Plugin][Genshin] create table resin_remind success')
+            log.info('[Plugin][Genshin] create table resin_remind success')

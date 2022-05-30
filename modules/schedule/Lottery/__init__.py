@@ -1,22 +1,33 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @Description: 定时任务,每日上午10点彩票开奖功能
 @Date     :2021/11/18 10:59:18
 @Author      :yuejieyao
 @version      :1.0
-'''
+"""
 
-from typing import List
-from ..miraiSchedule import MiraiScheduleProcessor
-from modules.dataSource.userDataSource import DataSource
-from modules.dataSource.miraiDataSource import MiraiDataSource as MD
-from modules.message.messageChain import MessageChain
-from modules.message.messageType import Plain, At ,Image
-from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
-from modules.utils import log as Log
-import traceback
 import random
+import traceback
+from typing import List, Tuple, Union, Any
+
+from modules.dataSource.miraiDataSource import MiraiDataSource
+from modules.dataSource.userDataSource import DataSource
+from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.message.messageChain import MessageChain
+from modules.message.messageType import Plain, At
+from modules.utils import log
+from ..miraiSchedule import MiraiScheduleProcessor
+
+
+def checkLettory(first_prize_left: List[int], first_prize_right: int, lettory: List) -> Tuple[Union[int, Any], int]:
+    lv_left, lv_right = 0, 0
+    if lettory[6] == first_prize_right:
+        lv_right = 1
+    for i in range(6):
+        if lettory[i] in first_prize_left:
+            lv_left = lv_left + 1
+    return lv_left, lv_right
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(schedule_name='LotterySchedule', hour=10, minute=0)
@@ -34,24 +45,25 @@ class LotterySchedule:
             first_prize_left = random.sample(l, 6)
             first_prize_right = random.randint(1, 9)
 
-            Log.info(
-                msg=f"[Schedule][Lottery]今日大奖: {','.join(map(str,first_prize_left))},{first_prize_right}", log=True)
+            log.info(
+                msg=f"[Schedule][Lottery]今日大奖: {','.join(map(str, first_prize_left))},{first_prize_right}", log=True)
             ds = DataSource(self.user_db)
             groups = ds.get_lottery_yesterday_group()
             if len(groups):
                 for group in groups:
-                    if MD().isScheduleClose(register_name='LotterySchedule', group=group):
+                    if MiraiDataSource().isScheduleClose(register_name='LotterySchedule', group=group):
                         continue
                     msg = MessageChain(
-                        [Plain(text=f"今日大奖: {','.join(map(str,first_prize_left))},{first_prize_right}\n")])
+                        [Plain(text=f"今日大奖: {','.join(map(str, first_prize_left))},{first_prize_right}\n")])
                     qqs = ds.get_lottery_yesterday_qq(group=group)
                     if len(qqs):
                         for qq in qqs:
                             msg.extend([At(target=qq), Plain(text=' 您的彩票如下:\n')])
                             r = ds.get_lottery_yesterday_group_qq(group=group, qq=qq)
                             for i in r:
-                                lvl, lvr = self.checkLettory(first_prize_left=first_prize_left, first_prize_right=first_prize_right,
-                                                             lettory=list(map(int, i[0].split(','))))
+                                lvl, lvr = checkLettory(first_prize_left=first_prize_left,
+                                                        first_prize_right=first_prize_right,
+                                                        lettory=list(map(int, i[0].split(','))))
                                 """
                                 奖励规则:
                                         六等奖:选6+1中2+1或中1+1或中0+1
@@ -92,16 +104,7 @@ class LotterySchedule:
                                         money = 3000000
                                 if money:
                                     ds.add_money(qq=qq, money=money)
-                    MMR().sendGroupMessage(msg=msg, target=group)
+                    MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)
 
         except:
-            Log.error(msg=traceback.format_exc())
-
-    def checkLettory(self, first_prize_left: List[int], first_prize_right: int, lettory: List) -> int:
-        lv_left, lv_right = 0, 0
-        if lettory[6] == first_prize_right:
-            lv_right = 1
-        for i in range(6):
-            if lettory[i] in first_prize_left:
-                lv_left = lv_left+1
-        return lv_left, lv_right
+            log.error(msg=traceback.format_exc())

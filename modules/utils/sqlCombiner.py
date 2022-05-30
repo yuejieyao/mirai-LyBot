@@ -2,6 +2,21 @@ import sqlite3
 from collections import namedtuple
 
 
+def __dict_factory(cursor, row):
+    """Returns sqlite rows as dict."""
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+
+def __namedtuple_factory(cursor, row):
+    """Returns sqlite rows as named tuples."""
+    fields = [col[0] for col in cursor.description]
+    Row = namedtuple("Row", fields)
+    return Row(*row)
+
+
 class Sqlite:
     def __init__(self, path: str, mode='list') -> None:
         """ 初始化sqlite
@@ -76,18 +91,3 @@ class Sqlite:
     def close(self):
         self.cur.close()
         self.conn.close()
-
-
-def __dict_factory(cursor, row):
-    """Returns sqlite rows as dict."""
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
-
-def __namedtuple_factory(cursor, row):
-    """Returns sqlite rows as named tuples."""
-    fields = [col[0] for col in cursor.description]
-    Row = namedtuple("Row", fields)
-    return Row(*row)

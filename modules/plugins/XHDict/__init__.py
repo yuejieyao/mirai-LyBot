@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @Description: 查字典,需要安装playwright的chromium
 @Date     :2021/09/03 10:39:55
 @Author      :yuejieyao
 @version      :1.0
-'''
+"""
 
 from ..miraiPlugin import MiraiMessagePluginProcessor
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Image, Plain
-from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
+from modules.http.miraiMessageRequest import MiraiMessageRequest
 from .modules.utils import screenshot
 import re
 import os
@@ -25,7 +25,7 @@ class XHDict:
 
     def process(self, chains: MessageChain, group: int, target: int,  quote: int):
         message_display = chains.asDisplay().lower()
-        if re.match('字典 .*', message_display) != None or re.match('dict .*', message_display) != None:
+        if re.match('字典 .*', message_display) is not None or re.match('dict .*', message_display) is not None:
             msgs = message_display.split(' ')
             if len(msgs) != 2:
                 return
@@ -39,8 +39,8 @@ class XHDict:
             path = os.path.join(temp_path, f'{uuid.uuid1()}.png')
             try:
                 screenshot.getScreenshot(url=url, path=path)
-                MMR().sendGroupMessage(msg=MessageChain(
+                MiraiMessageRequest().sendGroupMessage(msg=MessageChain(
                     [Image(image_type='group', file_path=path)]), target=group, quote=quote)
 
-            except Exception:
-                MMR().sendGroupMessage(msg=MessageChain([Plain(text="查询字典失败")]), target=group, quote=quote)
+            except:
+                MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Plain(text="查询字典失败")]), target=group, quote=quote)

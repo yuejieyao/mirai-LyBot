@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @Description: 群员昵称改变
 @Date     :2022/01/13 09:06:54
 @Author      :yuejieyao
 @version      :1.0
-'''
+"""
 
-from modules.http.miraiMessageRequest import MiraiMessageRequest as MMR
+from modules.http.miraiMessageRequest import MiraiMessageRequest
+from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, At
 from ..miraiEvent import MiraiEventProcessor
-from modules.message.messageChain import MessageChain
 
 
 @MiraiEventProcessor.mirai_member_card_change_event_register('CardChange')
@@ -20,4 +20,4 @@ class CardChange:
 
     def process(self, group: int, qq: int, name_old: str, name_new: str):
         msg = MessageChain([At(qq), Plain(f"哎唷,新昵称不错哟")])
-        MMR().sendGroupMessage(msg=msg, target=group)
+        MiraiMessageRequest().sendGroupMessage(msg=msg, target=group)

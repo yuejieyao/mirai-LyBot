@@ -1,17 +1,18 @@
 import re
-import uuid
 import string
+import uuid
+
 from PIL import Image, ImageFont, ImageDraw
 
 
-def text_to_img(str):
+def text_to_img(text):
     info_font = ImageFont.truetype('modules/resource/font/sarasa-mono-sc-bold.ttf', 26)
     info_color = "#474747"
     bg_color = "#F5F5F7"
-    lines = get_cut_str(str, 60)
+    lines = get_cut_str(text, 60)
     text = '\n'.join(lines)
     w, h = info_font.getsize_multiline(text)
-    img_new = Image.new("RGB", (w+10, h+10), bg_color)
+    img_new = Image.new("RGB", (w + 10, h + 10), bg_color)
     draw = ImageDraw.Draw(img_new)
     draw.text((5, 5), text, info_color, info_font)
     path = f"modules/resource/temp/{uuid.uuid1()}.png"
@@ -19,14 +20,14 @@ def text_to_img(str):
     return path
 
 
-def get_cut_str(str, cut):
-    '''
+def get_cut_str(text, cut):
+    """
     自动断行，用于 Pillow 等不会自动换行的场景
-    '''
+    """
     punc = """，,、。.？?）》】“"‘'；;：:！!·`~%^& """
     si = 0
     i = 0
-    next_str = str
+    next_str = text
     str_list = []
 
     while re.search(r'\n\n\n\n\n', next_str):
@@ -42,8 +43,8 @@ def get_cut_str(str, cut):
         elif next_str[0] == "\n":
             next_str = next_str[1:]
         elif s == "\n":
-            str_list.append(next_str[:i-1])
-            next_str = next_str[i-1:]
+            str_list.append(next_str[:i - 1])
+            next_str = next_str[i - 1:]
             si = 0
             i = 0
             continue

@@ -1,35 +1,37 @@
-
-import time
 import json
-import websocket
-from modules.conf import config
-from modules.utils import log as Log
-from modules.message.miraiMessageHandler import MiraiMessageHandler
+import time
 from threading import Thread
 
-botQQ = config.getMiraiConf('botQQ')
-verifykey = config.getMiraiConf('verifyKey')
+import websocket
+
+from modules.conf import config
+from modules.message.miraiMessageHandler import MiraiMessageHandler
+from modules.utils import log
+
+botQQ = config.getConf('mirai', 'botQQ')
+verifykey = config.getConf('mirai', 'verifyKey')
 messageHandler = MiraiMessageHandler()
 
 
 class MiraiWebSocketClient:
-    def __init__(self, sessionKey: str) -> None:
-        self.url = f"ws://{config.getMiraiConf('server')}:{config.getMiraiConf('port')}/all?sessionKey={sessionKey}&verifyKey={verifykey}&qq={botQQ}"
+    def __init__(self, session_key: str) -> None:
+        self.url = f"ws://{config.getConf('mirai', 'server')}:{config.getConf('mirai', 'port')}/all?sessionKey={session_key}&verifyKey={verifykey}&qq={botQQ}"
 
-    def on_open(ws):
-        Log.info(msg='websocket open success')
+    def on_open(self):
+        log.info(msg='websocket open success')
 
         def loop():
             time.sleep(2)
+
         Thread(target=loop).start()
 
-    def on_close(ws, close_status_code, close_msg):
+    def on_close(self, close_status_code, close_msg):
         raise Exception('websocket closed')
 
-    def on_error(ws, error):
+    def on_error(self, error):
         raise error
 
-    def on_message(ws, message):
+    def on_message(self, message):
         if isinstance(message, str):
             message = json.loads(message)
         messageHandler.onMessage(message['data'])
@@ -39,4 +41,4 @@ class MiraiWebSocketClient:
         ws = websocket.WebSocketApp(
             self.url, on_open=on_open, on_message=on_message, on_error=on_error, on_close=on_close)
         Thread(target=ws.run_forever).start()
-        # ws.run_forever()
+        # self.run_forever()

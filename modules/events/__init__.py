@@ -1,8 +1,8 @@
 import os
 import traceback
 from importlib import import_module
-from modules.utils import log as Log
 
+from modules.utils import log
 
 ignore = ["__init__.py", "__pycache__"]
 for event in os.listdir(__path__[0]):
@@ -16,12 +16,12 @@ for event in os.listdir(__path__[0]):
         """
         if os.path.isdir(os.path.join(__path__[0], event)):
             import_module(f'modules.events.{event}')
-            Log.info(msg=f'event register success : {event}')
+            log.info(msg=f'event register success : {event}')
         else:
             name = event.split('.')[0]
             import_module(f"modules.events.{name}")
             if name != 'miraiEvent':
-                Log.info(msg=f"event register success : {name}")
-    except Exception:
-        Log.info(msg=f'event register failed : {event}')
-        Log.error(msg=traceback.format_exc())
+                log.info(msg=f"event register success : {name}")
+    except:
+        log.info(msg=f'event register failed : {event}')
+        log.error(msg=traceback.format_exc())
