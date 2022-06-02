@@ -35,20 +35,20 @@ class Announcement:
             if _msg.asDisplay() in ('取消', '算了', 'cancel'):
                 return
             _msg_req = MsgReq()
-            _msg = MessageChain([Plain(text="接收到公告内容,即将开始发送公告")])
-            _msg_req.sendFriendMessage(msg=_msg, target=_target)
+            __msg = MessageChain([Plain(text="接收到公告内容,即将开始发送公告")])
+            _msg_req.sendFriendMessage(msg=__msg, target=_target)
             time.sleep(1)
             groups = MiraiMemberRequests().getGroupList()
-            _msg = MessageChain([Plain(text="检测到已加入的群%d个" % len(groups))])
-            _msg_req.sendFriendMessage(msg=_msg, target=_target)
+            __msg = MessageChain([Plain(text="检测到已加入的群%d个" % len(groups))])
+            _msg_req.sendFriendMessage(msg=__msg, target=_target)
             time.sleep(1)
             for group in groups:
-                _msg = MessageChain([Plain(text="正在发送公告 - 群号:%d" % group.id)])
+                __msg = MessageChain([Plain(text="正在发送公告 - 群号:%d" % group.id)])
                 _msg_req.sendGroupMessage(_msg, group.id)
-                _msg_req.sendFriendMessage(msg=_msg, target=_target)
+                _msg_req.sendFriendMessage(msg=__msg, target=_target)
                 time.sleep(0.5)
-            _msg = MessageChain([Plain(text="公告发送完毕")])
-            _msg_req.sendFriendMessage(_msg, target=_target)
+            __msg = MessageChain([Plain(text="公告发送完毕")])
+            _msg_req.sendFriendMessage(__msg, target=_target)
 
         MiraiMessageMonitorHandler().add(MiraiMessageMonitor(
             monitor_type='FriendMessage', target=target, call_filter=_filter, call_func=_callback))  # 添加一次性监听
