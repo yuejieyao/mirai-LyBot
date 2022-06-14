@@ -41,7 +41,7 @@ class Calendar:
 
 
 def get_news_img() -> MessageChain:
-    resp = requests.session().get('https://api.j4u.ink/proxy/remote/moyu.json')
+    resp = requests.session().get('https://api.j4u.ink/v1/store/other/proxy/remote/moyu.json')
     resp.raise_for_status()
     result = resp.json()
     if 'code' in result and result['code'] == 200:
