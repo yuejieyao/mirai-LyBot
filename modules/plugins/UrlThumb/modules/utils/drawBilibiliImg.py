@@ -7,6 +7,11 @@ from qrcode.image.pil import PilImage
 
 from modules.utils.common import get_cut_str
 
+_headers = {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 "
+                  "Safari/537.36 "
+}
+
 
 def numf(num: int):
     if num < 10000:
@@ -100,9 +105,9 @@ def binfo_image_create(video_info, save_path: str):
         up_list = []
         for up in video_info["data"]['staff']:
             up_mid = up['mid']
-            up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}").json()
+            up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
             up_list.append({
-                "name": up['name'],
+                "name": up_data['data']['name'],
                 "up_title": up['title'],
                 "face": up['face'],
                 "color": up_data['data']['vip']['nickname_color'] if up_data['data']['vip'][
@@ -112,8 +117,8 @@ def binfo_image_create(video_info, save_path: str):
             })
     else:
         up_mid = video_info["data"]["owner"]["mid"]
-        up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}").json()
-        up_stat = requests.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}").json()
+        up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
+        up_stat = requests.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}", headers=_headers).json()
         up_list = [{
             "name": up_data['data']['name'],
             "up_title": "UP主",

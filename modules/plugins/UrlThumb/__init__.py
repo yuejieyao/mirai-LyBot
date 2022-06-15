@@ -6,18 +6,22 @@
 @Author      :yuejieyao
 @version      :1.0
 """
-import requests
-import re
-import os
-from lxml import etree
-from PIL import Image as PILImage
-from io import BytesIO
 import json
-from ..miraiPlugin import MiraiMessagePluginProcessor
+import os
+import re
+import traceback
+from io import BytesIO
+
+import requests
+from PIL import Image as PILImage
+from lxml import etree
+
+from modules.http.miraiMessageRequest import MiraiMessageRequest as MsgReq
 from modules.message.messageChain import MessageChain
 from modules.message.messageType import Plain, Image, App, Xml
-from modules.http.miraiMessageRequest import MiraiMessageRequest as MsgReq
+from modules.utils import log
 from .modules.utils.drawBilibiliImg import binfo_image_create
+from ..miraiPlugin import MiraiMessagePluginProcessor
 
 
 def get(url, headers=None) -> requests.Response:
@@ -106,6 +110,7 @@ class UrlThumb:
                             except:
                                 MsgReq().sendGroupMessage(msg=MessageChain(
                                     [Plain(text=f"B站视频{video_number}解析失败")]), target=group)
+                                log.error(msg=traceback.format_exc())
             else:
                 MsgReq().sendGroupMessage(msg=MessageChain([Plain(text=url)]), target=group)
 
