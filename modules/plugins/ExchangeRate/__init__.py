@@ -49,7 +49,8 @@ class ExchangeRate:
         'MOP': ['MOP', '澳门币'],
         'VND': ['VND', '越南盾', '越南币'],
         'ARS': ['ARS', '阿根廷比索', '比索', '阿根廷币'],
-        'TRY': ['TRY', '土耳其里拉', '土耳其币']
+        'TRY': ['TRY', '土耳其里拉', '土耳其币'],
+        'NZD': ['NZD', '纽西兰刀']
     }
 
     def process(self, chains: MessageChain, group: int, target: int, quote: int):
@@ -87,7 +88,8 @@ class ExchangeRate:
             try:
                 strs = '\n'.join([f"\"{key}\": {','.join(self.currency[key])}" for key in self.currency])
                 path = common.text_to_img(strs)
-                MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]), target=group)
+                MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]),
+                                                       target=group)
             except:
                 log.error(traceback.format_exc())
 
