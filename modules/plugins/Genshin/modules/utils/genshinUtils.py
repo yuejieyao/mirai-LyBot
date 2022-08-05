@@ -57,7 +57,7 @@ class GenshinUtils:
             # 4:  pc web
             # 5:  mobile web
             'x-rpc-client_type': '5',
-            'x-rpc-app_version': '2.11.1' if query else '2.3.0',
+            'x-rpc-app_version': '2.11.1' if query else '2.28.1',
             'DS': self.getDs(query)
         })
         return headers
@@ -188,8 +188,8 @@ class GenshinUtils:
             c = self.hexdigest('salt=' + n + '&t=' + i + '&r=' + r + '&b=' + b + '&q=' + q)
             return f'{i},{r},{c}'
         else:
-            # v2.3.0-web @povsister & @journey-ad
-            n = 'h8w582wxwgqvahcdkpvdhbh2w9casgfl'
+            # v2.28.1
+            n = 'ulInCDohgEs557j0VsPDYnQaaz6KJcv5'
             i = str(int(time.time()))
             r = ''.join(random.sample(string.ascii_lowercase + string.digits, 6))
             c = self.hexdigest("salt=" + n + "&t=" + i + "&r=" + r)
