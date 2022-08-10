@@ -5,7 +5,7 @@ requests_toolbelt==0.9.1
 PixivPy==3.6.0
 requests==2.25.1
 playwright==1.14.1
-lxml==4.6.5
+lxml==4.9.1
 baidu_aip==2.2.18.0
 APScheduler==3.6.3
 pyunit_time==2021.2.2
