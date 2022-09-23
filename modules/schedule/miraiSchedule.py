@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 from modules.dataSource.miraiDataSource import MiraiDataSource
 from modules.utils import log
@@ -20,7 +20,7 @@ class MiraiScheduleProcessor:
         self.__initPluginData()
         self.db.close()
 
-    _sched = BackgroundScheduler()
+    _sched = BlockingScheduler(timezone='Asia/Shanghai')
 
     def start(self):
         self._sched.start()
