@@ -22,7 +22,7 @@ def getNewsImg() -> MessageChain:
     resp = requests.session().get('http://api.2xb.cn/zaob')
     resp.raise_for_status()
     result = resp.json()
-    if 'imageUrl' in result:
+    if 'imageUrl' in result and datetime.now().strftime('%Y-%m-%d') == result['datatime']:
         msg = MessageChain([Image(image_type="group", image_url=result['imageUrl'])])
         return msg
     else:
