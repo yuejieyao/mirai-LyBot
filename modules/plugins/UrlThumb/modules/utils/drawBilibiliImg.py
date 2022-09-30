@@ -1,3 +1,4 @@
+import time
 from io import BytesIO
 
 import qrcode
@@ -24,6 +25,8 @@ def numf(num: int):
 
 
 def binfo_image_create(video_info, save_path: str):
+    s = requests.session()
+    s.get('https://www.bilibili.com/', headers=_headers)
     bg_y = 0
     # 封面
     pic_url = video_info["data"]["pic"]
@@ -100,12 +103,11 @@ def binfo_image_create(video_info, save_path: str):
     # UP主
     # 等级 0-4 \uE6CB-F 5-6\uE6D0-1
     # UP \uE723
-
     if 'staff' in video_info["data"]:
         up_list = []
         for up in video_info["data"]['staff']:
             up_mid = up['mid']
-            up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
+            up_data = s.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
             up_list.append({
                 "name": up_data['data']['name'],
                 "up_title": up['title'],
@@ -117,8 +119,8 @@ def binfo_image_create(video_info, save_path: str):
             })
     else:
         up_mid = video_info["data"]["owner"]["mid"]
-        up_data = requests.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
-        up_stat = requests.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}", headers=_headers).json()
+        up_data = s.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
+        up_stat = s.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}", headers=_headers).json()
         up_list = [{
             "name": up_data['data']['name'],
             "up_title": "UP主",
@@ -165,7 +167,7 @@ def binfo_image_create(video_info, save_path: str):
 
         # 头像
         face_url = up["face"]
-        face_get = requests.get(face_url).content
+        face_get = s.get(face_url).content
         face_bio = BytesIO(face_get)
         face = Image.open(face_bio)
         face.convert("RGB")
