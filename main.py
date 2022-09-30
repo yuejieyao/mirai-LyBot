@@ -25,7 +25,6 @@ def start():
         mirai_schedule.start()
     except:
         log.error(msg=traceback.format_exc())
-        start()
 
 
 if __name__ == '__main__':
