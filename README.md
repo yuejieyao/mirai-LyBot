@@ -48,6 +48,7 @@
 | CardChange       |   群员昵称改变触发   |          `/events/CardChange`          |                                               无                                                |
 | MemberMute       |   群员被禁言触发    |          `/events/MemberMute`          |                                               无                                                |
 | Welcome          |    新人入群触发    |           `/events/Welcome`            |                                               无                                                |
+| NovelAI          |     AI作图     |           `/plugins/NovelAI`           |                                       需要有帐号和订阅,自行获取token                                       |
 
 ## 致谢
 
