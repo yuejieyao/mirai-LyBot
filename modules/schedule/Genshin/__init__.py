@@ -9,7 +9,8 @@
 import random
 import time
 import traceback
-from datetime import datetime
+import random
+from datetime import datetime, timedelta
 
 from modules.http.miraiMemberRequest import MiraiMemberRequests
 from modules.http.miraiMessageRequest import MiraiMessageRequest
@@ -20,6 +21,49 @@ from modules.plugins.Genshin.modules.utils.dataSource import DataSource
 from modules.plugins.Genshin.modules.utils.genshinUtils import GenshinUtils
 from modules.utils import log
 from ..miraiSchedule import MiraiScheduleProcessor
+
+
+def retrySign(award_info, cookie, group, qq, count):
+    msg_req = MiraiMessageRequest()
+    try:
+        msg_req.sendGroupMessage(MessageChain([Plain(f"正在尝试重新签到,group={group},qq={qq}")]), target=group)
+        nick_name = MiraiMemberRequests().getGroupMemberInfo(group=group, qq=qq).nickname
+        content = f"{nick_name}({qq}):  "
+        utils = GenshinUtils(cookie=cookie)
+        role = utils.getRole()
+        if not role:
+            raise Exception("获取角色失败,请重新绑定")
+        sign_info = utils.getSignInfo(role=role)
+        if not sign_info:
+            raise Exception("获取签到信息失败,请重新绑定")
+        if sign_info['is_sign']:
+            raise Exception("已经签到过了")
+        if sign_info['first_bind']:
+            raise Exception("需要在米游社手动签到一次")
+        if utils.sign(role=role):
+            content += f"尝试重新签到成功({count}/3)\n"
+            path = messageUtils.create_sign_pic(award_info=award_info, content=content)
+            msg_req.sendGroupMessage(MessageChain([Image(image_type='group', file_path=path)]), target=group.id)
+        else:
+            if count < 3:
+                kwargs = {
+                    "award_info": award_info,
+                    "cookie": cookie,
+                    "group": group,
+                    "qq": qq,
+                    "count": count + 1
+                }
+                m = random.randint(5, 15)
+                MiraiScheduleProcessor().mirai_schedule_plugin_timing_register(
+                    run_date=datetime.now() + timedelta(minutes=m), func=retrySign, **kwargs)
+                msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败,将在{m}分后再次执行(count/3),group={group},qq={qq}")]),
+                                         target=group)
+            else:
+                msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败(count/3),group={group},qq={qq}")]),
+                                         target=group)
+    except Exception as e:
+        msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败,group={group},qq={qq}\n"),
+                                               Plain(str(e))]), target=group)
 
 
 @MiraiScheduleProcessor.mirai_schedule_plugin_everyday_register(schedule_name='GenshinSchedule', hour=6, minute=10)
@@ -53,7 +97,8 @@ class GenshinSchedule:
                 for bind in binds:
                     time.sleep(random.randint(2, 5))
                     log.info(f'[Schedule][Genshin] Checking user [{group.id}(Group)][{bind[0]}(QQ)] ')
-                    content += f"{member_req.getGroupMemberInfo(group=group.id, qq=bind[0]).nickname}({bind[0]}):  "
+                    nick_name = member_req.getGroupMemberInfo(group=group.id, qq=bind[0]).nickname
+                    content += f"{nick_name}({bind[0]}):  "
                     utils = GenshinUtils(cookie=bind[1])
                     role = utils.getRole()
                     if not role:
@@ -72,9 +117,21 @@ class GenshinSchedule:
                     if utils.sign(role=role):
                         content += "签到成功\n"
                     else:
-                        content += "签到失败\n"
+                        m = random.randint(5, 15)
+                        content += f"签到失败,将在{m}分后重试\n"
+                        kwargs = {
+                            "award_info": award_info,
+                            "cookie": bind[1],
+                            "group": group,
+                            "qq": bind[0],
+                            "count": 1
+                        }
+                        MiraiScheduleProcessor().mirai_schedule_plugin_timing_register(
+                            run_date=datetime.now() + timedelta(minutes=m), func=retrySign, **kwargs)
+
                 path = messageUtils.create_sign_pic(award_info=award_info, content=content)
-                MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]), target=group.id)
+                MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Image(image_type='group', file_path=path)]),
+                                                       target=group.id)
 
         except:
             log.error(traceback.format_exc())
