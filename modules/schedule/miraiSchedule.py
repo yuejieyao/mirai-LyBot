@@ -75,13 +75,13 @@ class MiraiScheduleProcessor:
 
         return wapper
 
-    def mirai_schedule_plugin_timing_register(self, run_date: datetime, func):
+    def mirai_schedule_plugin_timing_register(self, run_date: datetime, func, **kwargs):
         """ 动态添加定时任务,只执行一次
         Param:
             run_date (datetime): 执行时间
             func (function): 执行任务函数
         """
-        self._sched.add_job(func=func, trigger='date', run_date=run_date)
+        self._sched.add_job(func=func, trigger='date', run_date=run_date, kwargs=kwargs)
 
     def __initPluginData(self):
         """初始化插件数据库,用于功能开关和说明等需求"""
