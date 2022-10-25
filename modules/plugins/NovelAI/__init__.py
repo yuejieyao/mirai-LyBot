@@ -75,15 +75,16 @@ def getKwargs(command: str):
 @MiraiMessagePluginProcessor.mirai_group_message_plugin_register('NovelAI')
 class NovelAI:
     NAME = 'AI作图'
-    DESCRIPTION = '发送: 作图 关键词(逗号分割多个关键词)'
+    DESCRIPTION = '发送: ci/cii -prompt 关键词(逗号分割多个关键词)'
 
     directory = "modules/resource/illusts"
 
     def process(self, chains: MessageChain, group: int, target: int, quote: int):
         msg_display = chains.asDisplay()
         if msg_display in ['ci -h', 'cii -h']:
-            msg = MessageChain([Plain('基础命令: ci -prompt tag1,tag2,tag3,tag4 \n'),
-                                Plain('可在ci后,-prompt前增加附加指令: \n'),
+            msg = MessageChain([Plain('基础命令: ci/cii -prompt tag1,tag2,tag3,tag4 \n'),
+                                Plain('ci命令根据tag生成图片,cii命令以图生图'),
+                                Plain('可在ci/cii后,-prompt前增加附加指令: \n'),
                                 Plain('    使用固定的种子,默认随机: -seed 1234567\n'),
                                 Plain('    使用设定的步数,默认28,上传图片固定50: -step 28\n'),
                                 Plain('    生成自定义大小的图片,默认512*768: -size 512x768\n'),
@@ -95,6 +96,10 @@ class NovelAI:
         elif msg_display == 'ci -m':
             MsgReq().sendGroupMessage(
                 MessageChain([Plain('ci -step 28 -size 512*768 -scale 12 -sampler 1 -prompt tag')]),
+                target=group)
+        elif msg_display == 'cii -m':
+            MsgReq().sendGroupMessage(
+                MessageChain([Plain('cii -size 512*768 -scale 12 -sampler 1 -prompt tag')]),
                 target=group)
         elif re.match('ci .*', msg_display) is not None:
             msg_req = MsgReq()
