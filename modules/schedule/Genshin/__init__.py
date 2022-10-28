@@ -122,7 +122,7 @@ class GenshinSchedule:
                         kwargs = {
                             "award_info": award_info,
                             "cookie": bind[1],
-                            "group": group,
+                            "group": group.id,
                             "qq": bind[0],
                             "count": 1
                         }
