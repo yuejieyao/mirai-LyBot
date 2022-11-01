@@ -56,10 +56,11 @@ def retrySign(award_info, cookie, group, qq, count):
                 m = random.randint(5, 15)
                 MiraiScheduleProcessor().mirai_schedule_plugin_timing_register(
                     run_date=datetime.now() + timedelta(minutes=m), func=retrySign, **kwargs)
-                msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败,将在{m}分后再次执行(count/3),group={group},qq={qq}")]),
-                                         target=group)
+                msg_req.sendGroupMessage(
+                    MessageChain([Plain(f"尝试重新签到失败,将在{m}分后再次执行({count}/3),group={group},qq={qq}")]),
+                    target=group)
             else:
-                msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败(count/3),group={group},qq={qq}")]),
+                msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败({count}/3),group={group},qq={qq}")]),
                                          target=group)
     except Exception as e:
         msg_req.sendGroupMessage(MessageChain([Plain(f"尝试重新签到失败,group={group},qq={qq}\n"),
@@ -83,7 +84,7 @@ class GenshinSchedule:
                 # 先获取签到奖励信息
                 awards = None
                 for bind in binds:
-                    res = GenshinUtils(cookie=bind[1]).getAwardInfo()
+                    res = GenshinUtils(cookie=bind[1], ua=bind[2]).getAwardInfo()
                     if res:
                         awards = res
                         break
@@ -99,7 +100,7 @@ class GenshinSchedule:
                     log.info(f'[Schedule][Genshin] Checking user [{group.id}(Group)][{bind[0]}(QQ)] ')
                     nick_name = member_req.getGroupMemberInfo(group=group.id, qq=bind[0]).nickname
                     content += f"{nick_name}({bind[0]}):  "
-                    utils = GenshinUtils(cookie=bind[1])
+                    utils = GenshinUtils(cookie=bind[1], ua=bind[2])
                     role = utils.getRole()
                     if not role:
                         content += "获取角色失败,请重新绑定\n"

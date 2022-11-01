@@ -21,13 +21,13 @@ class DataSource(Sqlite):
             return False
 
     def getGroupBinds(self, group: int):
-        res = self.query("select qq_id,cookie from bind where group_id=:group", {'group': group})
+        res = self.query("select qq_id,cookie,ua from bind where group_id=:group", {'group': group})
         return res
 
-    def getCookie(self, group: int, qq: int):
-        res = self.query("select cookie from bind where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
+    def getCookieAndUa(self, group: int, qq: int):
+        res = self.query("select cookie,ua from bind where group_id=:group and qq_id=:qq", {'group': group, 'qq': qq})
         if len(res) > 0:
-            return str(res[0][0])
+            return str(res[0][0]), str(res[0][1])
         else:
             return None
 

@@ -175,12 +175,12 @@ class Genshin:
         elif msg_display == "原神签到":
             try:
                 ds = DataSource(path=self.genshin_db)
-                cookie = ds.getCookie(group=group, qq=target)
+                cookie, ua = ds.getCookieAndUa(group=group, qq=target)
                 if cookie is None:
                     MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Plain(text="您尚未绑定cookie")]), target=group,
                                                            quote=quote)
                     return
-                utils = GenshinUtils(cookie=cookie)
+                utils = GenshinUtils(cookie=cookie, ua=ua)
                 awards = utils.getAwardInfo()
                 if not awards:
                     MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Plain(text="获取奖励信息失败")]), target=group)
@@ -217,9 +217,9 @@ class Genshin:
 
     def get_genshin_info(self, group: int, target: int, quote: int):
         ds = DataSource(path=self.genshin_db)
-        cookie = ds.getCookie(group=group, qq=target)
+        cookie, ua = ds.getCookieAndUa(group=group, qq=target)
         if cookie:
-            utils = GenshinUtils(cookie=cookie)
+            utils = GenshinUtils(cookie=cookie, ua=ua)
             content = ""
             role = utils.getRole()
             if role:
@@ -246,9 +246,9 @@ class Genshin:
 
     def get_genshin_resin(self, group: int, target: int, quote: int):
         ds = DataSource(path=self.genshin_db)
-        cookie = ds.getCookie(group=group, qq=target)
+        cookie, ua = ds.getCookieAndUa(group=group, qq=target)
         if cookie:
-            utils = GenshinUtils(cookie)
+            utils = GenshinUtils(cookie, ua)
             daily = utils.getRecordDaily()
             if daily:
                 current_resin = daily['current_resin']
@@ -272,10 +272,10 @@ class Genshin:
 
     def get_genshin_abyss(self, group: int, target: int, quote: int):
         ds = DataSource(path=self.genshin_db)
-        cookie = ds.getCookie(group=group, qq=target)
+        cookie, ua = ds.getCookieAndUa(group=group, qq=target)
         mm_req = MiraiMessageRequest()
         if cookie:
-            utils = GenshinUtils(cookie=cookie)
+            utils = GenshinUtils(cookie=cookie, ua=ua)
             role = utils.getRole()
             if role:
                 abyss = utils.getRecordAbyss(role=role)
@@ -297,12 +297,12 @@ class Genshin:
 
     def get_genshin_abyss_floor(self, group: int, target: int, quote: int, floor_index: int):
         ds = DataSource(path=self.genshin_db)
-        cookie = ds.getCookie(group, target)
+        cookie, ua = ds.getCookieAndUa(group, target)
         mm_req = MiraiMessageRequest()
         if floor_index not in [9, 10, 11, 12]:
             mm_req.sendGroupMessage(msg=MessageChain([Plain(text="仅支持查询9-12层的深渊阵容信息")]), target=group)
         if cookie:
-            utils = GenshinUtils(cookie=cookie)
+            utils = GenshinUtils(cookie=cookie, ua=ua)
             role = utils.getRole()
             if role:
                 abyss = utils.getRecordAbyss(role=role)

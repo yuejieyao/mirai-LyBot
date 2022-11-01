@@ -24,7 +24,7 @@
 | 名称               |      功能      |                   位置                   |                                               备注                                               |
 |------------------|:------------:|:--------------------------------------:|:----------------------------------------------------------------------------------------------:|
 | Control          |  功能控制器(群内)   |           `/plugins/Control`           |                                               无                                                |
-| Genshin          |      原神      | `/plugins/Genshin`,`/schedule/Genshin` |                                     签到,查询信息,私聊bot绑定cookie                                      |
+| Genshin          |      原神      | `/plugins/Genshin`,`/schedule/Genshin` |              签到(需注册公益打码[酷曦](https://ocr.kuxi.tech/user/login)),查询信息,私聊bot绑定cookie              |
 | Sign             |      签到      |            `/plugins/Sign`             |                                        抽签并给1张彩票和500游戏币                                         |
 | Announcement     |      群发      |        `/plugins/Announcement`         |                                               无                                                |
 | ExchangeRate     |     汇率转换     |        `/plugins/ExchangeRate`         |                              [申请fixer的apiKey](https://fixer.io/)                               |
@@ -40,7 +40,6 @@
 | Translation      |      翻译      |         `/plugins/Translation`         |                           [申请百度翻译api](https://fanyi-api.baidu.com/)                            |
 | UrlThumb         |      快览      |          `/plugins/Urlthumb`           |                 url地址快览,其中B站视频解析抄自[ABot](https://github.com/djkcyl/ABot-Graia)                 |
 | Weather          |     天气查询     |           `/plugins/Weather`           |                             [申请和风天气api](https://www.qweather.com/)                             |
-| XHDict           |     查字典      |           `/plugins/XHDict`            |            服务器需安装playwright的chromium,抄自[ABot](https://github.com/djkcyl/ABot-Graia)            |
 | NCOV             |     疫情查询     |            `/plugins/NCov`             |         API引用[DXY-COVID-19-Crawler](https://github.com/BlankerL/DXY-COVID-19-Crawler)          |
 | SearchImg        |      搜图      |          `/plugins/SearchImg`          |                           [申请saucenao的apikey](https://saucenao.com/)                           |
 | Newspaper        |    60s早报     |         `/schedule/Newspaper`          |                                               无                                                |

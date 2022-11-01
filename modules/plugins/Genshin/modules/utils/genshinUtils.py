@@ -18,6 +18,7 @@ import uuid
 import requests
 
 from modules.utils import log
+from modules.conf import config
 
 
 def hexdigest(text):
@@ -69,6 +70,30 @@ def getCompHeaders(headers, query: str = ''):
     return _headers
 
 
+def get_validate(gt, challenge):
+    # header = {"Accept": "*/*",
+    #           "X-Requested-With": "com.mihoyo.hyperion",
+    #           "User-Agent": self.USER_AGENT,
+    #           "Referer": "https://webstatic.mihoyo.com/",
+    #           "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7"
+    #           }
+    validate = ""
+    # req = requests.get(
+    #     f"https://api.geetest.com/ajax.php?gt={gt}&challenge={challenge}&lang=zh-cn&pt=3&client_type=web_mobile",
+    #     headers=header)
+    req = requests.post('https://api.ocr.kuxi.tech/api/recognize', params={
+        'token': config.getConf('kuxi_orc', 'token'),
+        'gt': gt,
+        'challenge': challenge,
+        'referer': 'https://passport-api.mihoyo.com/account/ma-cn-passport/app/loginByPassword'
+    })
+    data = req.json()
+    if data['code'] != 0:
+        print(data['msg'])  # 打码失败输出错误信息
+        return None
+    return data['data']['validate']  # 失败返回None 成功返回validate
+
+
 class GenshinUtils:
     ACT_ID = 'e202009291139501'
     MihoyoBBS_Version = '2.38.1'
@@ -85,7 +110,7 @@ class GenshinUtils:
     RECORD_ABYSS_URL = "https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/spiralAbyss?schedule_type=1&server={}&role_id={}"
     RECORD_DAILY_URL = "https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/dailyNote?server={}&role_id={}"
 
-    def __init__(self, cookie: str) -> None:
+    def __init__(self, cookie: str, ua: str = None) -> None:
         self.cookie = cookie
         self.headers = {
             'Accept': 'application/json, text/plain, */*',
@@ -94,7 +119,7 @@ class GenshinUtils:
             'Origin': 'https://webstatic.mihoyo.com',
             'x-rpc-app_version': self.MihoyoBBS_Version,
             'User-Agent': self.USER_AGENT,
-            'x-rpc-client_type': "5",  # 4=PC,5=Mobile Web
+            'x-rpc-client_type': "5",  # 1=IOS,2=Android,4=PC,5=Mobile Web
             'Referer': 'https://webstatic.mihoyo.com/bbs/event/signin-ys/index.html?bbs_auth_required=true'
                        f'&act_id={self.ACT_ID}&utm_source=bbs&utm_medium=mys&utm_campaign=icon',
             'Accept-Encoding': 'gzip, deflate',
@@ -103,6 +128,9 @@ class GenshinUtils:
             "Cookie": self.cookie,
             'x-rpc-device_id': get_device_id(self.cookie)
         }
+
+        if ua:
+            self.headers['User-Agent'] = ua + 'miHoYoBBS/' + self.MihoyoBBS_Version
 
     def getRole(self):
         """ 获取绑定的天空岛帐号信息 """
@@ -137,23 +165,6 @@ class GenshinUtils:
             return res['data']
         return None
 
-    def get_validate(self, gt, challenge):
-        header = {"Accept": "*/*",
-                  "X-Requested-With": "com.mihoyo.hyperion",
-                  "User-Agent": self.USER_AGENT,
-                  "Referer": "https://webstatic.mihoyo.com/",
-                  "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7"
-                  }
-        validate = ""
-        req = requests.get(
-            f"https://api.geetest.com/ajax.php?gt={gt}&challenge={challenge}&lang=zh-cn&pt=3&client_type=web_mobile",
-            headers=header)
-        if req.status_code == 200:
-            data = json.loads(req.text.replace("(", "").replace(")", ""))
-            if "success" in data["status"] and "success" in data["data"]["result"]:
-                validate = data["data"]["validate"]
-        return validate
-
     def sign(self, role=None):
         """ 签到 """
         if role is None:
@@ -178,7 +189,7 @@ class GenshinUtils:
                 if 'data' in res and 'success' in res['data'] and res['data']['success'] == 1:
                     log.info(msg="[Plugins][Genshin] start sign verification")
                     log.error(resp.text)
-                    validate = self.get_validate(res["data"]["gt"], res["data"]["challenge"])
+                    validate = get_validate(res["data"]["gt"], res["data"]["challenge"])
                     if validate != "":
                         self.headers["x-rpc-challenge"] = res["data"]["challenge"]
                         self.headers["x-rpc-validate"] = validate
