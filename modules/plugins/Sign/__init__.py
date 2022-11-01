@@ -47,9 +47,10 @@ class Sign:
     sign_db = 'modules/resource/data/user.db'
     sign_keyword = ['签到', '早安', '早上好', '午安', '中午好', '下午好', '晚安', '晚上好']
 
-    def process(self, chains: MessageChain, group: int, target: int,  quote: int):
+    def process(self, chains: MessageChain, group: int, target: int, quote: int):
         msg_display = chains.asDisplay()
-        if any(keyword if keyword in msg_display else False for keyword in self.sign_keyword):
+        # if any(keyword if keyword in msg_display else False for keyword in self.sign_keyword):
+        if msg_display in self.sign_keyword:
             try:
                 ds = DataSource(path=self.sign_db)
                 if not ds.isSign(target):
