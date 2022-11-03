@@ -43,7 +43,7 @@ def retrySign(award_info, cookie, group, qq, count):
         if utils.sign(role=role):
             content += f"尝试重新签到成功({count}/3)\n"
             path = messageUtils.create_sign_pic(award_info=award_info, content=content)
-            msg_req.sendGroupMessage(MessageChain([Image(image_type='group', file_path=path)]), target=group.id)
+            msg_req.sendGroupMessage(MessageChain([Image(image_type='group', file_path=path)]), target=group)
         else:
             if count < 3:
                 kwargs = {
