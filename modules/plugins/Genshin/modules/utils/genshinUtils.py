@@ -81,14 +81,14 @@ def get_validate(gt, challenge):
     # req = requests.get(
     #     f"https://api.geetest.com/ajax.php?gt={gt}&challenge={challenge}&lang=zh-cn&pt=3&client_type=web_mobile",
     #     headers=header)
-    req = requests.post('https://api.ocr.kuxi.tech/api/recognize', params={
-        'token': config.getConf('kuxi_orc', 'token'),
+    req = requests.post('http://api.rrocr.com/api/recognize.html', params={
+        'appkey': config.getConf('rrocr', 'appkey'),
         'gt': gt,
         'challenge': challenge,
         'referer': 'https://passport-api.mihoyo.com/account/ma-cn-passport/app/loginByPassword'
     })
     data = req.json()
-    if data['code'] != 0:
+    if data['status'] != 0:
         print(data['msg'])  # 打码失败输出错误信息
         return None
     return data['data']['validate']  # 失败返回None 成功返回validate
