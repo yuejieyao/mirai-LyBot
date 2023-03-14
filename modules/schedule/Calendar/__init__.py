@@ -6,7 +6,11 @@
 @Author      :yuejieyao
 @version      :1.0
 """
+import uuid
 from datetime import datetime, timedelta
+from io import BytesIO
+
+from PIL import Image as PILImage
 
 import requests
 
@@ -45,7 +49,27 @@ def get_news_img() -> MessageChain:
     resp.raise_for_status()
     result = resp.json()
     if 'code' in result and result['code'] == 200:
-        msg = MessageChain([Image(image_type="group", image_url=result['data']['moyu_url'])])
+        img_url = result['data']['moyu_url']
+
+        # 这个api返回的url文件后缀是png,但是不知道啥时候API更新后会跳转成一个webp,由于QQ不支持,需要先转换一下
+        file_type = 'png'
+        resp = requests.session().get(img_url)
+        if resp.history:
+            file_type = resp.url.split('.')[-1]
+        if file_type == 'png':
+            msg = MessageChain([Image(image_type="group", image_url=result['data']['moyu_url'])])
+        else:
+            # 将图片转为png格式
+            img = PILImage.open(BytesIO(resp.content)).convert('RGBA')
+            png_bytes = BytesIO()
+            img.save(png_bytes, format='PNG')
+            png_bytes.seek(0)
+
+            # 将png格式的图像保存到本地
+            path = f'modules/resource/temp/{uuid.uuid1()}.png'
+            with open(path, 'wb') as f:
+                f.write(png_bytes.read())
+            msg = MessageChain([Image(image_type="group", file_path=path)])
         return msg
     else:
         raise Exception('Calendar:获取数据失败')
