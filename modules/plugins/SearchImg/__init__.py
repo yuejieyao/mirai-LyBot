@@ -6,7 +6,7 @@
 @Author      :yuejieyao
 @version      :1.0
 """
-
+import traceback
 from urllib import parse
 
 import requests
@@ -42,27 +42,37 @@ class SearchImg:
                 if len(imgs) > 0:
                     url = imgs[0].chain['url']
                     result = search_by_image_url(url)
-                    if 'header' in result and 'status' in result['header'] and result['header']['status'] == 0:
-                        result = result['results'][0]
-                        if 'jp_name' in result['data']:
-                            title = result['data']['jp_name']
-                        else:
-                            title = result['data']['source']
-                        message_chain = MessageChain([Plain(text="检测到来源:\n"), Plain(text=title + '\n')])
-                        similarity = result['header']['similarity']
-                        message_chain.append(Plain(text=f"相似度达到{similarity}%哦\n"))
-                        if 'ext_urls' in result['data']:
-                            ext_urls = '\n'.join(result['data']['ext_urls'])
-                            message_chain.extend([Plain(text="来源链接:\n"), Plain(text=ext_urls)])
+                    try:
+                        if 'header' in result and 'status' in result['header'] and result['header']['status'] == 0:
+                            result = result['results'][0]
+                            if 'jp_name' in result['data']:
+                                title = result['data']['jp_name']
+                            else:
+                                title = result['data']['source']
+                            message_chain = MessageChain([Plain(text="检测到来源:\n"), Plain(text=title + '\n')])
+                            similarity = result['header']['similarity']
+                            message_chain.append(Plain(text=f"相似度达到{similarity}%哦\n"))
+                            if 'thumbnail' in result['header']:
+                                message_chain.append(Image(image_type='group', image_url=result['header']['thumbnail']))
+                            if 'ext_urls' in result['data']:
+                                ext_urls = '\n'.join(result['data']['ext_urls'])
+                                message_chain.extend([Plain(text="来源链接:\n"), Plain(text=ext_urls)])
+                            if 'part' in result['data'] and 'est_time' in result['data']:
+                                part = result['data']['part']
+                                est_time = result['data']['est_time']
+                                message_chain.append(Plain(text=f'\n出处为第{part}集的 {est_time}'))
 
-                        MiraiMessageRequest().sendGroupMessage(msg=message_chain, target=group)
-                    else:
-                        log.info('[SearchImg]' + result)
+                            MiraiMessageRequest().sendGroupMessage(msg=message_chain, target=group)
+                        else:
+                            log.info('[SearchImg]' + result)
+                    except:
+                        log.error(traceback.format_exc())
 
             MiraiMessageRequest().sendGroupMessage(msg=MessageChain([Plain(text="来图,我看看")]), target=group,
                                                    quote=quote)
             MiraiMessageMonitorHandler().add(
-                MiraiMessageMonitor(monitor_type='GroupMessage', target=target, call_filter=_filter, call_func=_callback))  # 添加一次性监听
+                MiraiMessageMonitor(monitor_type='GroupMessage', target=target, call_filter=_filter,
+                                    call_func=_callback))  # 添加一次性监听
 
 
 def search_by_image_url(url: str):
