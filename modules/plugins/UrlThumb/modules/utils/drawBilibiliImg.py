@@ -1,4 +1,3 @@
-import time
 from io import BytesIO
 
 import qrcode
@@ -10,7 +9,9 @@ from modules.utils.common import get_cut_str
 
 _headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 "
-                  "Safari/537.36 "
+                  "Safari/537.36 ",
+    "content-type": "application/json; charset=utf-8"
+
 }
 
 
@@ -107,7 +108,7 @@ def binfo_image_create(video_info, save_path: str):
         up_list = []
         for up in video_info["data"]['staff']:
             up_mid = up['mid']
-            up_data = s.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
+            up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}", headers=_headers).json()
             up_list.append({
                 "name": up_data['data']['name'],
                 "up_title": up['title'],
@@ -119,7 +120,8 @@ def binfo_image_create(video_info, save_path: str):
             })
     else:
         up_mid = video_info["data"]["owner"]["mid"]
-        up_data = s.get(f"https://api.bilibili.com/x/space/acc/info?mid={up_mid}", headers=_headers).json()
+
+        up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}", headers=_headers).json()
         up_stat = s.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}", headers=_headers).json()
         up_list = [{
             "name": up_data['data']['name'],
