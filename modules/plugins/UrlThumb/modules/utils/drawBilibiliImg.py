@@ -1,3 +1,6 @@
+import hashlib
+import time
+from functools import reduce
 from io import BytesIO
 
 import qrcode
@@ -13,6 +16,38 @@ _headers = {
     "content-type": "application/json; charset=utf-8"
 
 }
+
+
+def get_mixin_key(s: str):
+    num_list = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14,
+                39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59,
+                6, 63, 57, 62, 11, 36, 20, 34, 44, 52]
+    r = reduce(lambda x, i: x + s[i], num_list, "")
+    return r[:32]
+
+
+def md5(s: str):
+    return hashlib.md5(s.encode(encoding='utf-8')).hexdigest()
+
+
+def enc_wbi(s: requests.Session, params: dict):
+    response = s.get("https://api.bilibili.com/x/web-interface/nav", headers=_headers)
+    response.raise_for_status()
+    result = response.json()
+
+    img_url = result['data']['wbi_img']['img_url']
+    sub_url = result['data']['wbi_img']['sub_url']
+
+    a = img_url.split('/')[-1].split('.')[0]
+    b = sub_url.split('/')[-1].split('.')[0]
+
+    o = get_mixin_key(a + b)
+    wts = int(time.time())
+    params["wts"] = wts
+
+    f = "&".join([f'{key}={value}' for key, value in params.items()])
+    w_rid = md5(f + o)
+    return w_rid, wts
 
 
 def numf(num: int):
@@ -108,7 +143,10 @@ def binfo_image_create(video_info, save_path: str):
         up_list = []
         for up in video_info["data"]['staff']:
             up_mid = up['mid']
-            up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}", headers=_headers).json()
+            params = {'mid': up_mid}
+            w_rid, wts = enc_wbi(s, params)
+            up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}&w_rid={w_rid}&wts={wts}",
+                            headers=_headers).json()
             up_list.append({
                 "name": up_data['data']['name'],
                 "up_title": up['title'],
@@ -120,8 +158,11 @@ def binfo_image_create(video_info, save_path: str):
             })
     else:
         up_mid = video_info["data"]["owner"]["mid"]
+        params = {'mid': up_mid}
+        w_rid, wts = enc_wbi(s, params)
+        up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}&w_rid={w_rid}&wts={wts}",
+                        headers=_headers).json()
 
-        up_data = s.get(f"https://api.bilibili.com/x/space/wbi/acc/info?mid={up_mid}", headers=_headers).json()
         up_stat = s.get(f"https://api.bilibili.com/x/relation/stat?vmid={up_mid}", headers=_headers).json()
         up_list = [{
             "name": up_data['data']['name'],
