@@ -1,4 +1,3 @@
-
 import re
 from datetime import datetime
 
@@ -21,16 +20,18 @@ class RssUtils:
 
     def getLatestRss(self, url: str):
         """return (guid, title, description, img, link, date)"""
-        resp = requests.session().get(url=f"{url}?key={self.token}")
+        if 'rsshub.app' not in url:
+            url = f"{url}?key={self.token}"
+        resp = requests.session().get(url)
         resp.raise_for_status()
         xml = etree.fromstring(resp.content)
         item = xml.xpath('/rss/channel/item')[0]
 
         title = item.xpath('title')[0].text.splitlines()[0]
 
-        description = item.xpath('description')[0].text
+        description = str(item.xpath('description')[0].text).replace('&amp;', '&')
         # 提取description中的图片
-        img = ','.join(re.findall('img src="(.*?)"', description, re.S))
+        img = ','.join(re.findall('img.*?src="(.*?)"', description, re.S))
         # 去除description中的html标签
         description = re.sub('<br>', '\n', description)
         description = re.sub('<img.+?>', '', description)
@@ -43,7 +44,9 @@ class RssUtils:
 
     def getLatest10Rss(self, url: str):
         """return list((guid, title, description, img, link, date))"""
-        resp = requests.session().get(url=f"{url}?key={self.token}")
+        if 'rsshub.app' not in url:
+            url = f"{url}?key={self.token}"
+        resp = requests.session().get(url)
         resp.raise_for_status()
         xml = etree.fromstring(resp.content)
         items = xml.xpath('/rss/channel/item')
@@ -53,9 +56,9 @@ class RssUtils:
         for item in last_10_rss:
             title = item.xpath('title')[0].text.splitlines()[0]
 
-            description = item.xpath('description')[0].text
+            description = str(item.xpath('description')[0].text).replace('&amp;', '&')
             # 提取description中的图片
-            img = ','.join(re.findall('img src="(.*?)"', description, re.S))
+            img = ','.join(re.findall('img.*?src="(.*?)"', description, re.S))
             # 去除description中的html标签
             description = re.sub('<br>', '\n', description)
             description = re.sub('<img.+?>', '', description)
